@@ -7,22 +7,8 @@ export const RootPage = observer(({ model }) => {
     model.position[id] = parseInt(value);
   }
 
-  function onMove(event) {
-    console.log("onMove");
-    if (event.key === "ArrowUp") {
-      model.position.y -= 3;
-    } else if (event.key === "ArrowDown") {
-      model.position.y += 3;
-    }
-    if (event.key === "ArrowLeft") {
-      model.position.x -= 3;
-    } else if (event.key === "ArrowRight") {
-      model.position.x += 3;
-    }
-  }
-
   return (
-    <div tabIndex={0} onKeyDown={onMove}>
+    <div>
       <ReactP5Wrapper
         sketch={model.sketch}
         translateX={model.position.x}

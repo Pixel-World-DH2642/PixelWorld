@@ -1,6 +1,7 @@
 export function sketch(p5) {
   let translateX = 0;
   let translateY = 0;
+  let onPositionChange = null;
 
   let myCircle = new Circle();
 
@@ -15,6 +16,9 @@ export function sketch(p5) {
       translateY = props.translateY;
       console.log(translateY);
     }
+    if (props.onPositionChange !== undefined) {
+      onPositionChange = props.onPositionChange;
+    }
   };
 
   function checkInput() {
@@ -22,8 +26,7 @@ export function sketch(p5) {
       myCircle.move(0, -1);
     } else if (p5.keyIsDown(p5.DOWN_ARROW)) {
       myCircle.move(0, 1);
-    }
-    if (p5.keyIsDown(p5.LEFT_ARROW)) {
+    } else if (p5.keyIsDown(p5.LEFT_ARROW)) {
       myCircle.move(-1, 0);
     } else if (p5.keyIsDown(p5.RIGHT_ARROW)) {
       myCircle.move(1, 0);
@@ -38,12 +41,15 @@ export function sketch(p5) {
     this.move = function (xDir, yDir) {
       translateX += xDir * speed;
       translateY += yDir * speed;
+      if (onPositionChange === null) return;
+      onPositionChange({ target: { id: "x", value: translateX } });
+      onPositionChange({ target: { id: "y", value: translateY } });
     };
   }
 
   p5.draw = () => {
     p5.background(200);
-    // checkInput();
+    checkInput();
     myCircle.render();
   };
 }
