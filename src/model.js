@@ -1,4 +1,9 @@
+import * as reactSketch from "./sketches/demo";
+//Import Utils
+import { createInputHandler } from "./utils/inputSystem";
+
 export const model = {
-  sketch: null,
+  inputHandler: createInputHandler(),
+  sketch: reactSketch.sketch,
   position: { x: 0, y: 0 },
 };

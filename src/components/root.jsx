@@ -22,7 +22,7 @@ export const RootPage = observer(({ model }) => {
   }
 
   return (
-    <div tabIndex={0} onKeyDown={onMove}>
+    <div tabIndex={0}>
       <ReactP5Wrapper
         sketch={model.sketch}
         translateX={model.position.x}
