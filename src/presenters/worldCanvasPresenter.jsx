@@ -5,9 +5,11 @@ import { WorldCanvasView } from "../views/worldCanvasView";
 export const WorldCanvasPresenter = observer(function WorldCanvasRender({
   model,
 }) {
-  //Functions & Properties
-  console.log(model);
-
-  //Route To Views
-  return <WorldCanvasView model={model} />;
+  return (
+    <WorldCanvasView
+      sketch={model.sketch}
+      x={model.position.x}
+      y={model.position.y}
+    />
+  );
 });
