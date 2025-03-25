@@ -1,36 +1,16 @@
 // TODO make a reactive model, set it to window.myModel
-//-------------------------------IMPORT------------------------------//
-//Import React + Mobx Functions
-import { createElement } from "react";
 import { createRoot } from "react-dom/client";
-import {observable, configure, reaction} from "mobx";
+import { observable, configure } from "mobx";
+import "../style.css";
+import { model } from "./model";
+import * as demoSketch from "./sketches/demo";
+import { RootPage } from "./components/root";
 
-//Import Root
-import{ReactRoot} from "./ReactRoot.jsx";
+configure({ enforceActions: "never" });
 
-//Import Model
-import { worldModel } from "./model_data/world_model";
+const reactiveModel = observable(model);
+reactiveModel.sketch = demoSketch.sketch;
 
-//Persistence
-//import { connectToPersistence } from "../firestoreModel.js";
-
-//-------------------------------Bootstrapping------------------------------//
-//Instantiate Reactive Model
-const reactiveWorldModel = observable(worldModel);
-//Mount The App
-createRoot(document.getElementById('root')).render(<ReactRoot model={reactiveWorldModel} />);
-
-//Firebase
-//connectToPersistence(reactiveModel, reaction);
-
-//Simple Reaction Model
-//reaction(checkChangeACB, sideEffectACB);
-/*
-function checkChangeACB(){
-    return [reactiveModel...]
-}
-
-function sideEffectACB(){
-    reactiveModel...;
-}
-*/
+createRoot(document.getElementById("root")).render(
+  <RootPage model={reactiveModel}></RootPage>,
+);
