@@ -12,7 +12,7 @@ export function WorldCanvasView({ model }) {
         sketch={model.sketch}
         translateX={model.position.x}
         translateY={model.position.y}
-        onPositionChange={onPositionChange}
+        // onPositionChange={onPositionChange}
       />
     </div>
   );

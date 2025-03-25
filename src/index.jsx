@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import { observable, configure } from "mobx";
 import "./style.css";
 //Import Model
-import { createWorldModel } from "./model_data/model";
 import { model } from "./model_data/model";
 
 //Import Utils
@@ -48,4 +47,4 @@ function sideEffectACB(){
 }
 */
 
-window.worldModel = reactiveModel;
+window.model = reactiveModel;
