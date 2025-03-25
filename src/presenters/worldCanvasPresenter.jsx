@@ -1,15 +1,13 @@
 //Import Resources
 import { observer } from "mobx-react-lite";
-import { WorldCanvasView } from "/src/views/WorldCanvasView";
+import { WorldCanvasView } from "../views/worldCanvasView";
 
+export const WorldCanvasPresenter = observer(function WorldCanvasRender({
+  model,
+}) {
+  //Functions & Properties
+  console.log(model);
 
-export const WorldCanvasPresenter = observer(
-    function WorldCanvasRender(props){
-        //Functions & Properties
-
-        //Route To Views
-        return <WorldCanvasView
-            props = {props}
-        />
-    }
-);
+  //Route To Views
+  return <WorldCanvasView model={model} />;
+});
