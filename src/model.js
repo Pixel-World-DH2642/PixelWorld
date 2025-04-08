@@ -1,4 +1,4 @@
-import * as reactSketch from "./sketches/demo";
+import * as reactSketch from "./sketches/sketch";
 //Import Utils
 import { createInputHandler } from "./utils/inputSystem";
 

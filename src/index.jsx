@@ -1,9 +1,8 @@
-// TODO make a reactive model, set it to window.myModel
 import { createRoot } from "react-dom/client";
 import { observable, configure } from "mobx";
-import "../style.css";
+import "./style.css";
 import { model } from "./model";
-import * as demoSketch from "./sketches/demo";
+import * as demoSketch from "./sketches/sketch";
 import { RootPage } from "./components/root";
 import { UI_INPUT_TYPE } from "/src/utils/inputSystem";
 
