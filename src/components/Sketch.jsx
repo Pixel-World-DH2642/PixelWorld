@@ -1,4 +1,4 @@
-export function sketch(p5) {
+export function Sketch(p5) {
   let translateX = 0;
   let translateY = 0;
   let onPositionChange = null;
