@@ -8,6 +8,7 @@ export function sketch(p5) {
   p5.setup = () => p5.createCanvas(400, 400, p5.WEBGL);
 
   p5.updateWithProps = (props) => {
+    console.log(props);
     if (props.translateX !== undefined) {
       translateX = props.translateX;
       console.log(translateX);
@@ -38,6 +39,7 @@ export function sketch(p5) {
     this.render = function () {
       p5.circle(translateX, translateY, 30);
     };
+
     this.move = function (xDir, yDir) {
       translateX += xDir * speed;
       translateY += yDir * speed;
@@ -49,7 +51,7 @@ export function sketch(p5) {
 
   p5.draw = () => {
     p5.background(200);
-    checkInput();
+    //checkInput();
     myCircle.render();
   };
 }
