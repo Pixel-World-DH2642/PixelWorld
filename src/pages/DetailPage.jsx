@@ -1,31 +1,60 @@
 export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
   return (
-    <div className="font-pixel">
-      <div>
-        <a href="#" class="hover:underline">
+    <div className="font-pixel p-3">
+      <div className="flex pb-2">
+        <a
+          href="#"
+          className="hover:scale-110 transition transform duration-200"
+        >
+          <img src="/assets/arrow.png" className="w-10 h-10"></img>
+        </a>
+        <a
+          href="\pages\MuseumPage.jsx"
+          className="pl-2 hover:underline flex items-center"
+        >
           Back to gallery
         </a>
       </div>
-      <div className="flex space-x-4">
-        <div className="w-100 h-100 bg-blue-500 rounded-md shadow-md p-4"></div>
-        <div className="bg-blue-300 p-4">
-          <h1>Title</h1>
-          <h3>quote</h3>
-          <h2>description</h2>
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex-shrink-0 aspect-[4/3] w-full md:w-1/2 bg-gray-500 rounded-md shadow-md border p-4"></div>
+        <div className="bg-300 p-4 w-full">
+          <h1 className="text-4xl pb-1">Title</h1>
+          <div className="pb-2">
+            <span>"Everything you can imagine is real" - Pablo Picasso.</span>
+          </div>
           <div>
+            <span className="font-bold">Owner:</span>
+          </div>
+          <div>
+            <span> This painting is showing a dog.</span>
+          </div>
+          <div className="flex items-center pt-2 gap-2">
             <button /*onClick={}*/
               className="text-4xl hover:scale-110 transition transform duration-200"
             >
-              ❤️
+              <img src="/assets/heart.png" className="w-10 h-10"></img>
             </button>
-            <span>likes</span>
+            <span className=" flex items-center text-0.5xl">10</span>
           </div>
           <div>
-            <textarea
-              type="text"
-              placeholder="Leave your comment"
-              className="w-full border border-black rounded-md"
-            ></textarea>
+            <span className="font-bold">Comments</span>
+            <div className="pt-2 pb-3">
+              <textarea
+                type="text"
+                placeholder="Leave your comment"
+                className="w-full border border-black rounded-md px-2 pt-1"
+              ></textarea>
+            </div>
+
+            <div>
+              <span className="pb-3">Painter 123: This is super awesome!</span>
+            </div>
+            <div>
+              <span className="pb-3">Painter 123: This is super awesome!</span>
+            </div>
+            <div>
+              <span className="pb-3">Painter 123: This is super awesome!</span>
+            </div>
           </div>
         </div>
       </div>
