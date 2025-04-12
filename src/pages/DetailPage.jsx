@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
   return (
-    <div className="font-pixel p-8">
+    <div className="font-pixel p-6 mx-auto w-[512px] md:w-[768px] lg:w-[1024px]">
       <Link
         to="/museum"
         className="flex transition transform duration-200 pb-4 items-center"
@@ -10,9 +10,9 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
         <img src="/assets/back_arrow.png" className="h-8"></img>
         <div className="pl-4 hover:underline flex text-3xl">Back to museum</div>
       </Link>
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-shrink-0 aspect-[4/3] w-full md:w-1/2 bg-gray-500 rounded-md shadow-md border p-4"></div>
-        <div className="bg-300 p-4 w-full">
+      <div className="flex flex-col md:flex-row">
+        <div className="flex-shrink-0 aspect-square md:w-1/2 md:h-1/2 bg-gray-500 rounded-md shadow-md border mb-4"></div>
+        <div className="md:px-4">
           <h1 className="text-4xl pb-1">Title</h1>
           <div className="pb-2">
             <span>"Everything you can imagine is real" - Pablo Picasso.</span>
@@ -37,7 +37,7 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
               <textarea
                 type="text"
                 placeholder="Leave your comment"
-                className="w-full border border-black rounded-md px-2 pt-1"
+                className="border border-black rounded-md px-2 pt-1"
               ></textarea>
             </div>
 
