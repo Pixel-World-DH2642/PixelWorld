@@ -1,20 +1,15 @@
+import { Link } from "react-router-dom";
+
 export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
   return (
-    <div className="font-pixel p-3">
-      <div className="flex pb-2">
-        <a
-          href="#"
-          className="hover:scale-110 transition transform duration-200"
-        >
-          <img src="/assets/arrow.png" className="w-10 h-10"></img>
-        </a>
-        <a
-          href="\pages\MuseumPage.jsx"
-          className="pl-2 hover:underline flex items-center"
-        >
-          Back to gallery
-        </a>
-      </div>
+    <div className="font-pixel p-8">
+      <Link
+        to="/museum"
+        className="flex transition transform duration-200 pb-4 items-center"
+      >
+        <img src="/assets/back_arrow.png" className="h-8"></img>
+        <div className="pl-4 hover:underline flex text-3xl">Back to museum</div>
+      </Link>
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-shrink-0 aspect-[4/3] w-full md:w-1/2 bg-gray-500 rounded-md shadow-md border p-4"></div>
         <div className="bg-300 p-4 w-full">
