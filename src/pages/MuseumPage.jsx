@@ -184,7 +184,8 @@ export function MuseumPage({ paintings, onSelectPainting }) {
         {/* Paintings */}
         <div className="flex flex-grow justify-start gap-6">
           {currentPaintings.map((painting) => (
-            <div
+            <Link
+              to="/details"
               key={painting.id}
               className="flex flex-col w-[calc(33.333%-1rem)] p-4 shadow-2xl"
             >
@@ -228,7 +229,7 @@ export function MuseumPage({ paintings, onSelectPainting }) {
                 {painting.authorNotes ||
                   "There was a lot of different types among wolves in the Late Pleistocene.(1) The dingo is also a dog, but many dingos have become wild animals again and live in the wild, away from humans (parts of Australia).(5)"}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
 
