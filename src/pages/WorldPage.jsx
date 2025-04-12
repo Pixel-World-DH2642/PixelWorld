@@ -17,9 +17,10 @@ export function WorldPage({
   onResetPainting,
 }) {
   return (
-    <div>
+    <div className="flex flex-col items-center justify-center text-center">
       <h1>World Page</h1>
       <Link to="/">Back to welcome</Link>
+      <Link to="/profile">To profile</Link>
       <ReactP5Wrapper sketch={sketch} />
       <Link to="/museum">To museum</Link>
     </div>

@@ -33,7 +33,7 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
         <img src="/assets/back_arrow.png" className="h-8"></img>
         <div className="pl-4 hover:underline flex text-3xl">Back to museum</div>
       </Link>
-      <div className="flex flex-col md:flex-row">
+      <div className="flex flex-col md:flex-row mt-8">
         <div className="flex-shrink-0 aspect-square md:w-1/2 md:h-1/2 bg-gray-500 border-2 mb-4">
           {painting.colorMatrix.map((row, rowIndex) => (
             <div

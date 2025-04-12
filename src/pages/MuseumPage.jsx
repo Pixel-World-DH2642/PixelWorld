@@ -151,21 +151,25 @@ export function MuseumPage({ paintings, onSelectPainting }) {
   };
 
   return (
-    <div className="font-pixel p-8">
-      {/* Back Button */}
-      <Link
-        to="/world"
-        className="flex transition transform duration-200 pb-4 items-center"
-      >
-        <img src="/assets/back_arrow.png" className="h-8"></img>
-        <div className="pl-4 hover:underline flex text-3xl">Back to world</div>
-      </Link>
+    <div className="font-pixel p-6">
+      <div className="font-pixel px-6 mx-auto w-[512px] md:w-[768px] lg:w-[1024px]">
+        {/* Back Button */}
+        <Link
+          to="/world"
+          className="flex transition transform duration-200 pb-4 items-center"
+        >
+          <img src="/assets/back_arrow.png" className="h-8"></img>
+          <div className="pl-4 hover:underline flex text-3xl">
+            Back to world
+          </div>
+        </Link>
 
-      {/* Museum Title */}
-      <h1 className="text-6xl font-bold mb-6">MUSEUM</h1>
+        {/* Museum Title */}
+        <h1 className="text-6xl font-bold mb-6">MUSEUM</h1>
+      </div>
 
       {/* Paintings grid with scroll arrows */}
-      <div className="flex items-left">
+      <div className="flex items-left mt-16">
         {/* Left Arrow - only show if not on the first page */}
         <div className="mr-6 flex-shrink-0 self-center">
           <button

@@ -13,7 +13,7 @@ export function ProfilePage({ user, onChangeDisplayName }) {
       </Link>
 
       {/* Profile Info */}
-      <div className="flex items-center mb-6">
+      <div className="flex items-center mb-6 mt-8">
         <div className="w-12 h-12 bg-black rounded-full mr-4" />
         <div className="flex items-baseline space-x-2">
           <h1 className="text-3xl font-bold">Painter123</h1>
