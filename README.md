@@ -14,11 +14,11 @@ When ready, users can visit the Museum to browse and appreciate paintings upload
 - A micro game engine done by [David](https://gits-15.sys.kth.se/dsegal) to provide basic functionalities in the canvas element
 - Using [tailwindcss](https://tailwindcss.com/) to style the view
 - Deployed on Firebase [Link](https://pixelworld-45efc.web.app/)
+- Introduced a quote API fetch
 
 ### What we plan to do - 2025.04.14
 
 - [ ] Implement all the data slices for redux toolkit
-- [ ] Introduce a quote API fetch
 - [ ] Introduce a weather API fetch
 - [ ] Authentication using Firebase
 - [ ] User persistence using Firebase
