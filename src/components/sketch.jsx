@@ -9,13 +9,13 @@ export function sketch(p5) {
   MicroEngine.LoadScene(mainScene);
 
   //############################--DEFINE ACTORS--############################//
-  let recto, easel;
+  let recto, easel, testPlant1, testPlant2, testPlant3;
   //############################-----------------############################//
 
   p5.preload = () => {
-    //testPlant1 = p5.loadImage("../assets/flower01.png");
-    //testPlant2 = p5.loadImage("../assets/grass01.png");
-    //testPlant3 = p5.loadImage("../assets/moss01.png");
+    testPlant1 = p5.loadImage("/assets/flower01.png");
+    testPlant2 = p5.loadImage("/assets/grass01.png");
+    testPlant3 = p5.loadImage("/assets/moss01.png");
   };
 
   p5.setup = () => {
