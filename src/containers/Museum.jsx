@@ -9,9 +9,11 @@ import {
   selectCurrentPaintings,
   selectIsFirstPage,
   selectIsLastPage
-} from "../pages/MuseumPage";
+} from "../features/museumSlice";
 
 export const Museum = connect(
+
+  //works like observer --> monitors the change of components, the values come from the selectors in the slice
   function mapStateToProps(state) {
     return {
       paintings: selectAllPaintings(state),
@@ -20,6 +22,8 @@ export const Museum = connect(
       isLastPage: selectIsLastPage(state)
     };
   },
+
+  //wrapping the actions into dispatch
   function mapDispatchToProps(dispatch) {
     return {
       onSelectPainting: (id) => dispatch(selectPainting(id)),
