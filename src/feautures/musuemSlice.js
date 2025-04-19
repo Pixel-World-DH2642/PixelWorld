@@ -145,6 +145,7 @@ export const { selectPainting, nextPaintings, prevPaintings } = museumSlice.acti
 
 // Selectors
 export const selectAllPaintings = (state) => state.museum.paintings;
+//show the paintings which fit on the screen (max 3 - paintingsPerPage)
 export const selectCurrentPaintings = (state) => {
   const { paintings, startIndex, paintingsPerPage } = state.museum;
   return paintings.slice(startIndex, startIndex + paintingsPerPage);

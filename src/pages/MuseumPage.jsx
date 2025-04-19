@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-export function MuseumPage({ paintings, onSelectPainting }) {
-  // Props from Redux
+export function MuseumPage({ 
+  // Props from Redux --> declare them to be used in the function to display the view
   currentPaintings, 
   isFirstPage, 
   isLastPage, 
-  onSelectPainting, 
+  onSelectPainting, //for later? when connecting to details maybe
   onNextClick, 
   onPrevClick 
-
+}) {
 
   // Handle right arrow click to scroll to next set of paintings
   const handleNextClickACB = () => {
