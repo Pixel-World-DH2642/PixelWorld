@@ -1,29 +1,10 @@
 import { Link } from "react-router-dom";
+import { painting } from "../DetailModel";
 
 export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
-  painting = {
-    id: "painting1",
-    title: "Beauty",
-    colorMatrix: Array(32)
-      .fill()
-      .map(() =>
-        Array(32)
-          .fill()
-          .map(
-            () =>
-              "#" +
-              Math.floor(Math.random() * 16777215)
-                .toString(16)
-                .padStart(6, "0"),
-          ),
-      ),
-    savedQuote: "Art washes away from the soul the dust of everyday life.",
-    author: "PicassoFan123",
-    date: Date.now() - 100000000,
-    authorNotes: "Inspired by the colors of a Spanish sunset.",
-    likedBy: ["user1", "user2", "user3"],
-  };
-
+  if (!painting) {
+    return <div className="p-6 text-xl">Loading painting details...</div>;
+  }
   return (
     <div className="font-pixel p-6 mx-auto w-[512px] md:w-[768px] lg:w-[1024px]">
       <Link
@@ -57,18 +38,19 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
           ))}
         </div>
         <div className="md:px-4">
-          <h1 className="text-4xl pb-1">Title</h1>
+          <h1 className="text-4xl pb-1">{painting.title}</h1>
           <div className="pb-2">
-            <span>"Everything you can imagine is real" - Pablo Picasso.</span>
+            <span>"{painting.savedQuote}"</span>
           </div>
           <div>
-            <span className="font-bold">Owner:</span>
+            <span className="font-bold">Made by: {painting.author}</span>
           </div>
           <div>
-            <span> This painting is showing a dog.</span>
+            <span>{painting.authorNotes}</span>
           </div>
           <div className="flex items-center pt-2 gap-2">
-            <button /*onClick={}*/
+            <button
+              onClick={() => onLikePainting("currentUser")}
               className="text-4xl hover:scale-110 transition transform duration-200"
             >
               <img src="/assets/heart.png" className="w-10 h-10"></img>
