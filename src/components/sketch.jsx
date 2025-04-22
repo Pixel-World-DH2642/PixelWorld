@@ -9,7 +9,7 @@ export function sketch(p5) {
   MicroEngine.LoadScene(mainScene);
 
   //############################--DEFINE ACTORS--############################//
-  let recto, easel, testPlant1, testPlant2, testPlant3;
+  let recto, easel, testPlant1, testPlant2, testPlant3, skyCanvas, scribble;
   //############################-----------------############################//
 
   p5.preload = () => {
@@ -33,16 +33,20 @@ export function sketch(p5) {
     MicroEngine.LoadScene(ActorList.mainScene);
 
     //move to an actor object
-    /*
-    skyCanvas = createGraphics(width, height);
-    scribble = new Scribble(skyCanvas);
+
+    skyCanvas = p5.createGraphics(p5.width, p5.height);
+    scribble = MicroEngine.CreateScribbleInstance(skyCanvas); //new Scribble(skyCanvas);
+
     scribble.bowing = 5;
-    for(let i = 0; i < 8; i++){
-      skyCanvas.strokeWeight(20 + random(-7, 30));
-      skyCanvas.stroke(30 + random(-20, 20), 40 + random(-10, 10), 220 + random(-30, 10))
-      scribble.scribbleLine(0, i*20, width, i*20)
+    for (let i = 0; i < 8; i++) {
+      skyCanvas.strokeWeight(20 + p5.random(-7, 30));
+      skyCanvas.stroke(
+        30 + p5.random(-20, 20),
+        40 + p5.random(-10, 10),
+        220 + p5.random(-30, 10),
+      );
+      scribble.scribbleLine(0, i * 20, p5.width, i * 20);
     }
-    */
   };
 
   p5.updateWithProps = (props) => {
@@ -52,6 +56,8 @@ export function sketch(p5) {
   p5.draw = () => {
     p5.background(30, 40, 220);
     p5.translate(-p5.width / 2, -p5.height / 2);
+
+    p5.image(skyCanvas, 0, 0);
     MicroEngine.EngineLoop();
 
     if (p5.keyIsDown(p5.LEFT_ARROW)) recto.findComponent("GroundMove").move(-1);

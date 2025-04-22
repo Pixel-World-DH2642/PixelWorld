@@ -508,6 +508,12 @@ export function createMicroEngine(p5) {
     return heightMap;
   }
 
+  function createScribbleInstance(pg) {
+    return new Scribble(pg);
+  }
+
+  //deleteScribbleInstance...
+
   //############################GLOBAL#############################//
   //-----------------------Game Loop Functions--------------------//
 
@@ -689,6 +695,9 @@ export function createMicroEngine(p5) {
     },
     get GenerateCurveData() {
       return createCurveData;
+    },
+    get CreateScribbleInstance() {
+      return createScribbleInstance;
     },
     get Components() {
       return components;
