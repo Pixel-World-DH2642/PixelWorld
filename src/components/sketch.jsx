@@ -23,7 +23,7 @@ export function sketch(p5) {
     p5.rectMode(p5.CENTER);
     p5.background(30, 40, 220);
 
-    ActorList.createGroundActor();
+    ActorList.createGroundActor([testPlant1, testPlant2, testPlant3]);
     easel = ActorList.createCanvasActor(p5.createVector(900, 150), {
       x: 128,
       y: 128,
@@ -31,6 +31,18 @@ export function sketch(p5) {
     recto = ActorList.createRectActor();
 
     MicroEngine.LoadScene(ActorList.mainScene);
+
+    //move to an actor object
+    /*
+    skyCanvas = createGraphics(width, height);
+    scribble = new Scribble(skyCanvas);
+    scribble.bowing = 5;
+    for(let i = 0; i < 8; i++){
+      skyCanvas.strokeWeight(20 + random(-7, 30));
+      skyCanvas.stroke(30 + random(-20, 20), 40 + random(-10, 10), 220 + random(-30, 10))
+      scribble.scribbleLine(0, i*20, width, i*20)
+    }
+    */
   };
 
   p5.updateWithProps = (props) => {
