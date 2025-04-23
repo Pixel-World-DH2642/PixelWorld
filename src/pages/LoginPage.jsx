@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
+  const navigate = useNavigate();
+
   return (
     <div
       className="font-pixel min-h-screen bg-cover bg-center flex items-center justify-center"
@@ -28,22 +32,27 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
           </div>
           <button
             type="submit"
-            className="bg-gray-500 text-white rounded-md py-2 hover:bg-gray-600 border-1 border-gray-800"
+            className="bg-gray-500 text-white rounded-md py-2 hover:bg-gray-600 border-1 border-gray-800 cursor-pointer"
           >
             Log in
           </button>
         </form>
 
         <div className="my-4 text-center">
-          <button className="w-full flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100">
-            <i class="bi bi-google pr-2"></i>
+          <button
+            onClick={() => {
+              onLoginWithGoogle(navigate);
+            }}
+            className="w-full flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100 cursor-pointer"
+          >
+            <i className="bi bi-google pr-2"></i>
             Continue with Google
           </button>
         </div>
 
         <div className="text-center mt-4">
           <p className="text-sm mb-2 text-left">Are you new here?</p>
-          <button className="w-full bg-gray-500 text-white rounded-md py-2 hover:bg-gray-700 border-1 border-gray-800">
+          <button className="w-full bg-gray-500 text-white rounded-md py-2 hover:bg-gray-700 border-1 border-gray-800 cursor-pointer">
             Create an account
           </button>
         </div>

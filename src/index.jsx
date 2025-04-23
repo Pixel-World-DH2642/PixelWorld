@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import "./styles/global.css";
 import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
-import { WelcomePage } from "./pages/WelcomePage";
+import { Welcome } from "./containers/Welcome";
 import { Login } from "./containers/Login";
 import { World } from "./containers/World";
 import { Profile } from "./containers/Profile";
@@ -9,14 +9,16 @@ import { Museum } from "./containers/Museum";
 import { Detail } from "./containers/Detail";
 import { Provider } from "react-redux";
 import configureReduxStore from "./app/store";
+import { connectToPersistance } from "./app/firebase";
 
 const store = configureReduxStore();
+connectToPersistance(store);
 
 export function makeRouter() {
   return createHashRouter([
     {
       path: "/welcome",
-      element: <WelcomePage />,
+      element: <Welcome />,
     },
     {
       path: "/login",
