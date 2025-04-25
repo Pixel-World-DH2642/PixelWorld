@@ -42,8 +42,8 @@ export function WorldPage({
           Get a new quote
         </button>
         <p>Quote of the day: {quote.content}</p>
-
-        <hr></hr>
+      </div>
+      <div className="flex items-center justify-center">
         <button
           className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
           onClick={getWeather}
