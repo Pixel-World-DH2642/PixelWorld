@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import quoteSlice from "./slices/quoteSlice";
-import paintingReducer from "./slices/paintingSlice";
+import paintingSlice from "./slices/paintingSlice";
 
 export default function configureReduxStore() {
   console.log("Configuring Redux store...");
@@ -8,7 +8,7 @@ export default function configureReduxStore() {
   return configureStore({
     reducer: {
       quote: quoteSlice,
-      painting: paintingReducer,
+      painting: paintingSlice,
     },
     preloadedState: initialState,
   });

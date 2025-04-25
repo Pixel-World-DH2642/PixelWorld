@@ -2,12 +2,12 @@
 import { connect } from "react-redux";
 import { DetailPage } from "../pages/DetailPage";
 import { likePainting, dislikePainting } from "../app/slices/paintingSlice";
-import { painting as mockPainting } from "../DetailModel";
+import { painting } from "../DetailMockData";
 
 export const Detail = connect(
   function mapStateToProps(state) {
     return {
-      painting: state.painting.currentPainting || mockPainting,
+      painting: state.painting.currentPainting || painting,
     };
   },
   function mapDispatchToProps(dispatch) {

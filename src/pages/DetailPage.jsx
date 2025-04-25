@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { painting } from "../DetailModel";
+import { painting } from "../DetailMockData";
 
 export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
   if (!painting) {
