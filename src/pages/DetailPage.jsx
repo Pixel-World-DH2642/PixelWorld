@@ -6,7 +6,7 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
     return <div className="p-6 text-xl">Loading painting details...</div>;
   }
   return (
-    <div className="font-pixel p-6 mx-auto w-[512px] md:w-[768px] lg:w-[1024px]">
+    <section className="font-pixel p-6 mx-auto w-full max-w-[512px] md:max-w-[768px] lg:max-w-[1024px]">
       <Link
         to="/museum"
         className="flex transition transform duration-200 pb-4 items-center"
@@ -14,8 +14,8 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
         <img src="/assets/back_arrow.png" className="h-8"></img>
         <div className="pl-4 hover:underline flex text-3xl">Back to museum</div>
       </Link>
-      <div className="flex flex-col md:flex-row mt-8">
-        <div className="flex-shrink-0 aspect-square md:w-1/2 md:h-1/2 bg-gray-500 border-2 mb-4">
+      <div className="flex flex-col lg:flex-row gap-8 mt-8">
+        <div className="aspect-square w-full bg-gray-500 border-2">
           {painting.colorMatrix.map((row, rowIndex) => (
             <div
               key={rowIndex}
@@ -37,7 +37,7 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
             </div>
           ))}
         </div>
-        <div className="md:px-4">
+        <div className="">
           <h1 className="text-4xl pb-1">{painting.title}</h1>
           <div className="pb-2">
             <span>"{painting.savedQuote}"</span>
@@ -48,7 +48,7 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
           <div>
             <span>{painting.authorNotes}</span>
           </div>
-          <div className="flex items-center pt-2 gap-2">
+          <div className="">
             <button
               onClick={() => onLikePainting("currentUser")}
               className="text-4xl hover:scale-110 transition transform duration-200"
@@ -63,7 +63,7 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
               <textarea
                 type="text"
                 placeholder="Leave your comment"
-                className="border border-black rounded-md px-2 pt-1"
+                className="border border-black rounded-md px-2 pt-1 w-full"
               ></textarea>
             </div>
 
@@ -79,6 +79,6 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
