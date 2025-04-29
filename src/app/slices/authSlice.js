@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { auth, gProvider } from "../firebase";
-import { signInWithPopup, signOut } from "firebase/auth";
+import { signInWithPopup, signOut, updateProfile } from "firebase/auth";
 
 // Define the async thunk for Google sign-in
 export const signInWithGoogle = createAsyncThunk(
@@ -31,6 +31,26 @@ export const logoutUser = createAsyncThunk(
       return null; // Indicate successful logout
     } catch (error) {
       console.error("Error during sign-out:", error);
+      return rejectWithValue(error.message);
+    }
+  },
+);
+
+export const updateDisplayName = createAsyncThunk(
+  "auth/updateDisplayName",
+  async (newDisplayName, { rejectWithValue, getState }) => {
+    const user = auth.currentUser;
+    if (!user) {
+      return rejectWithValue("No user logged in");
+    }
+    try {
+      await updateProfile(user, { displayName: newDisplayName });
+      console.log("Display name updated successfully");
+      // Return the updated user info needed for the state
+      const { uid, email, photoURL } = user; // Get other details
+      return { uid, displayName: newDisplayName, email, photoURL }; // Return updated user object slice
+    } catch (error) {
+      console.error("Error updating display name:", error);
       return rejectWithValue(error.message);
     }
   },
@@ -84,6 +104,26 @@ const authSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
         // Keep user state as is or clear it depending on desired behavior on logout failure
+      })
+      .addCase(updateDisplayName.pending, (state) => {
+        // Optionally set a specific status like 'updating' or use 'loading'
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(updateDisplayName.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        // Ensure user object exists before updating
+        if (state.user) {
+          state.user.displayName = action.payload.displayName;
+        } else {
+          // This case might happen if the state was somehow cleared
+          // Re-initialize user state with the payload
+          state.user = action.payload;
+        }
+      })
+      .addCase(updateDisplayName.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload; // Store the error message
       });
   },
 });
