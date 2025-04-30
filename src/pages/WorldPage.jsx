@@ -2,6 +2,7 @@ import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { sketch } from "../components/Sketch";
 //import { Link } from "react-router-dom";
 import { Menu } from "../components/Menu";
+import { current } from "@reduxjs/toolkit";
 
 export function WorldPage({
   quote,
@@ -18,6 +19,7 @@ export function WorldPage({
   onSubmitPainting,
   onResetPainting,
 }) {
+  console.log(weather);
   function getNewQuote() {
     onGetQuote();
   }

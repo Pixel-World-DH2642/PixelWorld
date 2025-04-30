@@ -28,6 +28,8 @@ const weatherSlice = createSlice({
       })
       .addCase(getWeatherData.fulfilled, (state, action) => {
         state.status = "succeeded";
+        const code = String(action.payload.weatherData);
+        state.weatherCode = code;
         state.weatherData = action.payload;
         state.timestamp = action.payload.timestamp;
       })
