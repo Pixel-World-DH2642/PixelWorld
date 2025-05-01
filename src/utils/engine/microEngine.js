@@ -1,6 +1,6 @@
 //const MicroEngine = createMicroEngine();
 //const MComponents = MicroEngine.Components;
-//import { createInputHandler } from "../inputSystem";
+import { createInputHandler } from "../inputSystem";
 
 export function createMicroEngine(p5) {
   //#############################SCENE ACTOR#############################//
