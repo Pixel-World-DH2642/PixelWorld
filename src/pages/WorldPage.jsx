@@ -52,7 +52,7 @@ export function WorldPage({
         >
           Get Weather
         </button>
-        <p>{JSON.stringify(weather)}</p>
+        <p>Current weather: {weather.currentWeather || "No data yet"}</p>
       </div>
     </div>
   );

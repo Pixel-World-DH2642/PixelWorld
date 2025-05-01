@@ -7,7 +7,7 @@ export const World = connect(
   function mapStateToProps(state) {
     return {
       quote: state.quote.currentQuote,
-      weather: state.weather.weatherData,
+      weather: state.weather,
     };
   },
   function mapDispatchToProps(dispatch) {
