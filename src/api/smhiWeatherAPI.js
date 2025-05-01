@@ -35,12 +35,70 @@ async function checkWeather() {
       break;
     case "8":
     case "9":
+    case "18":
+    case "19":
       currentWeather = "light to moderate rain showers";
+      break;
+    case "10":
+    case "20":
+      currentWeather = "heavy rain";
+      break;
+    case "11":
+    case "21":
+      currentWeather = "heavy rain and thunderstorms";
+      break;
+    case "12":
+    case "13":
+    case "14":
+    case "22":
+    case "23":
+    case "24":
+      currentWeather = "sleet showers";
+      break;
+    case "15":
+    case "16":
+    case "25":
+    case "26":
+      currentWeather = "light to moderate snow";
+      break;
+    case "17":
+    case "27":
+      currentWeather = "heavy snow";
       break;
   }
   console.log("Current weather is:", currentWeather);
 }
 checkWeather();
+
+/* Weather Symbol - value + meaning
+1	Clear sky
+2	Nearly clear sky
+3	Variable cloudiness
+4	Halfclear sky
+5	Cloudy sky
+6	Overcast
+7	Fog
+8	Light rain showers
+9	Moderate rain showers
+10	Heavy rain showers
+11	Thunderstorm
+12	Light sleet showers
+13	Moderate sleet showers
+14	Heavy sleet showers
+15	Light snow showers
+16	Moderate snow showers
+17	Heavy snow showers
+18	Light rain
+19	Moderate rain
+20	Heavy rain
+21	Thunder
+22	Light sleet
+23	Moderate sleet
+24	Heavy sleet
+25	Light snowfall
+26	Moderate snowfall
+27	Heavy snowfall
+*/
 
 //https://opendata.smhi.se/metfcst/pmp/demo_get_point
 //https://opendata.smhi.se/metfcst/pmp/parameters
