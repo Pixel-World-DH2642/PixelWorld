@@ -5,6 +5,7 @@ export async function fetchWeatherData(longitude, latitude) {
   if (!response.ok)
     throw new Error("SMHI API call failed with status: " + response.status);
   const data = await response.json();
+  console.log(data);
   const weatherCode = data.timeSeries[0].parameters[18].values[0];
   return {
     weatherData: weatherCode,
@@ -12,7 +13,7 @@ export async function fetchWeatherData(longitude, latitude) {
   };
 }
 
-async function checkWeather() {
+/*async function checkWeather() {
   const result = await fetchWeatherData(18.06324, 59.334591);
   const weatherCheck = result.weatherData;
   let currentWeather = null;
@@ -68,7 +69,7 @@ async function checkWeather() {
   }
   console.log("Current weather is:", currentWeather);
 }
-checkWeather();
+checkWeather();*/
 
 /* Weather Symbol - value + meaning
 1	Clear sky
