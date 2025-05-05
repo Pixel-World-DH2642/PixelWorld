@@ -1,11 +1,40 @@
 //const MicroEngine = createMicroEngine();
 //const MComponents = MicroEngine.Components;
-import { createInputHandler } from "../inputSystem";
+import { createInputHandler } from "./inputSystem";
+import { Scribble } from "./scribble";
 
 export function createMicroEngine(p5) {
+  //#############################Global Vars#############################//
+
+  //----------------------------Scenes & Actors-------------------------//
+  const scenes = [];
+
+  //-------------------------------Rendering----------------------------//
+  const panning = { x: 0, y: 0 };
+  const scribbleInstances = [];
+  //---------------------------------Input------------------------------//
+  const inputHandler = createInputHandler();
+
+  //--------------------------------Physics-----------------------------//
+  let gravityStrength = 0.15;
+
+  //Physics Game Loop
+  const actorsWithForceComponents = [];
+  const actorsWithColliders = [];
+  let collisionBuffer = [];
+
+  const collisionResolverMap = new Map();
+
+  collisionResolverMap.set("GroundRect", (colA, colB) =>
+    groundResolver(colA, colB),
+  );
+
+  collisionResolverMap.set("RectGround", (colA, colB) =>
+    groundResolver(colB, colA),
+  );
+
   //#############################SCENE ACTOR#############################//
   //------------------------Scene Actor Components----------------------//
-  const scenes = [];
 
   function createScene() {
     const actors = [];
@@ -102,7 +131,6 @@ export function createMicroEngine(p5) {
   //#############################PHYSICS#############################//
 
   //------------------------Physics Components----------------------//
-  let gravityStrength = 0.15;
 
   function createForceComponent(settings, actor, pos) {
     let vel = p5.createVector();
@@ -263,75 +291,6 @@ export function createMicroEngine(p5) {
     };
   }
 
-  //#############################RENDERING#############################//
-  //------------------------Rendering Components----------------------//
-  function createRendererComponent(settings, actor, pos) {
-    return {
-      get type() {
-        return "Renderer";
-      },
-      get render() {
-        return settings.render;
-      },
-    };
-  }
-
-  function createAnimatorComponent() {
-    return {
-      get type() {
-        return "Animation";
-      },
-    };
-  }
-
-  //------------------------Component Helpers----------------------//
-  function createCurveData(settings) {
-    const heightMap = [];
-    //Vary amplitude & noiseIncrementStep
-    let amplitude = settings.amplitude;
-    let baseHeight = settings.baseHeight || height;
-    let noiseIncrementStep = settings.noiseIncrementStep || 0.1;
-    let noiseIndex = 0;
-    let vertexIterations = settings.vertexIterations || 100;
-
-    for (let i = 0; i < vertexIterations; i++) {
-      heightMap[i] = baseHeight - p5.noise(noiseIndex) * amplitude;
-      noiseIndex += noiseIncrementStep;
-    }
-
-    return heightMap;
-  }
-
-  function createGroundGeometryCollider(settings, actor, pos) {
-    return createColliderComponent(createGroundGeometry, settings, actor, pos);
-  }
-  //have geometry as arg?
-  function createRectGeometryCollider(settings, actor, pos) {
-    return createColliderComponent(createRectGeometry, settings, actor, pos);
-  }
-
-  const components = {
-    get Actor() {
-      return createActorComponent;
-    },
-    get Force() {
-      return createForceComponent;
-    },
-    get GroundCollider() {
-      return createGroundGeometryCollider;
-    },
-    get RectCollider() {
-      return createRectGeometryCollider;
-    },
-    get Animator() {
-      return createAnimatorComponent;
-    },
-    get Renderer() {
-      return createRendererComponent;
-    },
-  };
-
-  //-------------------------Physics Helpers------------------------//
   //-------------------------Collider Types------------------------//
   function createGroundGeometry(settings, actor, pos) {
     let vertexSpacing = settings?.vertexSpacing || 10;
@@ -431,6 +390,7 @@ export function createMicroEngine(p5) {
     };
   }
 
+  //-------------------------Physics Helpers------------------------//
   //The other geometry type doesn't matter for ground collisions
   function groundResolver(groundData, otherData) {
     otherData.ownCollider.parent.pos = {
@@ -439,7 +399,6 @@ export function createMicroEngine(p5) {
     };
   }
 
-  //------------------------Physics Helpers----------------------//
   function createCollisionData(pt, normal, ownCollider, otherCollider) {
     let colNormal = normal;
 
@@ -475,21 +434,25 @@ export function createMicroEngine(p5) {
     ];
   }
 
-  //############################GLOBAL#############################//
-  //-------------------Global Vars & Functions--------------------//
-
-  const inputHandler = createInputHandler();
-
-  function loadScene(scene) {
-    scene.actors.forEach((actor) => {
-      actor.initialize();
-    });
-    scenes.push(scene);
+  //#############################RENDERING#############################//
+  //------------------------Rendering Components----------------------//
+  function createRendererComponent(settings, actor, pos) {
+    return {
+      get type() {
+        return "Renderer";
+      },
+      get render() {
+        return settings.render;
+      },
+    };
   }
 
-  function unloadScene(scene) {
-    //scene.unload();
-    scenes.splice(scenes.indexOf(scene), 1);
+  function createAnimatorComponent() {
+    return {
+      get type() {
+        return "Animation";
+      },
+    };
   }
 
   //Animator
@@ -500,6 +463,7 @@ export function createMicroEngine(p5) {
   //const renderLayerB = []
   //const renderLayerC = []
   //const renderLayerD = []
+
   function createClockDriver() {
     let clockRate = 0.2;
     let prevTick = 0;
@@ -522,7 +486,36 @@ export function createMicroEngine(p5) {
 
   //const clockDriver = createClockDriver();
 
-  const panning = { x: 0, y: 0 };
+  //clockDriver.update();
+
+  //----------------------Render Component Helpers--------------------//
+
+  //-----------------------Public Rendering Utils---------------------//
+  function createCurveData(settings) {
+    const heightMap = [];
+    //Vary amplitude & noiseIncrementStep
+    let amplitude = settings.amplitude;
+    let baseHeight = settings.baseHeight || height;
+    let noiseIncrementStep = settings.noiseIncrementStep || 0.1;
+    let noiseIndex = 0;
+    let vertexIterations = settings.vertexIterations || 100;
+
+    for (let i = 0; i < vertexIterations; i++) {
+      heightMap[i] = baseHeight - p5.noise(noiseIndex) * amplitude;
+      noiseIndex += noiseIncrementStep;
+    }
+
+    return heightMap;
+  }
+
+  function createScribbleInstance(pg) {
+    return new Scribble(pg);
+  }
+
+  //deleteScribbleInstance...
+
+  //############################GLOBAL#############################//
+  //-----------------------Game Loop Functions--------------------//
 
   function render() {
     //z-mapping
@@ -544,12 +537,7 @@ export function createMicroEngine(p5) {
         if (actor.forceComponent) actorsWithForceComponents.push(actor);
       });
     });
-
-    //clockDriver.update();
   }
-
-  //Physics Game Loop
-  const actorsWithForceComponents = [];
 
   function forceUpdate() {
     actorsWithForceComponents.forEach((actor) => {
@@ -557,17 +545,6 @@ export function createMicroEngine(p5) {
     });
     actorsWithForceComponents.length = 0;
   }
-
-  const actorsWithColliders = [];
-  let collisionBuffer = [];
-
-  const collisionResolverMap = new Map();
-  collisionResolverMap.set("GroundRect", (colA, colB) =>
-    groundResolver(colA, colB),
-  );
-  collisionResolverMap.set("RectGround", (colA, colB) =>
-    groundResolver(colB, colA),
-  );
 
   function checkCollisions(colliderObjects) {
     if (colliderObjects.length < 2) return;
@@ -661,6 +638,50 @@ export function createMicroEngine(p5) {
     render();
   }
 
+  //--------------------Global Util Functions---------------------//
+
+  function loadScene(scene) {
+    scene.actors.forEach((actor) => {
+      actor.initialize();
+    });
+    scenes.push(scene);
+  }
+
+  function unloadScene(scene) {
+    //scene.unload();
+    scenes.splice(scenes.indexOf(scene), 1);
+  }
+
+  //--------------------Public Components Access------------------//
+  function createGroundGeometryCollider(settings, actor, pos) {
+    return createColliderComponent(createGroundGeometry, settings, actor, pos);
+  }
+  //have geometry as arg?
+  function createRectGeometryCollider(settings, actor, pos) {
+    return createColliderComponent(createRectGeometry, settings, actor, pos);
+  }
+
+  const components = {
+    get Actor() {
+      return createActorComponent;
+    },
+    get Force() {
+      return createForceComponent;
+    },
+    get GroundCollider() {
+      return createGroundGeometryCollider;
+    },
+    get RectCollider() {
+      return createRectGeometryCollider;
+    },
+    get Animator() {
+      return createAnimatorComponent;
+    },
+    get Renderer() {
+      return createRendererComponent;
+    },
+  };
+
   //##########################ENGINE OBJECT###########################//
   return {
     get CreateScene() {
@@ -674,6 +695,9 @@ export function createMicroEngine(p5) {
     },
     get GenerateCurveData() {
       return createCurveData;
+    },
+    get CreateScribbleInstance() {
+      return createScribbleInstance;
     },
     get Components() {
       return components;

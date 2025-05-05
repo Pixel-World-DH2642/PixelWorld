@@ -144,7 +144,7 @@ export function createActorList(p5, MicroEngine) {
     return actor;
   }
 
-  function createGroundActor() {
+  function createGroundActor(testPlants) {
     //Make sure vertex spacing gets passed through to the collider & renderer...
     //Make it available
 
@@ -160,8 +160,8 @@ export function createActorList(p5, MicroEngine) {
       let groundCanvas = p5.createGraphics(p5.width, p5.height);
 
       //PLANT BIZZ
-      /*
-      const plantRefs = [testPlant1, testPlant2, testPlant3];
+
+      //const plantRefs = [testPlant1, testPlant2, testPlant3];
       const plants = [];
 
       for (let i = 0; i < 100; i++) {
@@ -172,7 +172,6 @@ export function createActorList(p5, MicroEngine) {
         const plantIndex = Math.floor(p5.random(3));
         plants.push({ xpos, ypos, plantIndex });
       }
-      */
 
       //RESTRICT PLAYER FROM MOVING TO EDGES
 
@@ -230,11 +229,9 @@ export function createActorList(p5, MicroEngine) {
           p5.image(groundCanvas, 0, 0);
           p5.pop();
 
-          /*
           plants.forEach((plant) => {
-            p5.image(plantRefs[plant.plantIndex], plant.xpos, plant.ypos - 12);
+            p5.image(testPlants[plant.plantIndex], plant.xpos, plant.ypos - 12);
           });
-          */
         },
       };
     }

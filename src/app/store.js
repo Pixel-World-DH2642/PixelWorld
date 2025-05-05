@@ -1,6 +1,7 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 import quoteSlice from "./slices/quoteSlice";
 import paintingSlice from "./slices/paintingSlice";
+import weatherSlice from "./slices/weatherSlice";
 import authSlice from "./slices/authSlice";
 
 const appSlice = createSlice({
@@ -28,6 +29,7 @@ export default function configureReduxStore() {
       auth: authSlice,
       quote: quoteSlice,
       painting: paintingSlice,
+      weather: weatherSlice,
     },
     preloadedState: initialState,
   });
