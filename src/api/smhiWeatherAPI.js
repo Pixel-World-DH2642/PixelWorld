@@ -12,12 +12,15 @@ export async function fetchWeatherData(longitude, latitude) {
 }
 
 function parseWeatherData(data) {
-  let rainAmt = 0;
-  let snowAmt = 0;
-  let cloudState = 0;
+  //------------------------------Forecast------------------------------//
+  const timeIndex = 2; //time in UTC check which one matches user
+
+  //Weather Symbols
+  let rainAmt = 0; //(0-3)
+  let snowAmt = 0; //(0-3)
+  let cloudAmt = 0; //(0-6) where 5&6 overcast/ foggy
   let windSpeed = 0;
 
-  const timeIndex = 2; //time in UTC check which one matches user
   const weatherSymbols = data.timeSeries[timeIndex].parameters[18].values;
   weatherSymbols.forEach((symbol) => abstractWeatherSymbol(symbol));
 
@@ -27,22 +30,31 @@ function parseWeatherData(data) {
       case 1: //Clear sky
         break;
       case 2: //Nearly clear sky
+        cloudAmt = 1;
         break;
       case 3: //Variable cloudiness
+        cloudAmt = 2;
         break;
       case 4: //Halfclear sky
+        cloudAmt = 3;
         break;
       case 5: //Cloudy sky
+        cloudAmt = 4;
         break;
       case 6: //Overcast
+        cloudAmt = 5;
         break;
       case 7: //Fog
+        cloudAmt = 6;
         break;
       case 8: //Light rain showers
+        rainAmt = 1;
         break;
       case 9: //Moderate rain showers
+        rainAmt = 2;
         break;
       case 10: //Heavy rain showers
+        rainAmt = 3;
         break;
       case 11: //Thunderstorm
         break;
@@ -73,13 +85,22 @@ function parseWeatherData(data) {
       case 24: //Heavy sleet
         break;
       case 25: //Light snowfall
+        snowAmt = 1;
         break;
       case 26: //Moderate snowfall
+        snowAmt = 2;
         break;
       case 27: //Heavy snowfall
+        snowAmt = 3;
         break;
     }
   }
+
+  //------------------------------Observations------------------------------//
+  let groundSnowAmt = 0;
+  let sunriseAmt = 0;
+  let sunsetAmt = 0;
+  //...
 }
 
 /*Weather Abstraction Layer
