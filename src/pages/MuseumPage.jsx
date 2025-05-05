@@ -1,136 +1,29 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-export function MuseumPage({ paintings, onSelectPainting }) {
-  function backnavACB() {
-    window.location.hash = "#/world";
-  }
+export function MuseumPage({ 
+  // Props from Redux --> declare them to be used in the function to display the view
+  currentPaintings, 
+  isFirstPage, 
+  isLastPage, 
+  onSelectPainting, //for later? when connecting to details maybe
+  onNextClick, 
+  onPrevClick 
+}) {
 
-  // Dummy data
-  paintings = [
-    {
-      id: "painting1",
-      title: "Beauty",
-      colorMatrix: Array(32)
-        .fill()
-        .map(() =>
-          Array(32)
-            .fill()
-            .map(
-              () =>
-                "#" +
-                Math.floor(Math.random() * 16777215)
-                  .toString(16)
-                  .padStart(6, "0"),
-            ),
-        ),
-      savedQuote: "Art washes away from the soul the dust of everyday life.",
-      author: "PicassoFan123",
-      date: Date.now() - 100000000,
-      authorNotes: "Inspired by the colors of a Spanish sunset.",
-      likedBy: ["user1", "user2", "user3"],
-    },
-    {
-      id: "painting2",
-      title: "Silence in Spring",
-      colorMatrix: Array(32)
-        .fill()
-        .map(() =>
-          Array(32)
-            .fill()
-            .map(
-              () =>
-                "#" +
-                Math.floor(Math.random() * 16777215)
-                  .toString(16)
-                  .padStart(6, "0"),
-            ),
-        ),
-      savedQuote: "Every artist was first an amateur.",
-      author: "art_lover_98",
-      date: Date.now() - 50000000,
-      authorNotes: "My first attempt using only shades of blue.",
-      likedBy: ["user5"],
-    },
-    {
-      id: "painting3",
-      title: "Wind",
-      colorMatrix: Array(32)
-        .fill()
-        .map(() =>
-          Array(32)
-            .fill()
-            .map(
-              () =>
-                "#" +
-                Math.floor(Math.random() * 16777215)
-                  .toString(16)
-                  .padStart(6, "0"),
-            ),
-        ),
-      savedQuote: "Creativity takes courage.",
-      author: "beginner_painter",
-      date: Date.now() - 2000000,
-      authorNotes: "Experimented with pixel symmetry.",
-      likedBy: [],
-    },
-    {
-      id: "painting4",
-      title: "Horse",
-      colorMatrix: Array(32)
-        .fill()
-        .map(() =>
-          Array(32)
-            .fill()
-            .map(
-              () =>
-                "#" +
-                Math.floor(Math.random() * 16777215)
-                  .toString(16)
-                  .padStart(6, "0"),
-            ),
-        ),
-      savedQuote:
-        "Two things are infinite: the universe and human stupidity; and Im not sure about the universe.",
-      author: "Painter345",
-      date: Date.now() - 100000000,
-      authorNotes: "I painted this on a vacation",
-      likedBy: ["user1", "user3"],
-    },
-    {
-      id: "painting5",
-      title: "Love in  the sky",
-      colorMatrix: Array(32)
-        .fill()
-        .map(() =>
-          Array(32)
-            .fill()
-            .map(
-              () =>
-                "#" +
-                Math.floor(Math.random() * 16777215)
-                  .toString(16)
-                  .padStart(6, "0"),
-            ),
-        ),
-      savedQuote: "I love to fly",
-      author: "art_enthuisast_98",
-      date: Date.now() - 50000000,
-      authorNotes: "I like to paint with this app",
-      likedBy: ["user5", "PicassoFan123"],
-    },
-  ];
-
-  const [startIndex, setStartIndex] = useState(0);
-  const paintingsPerPage = 3;
   // Handle right arrow click to scroll to next set of paintings
   const handleNextClickACB = () => {
-    if (startIndex + paintingsPerPage < paintings.length) {
-      setStartIndex(startIndex + paintingsPerPage);
-    }
+    onNextClick();
     console.log("next click");
   };
 
+    //Handle left arrow click to scroll back to the previous set of paintigs
+    const handlePrevClickACB = () => {
+      onPrevClick();
+      console.log("prev click");
+    };
+
+    /*
   // Get current paintings to display
   const currentPaintings = paintings.slice(
     startIndex,
@@ -142,13 +35,8 @@ export function MuseumPage({ paintings, onSelectPainting }) {
 
   // Determine if we're on the first page
   const isFirstPage = startIndex === 0;
+*/
 
-  //Handle left arrow click to scroll back to the previous set of paintigs
-  const handlePrevClickACB = () => {
-    setStartIndex(startIndex - paintingsPerPage);
-
-    console.log("prev click");
-  };
 
   return (
     <div className="font-pixel p-6">
