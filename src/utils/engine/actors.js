@@ -248,10 +248,280 @@ export function createActorList(p5, MicroEngine) {
     return actor;
   }
 
+  ///%%%%%%%%%%%%%%%%%%%%%%%% WIP %%%%%%%%%%%%%%%%%%%%%%%%///
+  function createGroundSliceActor(testPlants) {
+    //Make sure vertex spacing gets passed through to the collider & renderer...
+    //Make it available
+
+    const hmap = MicroEngine.Utils.GenerateCurveData({
+      amplitude: 130,
+      baseHeight: p5.height,
+      noiseIncrementStep: 0.1,
+      vertexIterations: 300,
+    });
+
+    let vertexSpacing = 20;
+
+    //Add vertex spacing to hmap object for renderer & collider...
+
+    function GroundRendererComponent(settings, actor, pos) {
+      const plants = spawnPlants();
+      const backgroundSlices = generateSlices();
+
+      function spawnPlants() {
+        let plantArr = [];
+
+        for (let i = 0; i < 500; i++) {
+          const xpos = p5.random(10000);
+          const ypos = actor
+            .findComponent("Collider")
+            .colliderGeometry.querryGroundHeight(xpos);
+          const plantIndex = Math.floor(p5.random(3));
+          plantArr.push({ xpos, ypos, plantIndex });
+        }
+
+        return plantArr;
+      }
+
+      function generateSlices() {
+        //Generate background, chop into slices, garbage collect big image
+        //Temp canvas
+        let groundCanvasFull = p5.createGraphics(
+          hmap.length * vertexSpacing,
+          p5.height,
+        );
+        renderCurve(hmap, groundCanvasFull);
+        const backgroundSlices = MicroEngine.Utils.SliceImage(
+          groundCanvasFull,
+          300,
+          p5.height,
+        );
+        groundCanvasFull.remove();
+        groundCanvasFull = undefined;
+
+        return backgroundSlices;
+      }
+
+      function renderCurve(heightMap, pg) {
+        pg.beginShape();
+        pg.noStroke();
+        pg.fill(40, 220, 39);
+
+        const offset = pos.x - 2 * vertexSpacing;
+
+        for (let i = 0; i < heightMap.length; i++) {
+          pg.curveVertex(offset + i * vertexSpacing, heightMap[i]);
+        }
+
+        pg.endShape();
+
+        //Render plants
+        plants.forEach((plant) => {
+          pg.image(testPlants[plant.plantIndex], plant.xpos, plant.ypos - 12);
+        });
+      }
+
+      return {
+        type: "GroundRenderer",
+
+        initialize: function () {},
+        update: function () {},
+
+        render: function () {
+          backgroundSlices.forEach((slice) => {
+            if (
+              MicroEngine.CameraPanning.x + slice.coords.x <
+              -slice.imgSlice.width
+            )
+              return;
+            if (MicroEngine.CameraPanning.x + slice.coords.x > p5.width) return;
+
+            p5.image(slice.imgSlice, slice.coords.x, slice.coords.y);
+          });
+        },
+      };
+    }
+
+    const colliderSettings = {
+      elasticity: 1,
+      geometrySettings: {
+        vertexSpacing: 20,
+        heightMap: hmap.slice(2, hmap.length - 1),
+        smoothOn: true,
+      },
+    };
+
+    let actor = MicroEngine.Components.Actor(p5.createVector(0, 0));
+    actor.addComponent(MicroEngine.Components.GroundCollider, colliderSettings);
+    actor.addComponent(GroundRendererComponent, {});
+    mainScene.addActor(actor);
+    return actor;
+  }
+
+  function TileGroundRendererComponent(settings, actor, pos) {
+    //Layers
+    //Add parallax as component
+    //Paralax manager
+    //Background system, slice up large images into smaller tiles
+    //Tile background component
+    //1 - Generate tile map image
+    //2 - Slice tile map into tile slices
+    //3 - Render tile map by managing which slices rendered based on player position
+
+    let tileStackWidth = settings.tileStackWidth;
+    let tileStackHeight = settings.tileStackHeight;
+    //To deterimine tile placement
+    let tileRules = []; //{tile: tileImage, rule: function}
+
+    let tileSize = settings?.tileSize || 10;
+    const hmap = settings.hmap;
+    let vertexSpacing = settings?.vertexSpacing || 20;
+
+    function drawTiles() {
+      //Params
+
+      //Panning
+      let xOffset = MicroEngine.CameraPanning.x / vertexSpacing;
+      let indexOffset = -Math.floor(xOffset);
+      xOffset = (xOffset + indexOffset) * vertexSpacing;
+      let indexWidth = Math.floor(pg.width / vertexSpacing) + indexOffset + 2;
+
+      for (let i = indexOffset; i < indexWidth; i++) {
+        pg.curveVertex(
+          (i - indexOffset) * vertexSpacing + xOffset,
+          heightMap[i],
+        );
+      }
+    }
+
+    return {
+      type: "TileRenderer",
+      initialize: function () {},
+      update: function () {},
+      render: drawTiles(),
+    };
+  }
+
+  function createGroundObject(settings) {
+    //---------------------------------------------Object vars
+    const hmap = MicroEngine.GenerateCurveData({
+      amplitude: 130,
+      baseHeight: p5.height - 20,
+      noiseIncrementStep: 0.1,
+      vertexIterations: 160,
+    });
+
+    //let tileStackWidth = settings.tileStackWidth;
+    //let tileStackHeight = settings.tileStackHeight;
+    //To deterimine tile placement
+    //let tileRules = []; //{tile: tileImage, rule: function}
+
+    let tileSize = settings?.tileSize || 8;
+    let vertexSpacing = tileSize;
+
+    //---------------------------------------------Initialization functions
+    function quantizeHeightMap(heightMap) {
+      heightMap.forEach((val) => (val = val - (val % tileSize)));
+    }
+    //---------------------------------------------Object initialization
+    quantizeHeightMap(hmap);
+
+    //---------------------------------------------Add/ define components
+    function TileGroundRendererComponent(settings, actor, pos) {
+      function drawTiles() {
+        //Params
+
+        //Panning
+        /*
+        let xOffset = MicroEngine.CameraPanning.x / vertexSpacing;
+        let indexOffset = -Math.floor(xOffset);
+        xOffset = (xOffset + indexOffset) * vertexSpacing;
+        let indexWidth = Math.floor(vertexSpacing) + indexOffset + 2;
+        */
+        MicroEngine.CameraPanning = { x: 0, y: 0 };
+        console.log(MicroEngine.CameraPanning);
+        for (let i = 0; i < hmap.length; i += vertexSpacing) {
+          p5.stroke(0);
+          p5.strokeWeight(1);
+          /*
+          p5.rect(
+            (i - indexOffset) * vertexSpacing + xOffset,
+            hmap[i],
+            tileSize,
+            tileSize,
+          );
+          */
+
+          p5.rect(i * vertexSpacing, hmap[i], tileSize, tileSize);
+        }
+      }
+
+      return {
+        type: "TileRenderer",
+        initialize: function () {},
+        update: function () {},
+        render: drawTiles(),
+      };
+    }
+
+    let actor = MicroEngine.Components.Actor(p5.createVector(0, 0));
+    //actor.addComponent(MicroEngine.Components.GroundCollider, colliderSettings);
+    actor.addComponent(TileGroundRendererComponent, {});
+
+    //---------------------------------------------Return
+    mainScene.addActor(actor);
+    return actor;
+  }
+  ////////////////////////////////////////////////////////////
+
+  /* Render Example */
+  /*  
+  
+  //The image to slice
+  const bigImg = createGraphics(300, 300);
+  bigImg.circle(width/2, height/2, 300);
+  
+  //Slice it up
+  const sliced = createImageSlices(bigImg, 100, 100);
+
+  //Render it
+  sliced.forEach((slice) => {
+    console.log(slice.coords)
+    image(slice.imgSlice, slice.coords.x, slice.coords.y);
+  });
+   */
+
+  function createSkyLayer() {
+    const actor = MicroEngine.Components.Actor(createVector());
+
+    const skyCanvas = p5.createGraphics(p5.width, p5.height);
+    const scribble = MicroEngine.CreateScribbleInstance(skyCanvas); //new Scribble(skyCanvas);
+    scribble.bowing = 5;
+
+    function renderSky() {
+      for (let i = 0; i < 8; i++) {
+        skyCanvas.strokeWeight(20 + p5.random(-7, 30));
+        skyCanvas.stroke(
+          30 + p5.random(-20, 20),
+          40 + p5.random(-10, 10),
+          220 + p5.random(-30, 10),
+        );
+        scribble.scribbleLine(0, i * 20, p5.width, i * 20);
+      }
+    }
+
+    function displaySky() {
+      p5.image(skyCanvas, actor.pos.x, actor.pos.y);
+    }
+  }
+
+  //--------------------------------ACTORS-------------------------------------
   return {
     mainScene,
     createCanvasActor,
     createRectActor,
     createGroundActor,
+
+    createGroundSliceActor,
   };
 }

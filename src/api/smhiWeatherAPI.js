@@ -13,93 +13,111 @@ export async function fetchWeatherData(longitude, latitude) {
   };
 }
 
-/*async function checkWeather() {
-  const result = await fetchWeatherData(18.06324, 59.334591);
-  const weatherCheck = result.weatherData;
-  let currentWeather = null;
+function parseWeatherData(data) {
+  //------------------------------Forecast------------------------------//
+  const timeIndex = 2; //time in UTC check which one matches user
 
-  switch (String(weatherCheck)) {
-    case "1":
-    case "2":
-      currentWeather = "clear sky";
-      break;
-    case "3":
-    case "4":
-      currentWeather = "slightly cloudy sky";
-      break;
-    case "5":
-    case "6":
-      currentWeather = "cloudy sky";
-      break;
-    case "7":
-      currentWeather = "fog";
-      break;
-    case "8":
-    case "9":
-    case "18":
-    case "19":
-      currentWeather = "light to moderate rain showers";
-      break;
-    case "10":
-    case "20":
-      currentWeather = "heavy rain";
-      break;
-    case "11":
-    case "21":
-      currentWeather = "heavy rain and thunderstorms";
-      break;
-    case "12":
-    case "13":
-    case "14":
-    case "22":
-    case "23":
-    case "24":
-      currentWeather = "sleet showers";
-      break;
-    case "15":
-    case "16":
-    case "25":
-    case "26":
-      currentWeather = "light to moderate snow";
-      break;
-    case "17":
-    case "27":
-      currentWeather = "heavy snow";
-      break;
+  //Weather Symbols
+  let rainAmt = 0; //(0-3)
+  let snowAmt = 0; //(0-3)
+  let cloudAmt = 0; //(0-6) where 5&6 overcast/ foggy
+  let windSpeed = 0;
+
+  const weatherSymbols = data.timeSeries[timeIndex].parameters[18].values;
+  weatherSymbols.forEach((symbol) => abstractWeatherSymbol(symbol));
+
+  function abstractWeatherSymbol(weatherSymbol) {
+    switch (weatherSymbol) {
+      //------------Clouds-------------
+      case 1: //Clear sky
+        break;
+      case 2: //Nearly clear sky
+        cloudAmt = 1;
+        break;
+      case 3: //Variable cloudiness
+        cloudAmt = 2;
+        break;
+      case 4: //Halfclear sky
+        cloudAmt = 3;
+        break;
+      case 5: //Cloudy sky
+        cloudAmt = 4;
+        break;
+      case 6: //Overcast
+        cloudAmt = 5;
+        break;
+      case 7: //Fog
+        cloudAmt = 6;
+        break;
+      case 8: //Light rain showers
+        rainAmt = 1;
+        break;
+      case 9: //Moderate rain showers
+        rainAmt = 2;
+        break;
+      case 10: //Heavy rain showers
+        rainAmt = 3;
+        break;
+      case 11: //Thunderstorm
+        break;
+      case 12: //Light sleet showers
+        break;
+      case 13: //Moderate sleet showers
+        break;
+      case 14: //Heavy sleet showers
+        break;
+      case 15: //Light snow showers
+        break;
+      case 16: //Moderate snow showers
+        break;
+      case 17: //Heavy snow showers
+        break;
+      case 18: //Light rain
+        break;
+      case 19: //Moderate rain
+        break;
+      case 20: //Heavy rain
+        break;
+      case 21: //Thunder
+        break;
+      case 22: //Light sleet
+        break;
+      case 23: //Moderate sleet
+        break;
+      case 24: //Heavy sleet
+        break;
+      case 25: //Light snowfall
+        snowAmt = 1;
+        break;
+      case 26: //Moderate snowfall
+        snowAmt = 2;
+        break;
+      case 27: //Heavy snowfall
+        snowAmt = 3;
+        break;
+    }
   }
-  console.log("Current weather is:", currentWeather);
-}
-checkWeather();*/
 
-/* Weather Symbol - value + meaning
-1	Clear sky
-2	Nearly clear sky
-3	Variable cloudiness
-4	Halfclear sky
-5	Cloudy sky
-6	Overcast
-7	Fog
-8	Light rain showers
-9	Moderate rain showers
-10	Heavy rain showers
-11	Thunderstorm
-12	Light sleet showers
-13	Moderate sleet showers
-14	Heavy sleet showers
-15	Light snow showers
-16	Moderate snow showers
-17	Heavy snow showers
-18	Light rain
-19	Moderate rain
-20	Heavy rain
-21	Thunder
-22	Light sleet
-23	Moderate sleet
-24	Heavy sleet
-25	Light snowfall
-26	Moderate snowfall
-27	Heavy snowfall
-*/
+  //------------------------------Observations------------------------------//
+  let groundSnowAmt = 0;
+  let sunriseAmt = 0;
+  let sunsetAmt = 0;
+  //...
+}
+
+/*Weather Abstraction Layer
+ *
+ * -Raining: Intensity 0-1
+ *
+ * -Snowing: Intensity 0-1
+ *
+ * -Overcast
+ *
+ * -Cloudy: Amount 0-1
+ *
+ * -Wind: Intensity 0-1
+ *
+ */
 
 //https://opendata.smhi.se/metfcst/pmp/demo_get_point
 //https://opendata.smhi.se/metfcst/pmp/parameters
