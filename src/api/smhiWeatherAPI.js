@@ -5,10 +5,12 @@ export async function fetchWeatherData(longitude, latitude) {
   if (!response.ok)
     throw new Error("SMHI API call failed with status: " + response.status);
   const data = await response.json();
-  console.log(data);
+  //console.log(data);
   const weatherCode = data.timeSeries[0].parameters[18].values[0];
+  const parsedData = parseWeatherData(data);
   return {
-    weatherData: weatherCode,
+    weatherCode,
+    parsedData,
     timestamp: Date.now(),
   };
 }
@@ -17,12 +19,13 @@ function parseWeatherData(data) {
   //------------------------------Forecast------------------------------//
   const timeIndex = 2; //time in UTC check which one matches user
 
+  let windSpeed =
+    Math.min(data.timeSeries[timeIndex].parameters[14].values[0], 30) / 30; //(0-1)
+
   //Weather Symbols
   let rainAmt = 0; //(0-3)
   let snowAmt = 0; //(0-3)
   let cloudAmt = 0; //(0-6) where 5&6 overcast/ foggy
-  let windSpeed = 0;
-
   const weatherSymbols = data.timeSeries[timeIndex].parameters[18].values;
   weatherSymbols.forEach((symbol) => abstractWeatherSymbol(symbol));
 
@@ -103,21 +106,14 @@ function parseWeatherData(data) {
   let sunriseAmt = 0;
   let sunsetAmt = 0;
   //...
-}
 
-/*Weather Abstraction Layer
- *
- * -Raining: Intensity 0-1
- *
- * -Snowing: Intensity 0-1
- *
- * -Overcast
- *
- * -Cloudy: Amount 0-1
- *
- * -Wind: Intensity 0-1
- *
- */
+  return {
+    rainAmt,
+    snowAmt,
+    cloudAmt,
+    windSpeed,
+  };
+}
 
 //https://opendata.smhi.se/metfcst/pmp/demo_get_point
 //https://opendata.smhi.se/metfcst/pmp/parameters
