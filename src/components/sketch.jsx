@@ -10,6 +10,7 @@ export function sketch(p5) {
 
   //############################--DEFINE ACTORS--############################//
   let recto, easel, testPlant1, testPlant2, testPlant3, skyCanvas, scribble;
+
   //############################-----------------############################//
 
   p5.preload = () => {
@@ -23,7 +24,8 @@ export function sketch(p5) {
     p5.rectMode(p5.CENTER);
     p5.background(30, 40, 220);
 
-    ActorList.createGroundActor([testPlant1, testPlant2, testPlant3]);
+    //ActorList.createGroundActor([testPlant1, testPlant2, testPlant3]);
+    ActorList.createGroundSliceActor([testPlant1, testPlant2, testPlant3]);
     easel = ActorList.createCanvasActor(p5.createVector(900, 150), {
       x: 128,
       y: 128,
@@ -33,7 +35,7 @@ export function sketch(p5) {
     MicroEngine.LoadScene(ActorList.mainScene);
 
     //move to an actor object
-
+    /*
     skyCanvas = p5.createGraphics(p5.width, p5.height);
     scribble = MicroEngine.CreateScribbleInstance(skyCanvas); //new Scribble(skyCanvas);
 
@@ -47,6 +49,7 @@ export function sketch(p5) {
       );
       scribble.scribbleLine(0, i * 20, p5.width, i * 20);
     }
+    */
   };
 
   p5.updateWithProps = (props) => {
@@ -57,7 +60,7 @@ export function sketch(p5) {
     p5.background(30, 40, 220);
     p5.translate(-p5.width / 2, -p5.height / 2);
 
-    p5.image(skyCanvas, 0, 0);
+    //p5.image(skyCanvas, 0, 0);
     MicroEngine.EngineLoop();
 
     if (p5.keyIsDown(p5.LEFT_ARROW)) recto.findComponent("GroundMove").move(-1);

@@ -12,6 +12,11 @@ export function createMicroEngine(p5) {
   //-------------------------------Rendering----------------------------//
   const panning = { x: 0, y: 0 };
   const scribbleInstances = [];
+  const renderLayers = new Map();
+  //Add a render layer object with layers & instantiate map on engine init
+  //During update cycle add game objects to render layer buckets
+  //Call buckets during render loop
+
   //---------------------------------Input------------------------------//
   const inputHandler = createInputHandler();
 
@@ -500,12 +505,41 @@ export function createMicroEngine(p5) {
     let noiseIndex = 0;
     let vertexIterations = settings.vertexIterations || 100;
 
-    for (let i = 0; i < vertexIterations; i++) {
+    //For curve control pts start
+    heightMap[0] = baseHeight;
+    heightMap[1] = baseHeight;
+
+    for (let i = 2; i < vertexIterations + 2; i++) {
       heightMap[i] = baseHeight - p5.noise(noiseIndex) * amplitude;
       noiseIndex += noiseIncrementStep;
     }
 
+    //For curve control pts end
+    heightMap.push(baseHeight), heightMap.push(baseHeight);
+
     return heightMap;
+  }
+
+  function createImageSlices(img, sliceWidth, sliceHeight) {
+    const imageSlices = [];
+
+    for (let x = 0; x < img.width; x += sliceWidth) {
+      for (let y = 0; y < img.height; y += sliceHeight) {
+        imageSlices.push(
+          createSliceData(x, y, p5.createGraphics(sliceWidth, sliceHeight)),
+        );
+        imageSlices.at(-1).imgSlice.image(img, -x, -y);
+      }
+    }
+
+    function createSliceData(x, y, pg) {
+      return {
+        coords: { x, y },
+        imgSlice: pg,
+      };
+    }
+
+    return imageSlices;
   }
 
   function createScribbleInstance(pg) {
@@ -695,6 +729,12 @@ export function createMicroEngine(p5) {
     },
     get GenerateCurveData() {
       return createCurveData;
+    },
+    get Utils() {
+      return {
+        GenerateCurveData: createCurveData,
+        SliceImage: createImageSlices,
+      };
     },
     get CreateScribbleInstance() {
       return createScribbleInstance;
