@@ -12,7 +12,7 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
         className="flex transition transform duration-200 pb-4 items-center"
       >
         <img src="/assets/back_arrow.png" className="h-8"></img>
-        <div className="pl-4 hover:underline flex text-3xl">Back to museum</div>
+        <div className="pl-4 hover:underline flex text-1xl">Back to museum</div>
       </Link>
       <div className="flex flex-col lg:flex-row gap-8 mt-8">
         <div className="aspect-square w-full bg-gray-500 border-2">
