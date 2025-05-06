@@ -185,7 +185,7 @@ export function ProfilePage({
           {!isEditing ? (
             <>
               <h1 className="text-3xl font-bold">
-                {user.displayName || "User"}
+                {user.displayName || user.email || "User"}
               </h1>
               <button
                 onClick={handleEditClick}

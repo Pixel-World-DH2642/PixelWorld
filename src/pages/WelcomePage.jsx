@@ -29,7 +29,11 @@ export function WelcomePage({ user, onLogout }) {
         </Link>
       </div>
       <h1>
-        {user ? `Welcome back, ${user.displayName}` : "Welcome to Pixelworld!"}
+        {user
+          ? user.displayName
+            ? `Welcome back, ${user.displayName}`
+            : `Welcome back, ${user.email}`
+          : "Welcome to Pixelworld!"}
       </h1>
       {user && (
         <button

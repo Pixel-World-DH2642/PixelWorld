@@ -1,6 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { auth, gProvider } from "../firebase";
-import { signInWithPopup, signOut, updateProfile } from "firebase/auth";
+import {
+  signInWithPopup,
+  signOut,
+  updateProfile,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 // Define the async thunk for Google sign-in
 export const signInWithGoogle = createAsyncThunk(
@@ -17,6 +23,50 @@ export const signInWithGoogle = createAsyncThunk(
     } catch (error) {
       console.error("Error during Google sign-in:", error);
       return rejectWithValue(error.message); // Pass serializable error message
+    }
+  },
+);
+
+// Define the async thunk for sign-up with email/password
+export const signUpWithEmailPassword = createAsyncThunk(
+  "auth/signUpWithEmailPassword",
+  async ({ email, password }, { rejectWithValue }) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      console.log("User created successfully:", userCredential.user);
+
+      // Extract serializable user data
+      const { uid, displayName, photoURL } = userCredential.user;
+      return { uid, displayName, email, photoURL };
+    } catch (error) {
+      console.error("Error during sign-up:", error);
+      return rejectWithValue(error.message);
+    }
+  },
+);
+
+// Define the async thunk for login with email/password
+export const loginWithEmailPassword = createAsyncThunk(
+  "auth/loginWithEmailPassword",
+  async ({ email, password }, { rejectWithValue }) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      console.log("User logged in successfully:", userCredential.user);
+
+      // Extract serializable user data
+      const { uid, displayName, photoURL } = userCredential.user;
+      return { uid, displayName, email, photoURL };
+    } catch (error) {
+      console.error("Error during login:", error);
+      return rejectWithValue(error.message);
     }
   },
 );
@@ -91,6 +141,37 @@ const authSlice = createSlice({
         state.error = action.payload; // Payload is the error message from rejectWithValue
         state.user = null;
       })
+
+      // Handle Email/Password Sign-Up lifecycle
+      .addCase(signUpWithEmailPassword.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(signUpWithEmailPassword.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.user = action.payload;
+      })
+      .addCase(signUpWithEmailPassword.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        state.user = null;
+      })
+
+      // Handle Email/Password Login lifecycle
+      .addCase(loginWithEmailPassword.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(loginWithEmailPassword.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.user = action.payload;
+      })
+      .addCase(loginWithEmailPassword.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        state.user = null;
+      })
+
       // Handle Logout lifecycle
       .addCase(logoutUser.pending, (state) => {
         state.status = "loading";
