@@ -5,10 +5,15 @@ export async function fetchWeatherData(longitude, latitude) {
   if (!response.ok)
     throw new Error("SMHI API call failed with status: " + response.status);
   const data = await response.json();
-  console.log(data);
+  //console.log(data);
   const weatherCode = data.timeSeries[0].parameters[18].values[0];
+  const weatherTemperature = data.timeSeries[0].parameters[18].values[10];
+  const windSpeed = data.timeSeries[0].parameters[18].values[14];
+  console.log(weatherCode, weatherTemperature, windSpeed);
   return {
     weatherData: weatherCode,
+    weatherTemperature,
+    windSpeed,
     timestamp: Date.now(),
   };
 }
