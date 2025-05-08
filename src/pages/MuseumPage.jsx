@@ -1,70 +1,95 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  selectCurrentPaintings,
+  selectIsFirstPage,
+  selectIsLastPage,
+  nextPaintings,
+  prevPaintings,
+  selectPainting,
+} from "../app/slices/museumSlice";
 
-export function MuseumPage({ 
-  // Props from Redux --> declare them to be used in the function to display the view
-  currentPaintings, 
-  isFirstPage, 
-  isLastPage, 
-  onSelectPainting, //for later? when connecting to details maybe
-  onNextClick, 
-  onPrevClick 
-}) {
+// Separate PaintingFrame component
+const PaintingFrame = ({ colorMatrix = [] }) => {
+  // Define a fixed grid structure - 4 rows x 8 columns for 32 elements
+  const rows = 4;
+  const cols = 8;
+  
+  // Create a grid display that's always rectangular
+  return (
+    <div className="border-2 border-black mb-4 aspect-square w-full">
+      <div className="w-full h-full flex flex-col">
+        {Array(rows).fill().map((_, rowIndex) => (
+          <div
+            key={rowIndex}
+            className="flex flex-1"
+          >
+            {Array(cols).fill().map((_, colIndex) => {
+              const index = rowIndex * cols + colIndex;
+              return (
+                <div
+                  key={`${rowIndex}-${colIndex}`}
+                  className="flex-1"
+                  style={{
+                    backgroundColor: index < colorMatrix.length ? colorMatrix[index] : "#ffffff",
+                  }}
+                />
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export function MuseumPage() {
+  const dispatch = useDispatch();
+  const displayedPaintings = useSelector(selectCurrentPaintings);
+  const isFirstPage = useSelector(selectIsFirstPage);
+  const isLastPage = useSelector(selectIsLastPage);
 
   // Handle right arrow click to scroll to next set of paintings
   const handleNextClickACB = () => {
-    onNextClick();
-    console.log("next click");
+    dispatch(nextPaintings());
   };
 
-    //Handle left arrow click to scroll back to the previous set of paintigs
-    const handlePrevClickACB = () => {
-      onPrevClick();
-      console.log("prev click");
-    };
+  // Handle left arrow click to scroll back to the previous set of paintings
+  const handlePrevClickACB = () => {
+    dispatch(prevPaintings());
+  };
 
-    /*
-  // Get current paintings to display
-  const currentPaintings = paintings.slice(
-    startIndex,
-    startIndex + paintingsPerPage,
-  );
-
-  // Determine if we're on the last page
-  const isLastPage = startIndex + paintingsPerPage >= paintings.length;
-
-  // Determine if we're on the first page
-  const isFirstPage = startIndex === 0;
-*/
-
+  // Handle painting selection
+  const handlePaintingSelectACB = (paintingId) => {
+    dispatch(selectPainting(paintingId));
+  };
 
   return (
     <div className="font-pixel p-6">
-       {/* Back Button */}
-       <Link
-          to="/world"
-          className="flex transition transform duration-200 pb-4 items-center"
-        >
-          <img src="/assets/back_arrow.png" className="h-8"></img>
-          <div className="pl-4 hover:underline flex text-1xl">
-            Back to world
-          </div>
-        </Link>
+      {/* Back Button */}
+      <Link
+        to="/world"
+        className="flex transition transform duration-200 pb-4 items-center"
+      >
+        <img src="/assets/back_arrow.png" className="h-8" alt="Back" />
+        <div className="pl-4 hover:underline flex text-1xl">
+          Back to world
+        </div>
+      </Link>
+      
       <div className="font-pixel px-6 mx-auto w-[512px] md:w-[768px] lg:w-[1024px]">
-       
-
-        {/* Museum Title */}
         <h1 className="text-6xl font-bold">MUSEUM</h1>
       </div>
 
       {/* Paintings grid with scroll arrows */}
-      <div className="flex items-left ">
-        {/* Left Arrow - only show if not on the first page */}
+      <div className="flex items-left">
+        {/* Left Arrow */}
         <div className="mr-6 flex-shrink-0 self-center">
           <button
             onClick={handlePrevClickACB}
             className={`${!isFirstPage ? "" : "opacity-50 cursor-not-allowed"}`}
-            disabled={!isFirstPage ? false : true}
+            disabled={isFirstPage}
           >
             <img
               src="/assets/left_arrow.png"
@@ -74,70 +99,39 @@ export function MuseumPage({
           </button>
         </div>
 
-        {/* Paintings */}
-        <div className="flex flex-grow justify-start gap-6">
-          {currentPaintings.map((painting) => (
+        {/* Paintings - display with proper alignment */}
+        <div className={`flex flex-grow ${displayedPaintings.length < 3 ? "justify-start" : "justify-between"} gap-8`}>
+          {displayedPaintings.map((painting) => (
             <Link
               to="/details"
               key={painting.id}
-              className="flex flex-col w-[calc(33.333%-1rem)] p-4 shadow-2xl"
+              className={`flex flex-col ${displayedPaintings.length < 3 ? "w-[30%]" : "w-[31%]"} p-6 shadow-2xl `}
+              onClick={() => handlePaintingSelectACB(painting.id)}
             >
-              {/* Painting Frame */}
-              <div className="border-2 border-black mb-4 aspect-square w-full">
-                <div className="w-full h-full">
-                  {painting.colorMatrix.map((row, rowIndex) => (
-                    <div
-                      key={rowIndex}
-                      className="flex"
-                      style={{
-                        height: `${100 / painting.colorMatrix.length}%`,
-                      }}
-                    >
-                      {row.map((color, colIndex) => (
-                        <div
-                          key={`${rowIndex}-${colIndex}`}
-                          style={{
-                            backgroundColor: color,
-                            width: `${100 / row.length}%`,
-                            height: "100%",
-                          }}
-                        />
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Painting Title */}
+              <PaintingFrame colorMatrix={painting.colorMatrix} />
               <h2 className="text-3xl mb-2">{painting.title}</h2>
-
-              {/* Quote */}
               <div className="mb-4 h-17">
-                <p className=" text-sm italic">"{painting.savedQuote}"</p>
-                <p className="mt-2  text-sm">- {painting.author}</p>
+                <p className="text-sm italic">"{painting.savedQuote}"</p>
+                <p className="mt-2 text-sm">- {painting.author}</p>
               </div>
-
-              {/* Description */}
-              <p className=" text-xs leading-tight mt-4">
-                {painting.authorNotes ||
-                  "There was a lot of different types among wolves in the Late Pleistocene.(1) The dingo is also a dog, but many dingos have become wild animals again and live in the wild, away from humans (parts of Australia).(5)"}
+              <p className="text-xs leading-tight mt-4">
+                {painting.authorNotes}
               </p>
             </Link>
           ))}
         </div>
 
-        {/* Right Arrow - only show if not on the last page */}
-
+        {/* Right Arrow */}
         <div className="ml-4 flex-shrink-0 self-center">
           <button
             onClick={handleNextClickACB}
             className={`${!isLastPage ? "" : "opacity-50 cursor-not-allowed"}`}
-            disabled={!isLastPage ? false : true}
+            disabled={isLastPage}
           >
             <img
-              src="assets/right_arrow.png"
+              src="/assets/right_arrow.png"
               className="w-10 h-15"
-              alt="Previous"
+              alt="Next"
             />
           </button>
         </div>

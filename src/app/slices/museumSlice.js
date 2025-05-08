@@ -1,17 +1,21 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { db } from '../firebase'; // Adjust path if needed
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
 
-// Thunk to fetch paintings from Firestore
 export const fetchPaintings = createAsyncThunk(
   'museum/fetchPaintings',
-  async () => {
-    const querySnapshot = await getDocs(collection(db, 'paintings'));
-    const paintings = querySnapshot.docs.map(doc => ({
-      id: doc.id, // use Firestore doc ID
-      ...doc.data()
-    }));
-    return paintings;
+  async (_, thunkAPI) => {
+    try {
+      const paintingsCollection = collection(db, "paintings");
+      const paintingsSnapshot = await getDocs(paintingsCollection);
+      const paintings = paintingsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      return paintings;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
   }
 );
 
@@ -20,7 +24,7 @@ const initialState = {
   selectedPaintingId: null,
   startIndex: 0,
   paintingsPerPage: 3,
-  status: 'idle', // 'loading' | 'succeeded' | 'failed'
+  isLoading: false,
   error: null
 };
 
@@ -28,6 +32,9 @@ export const museumSlice = createSlice({
   name: 'museum',
   initialState,
   reducers: {
+    setPaintings: (state, action) => {
+      state.paintings = action.payload;
+    },
     selectPainting: (state, action) => {
       state.selectedPaintingId = action.payload;
     },
@@ -45,25 +52,31 @@ export const museumSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchPaintings.pending, (state) => {
-        state.status = 'loading';
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(fetchPaintings.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.isLoading = false;
         state.paintings = action.payload;
       })
       .addCase(fetchPaintings.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
+        state.isLoading = false;
+        state.error = action.payload;
       });
-  }
+  },
 });
 
+// Add new selectors
+export const selectMuseumLoading = (state) => state.museum.isLoading;
+export const selectMuseumError = (state) => state.museum.error;
+
+
 // Export actions
-export const { selectPainting, nextPaintings, prevPaintings } = museumSlice.actions;
+export const { setPaintings, selectPainting, nextPaintings, prevPaintings } = museumSlice.actions;
 
 // Selectors
 export const selectAllPaintings = (state) => state.museum.paintings;
+//show the paintings which fit on the screen (max 3 - paintingsPerPage)
 export const selectCurrentPaintings = (state) => {
   const { paintings, startIndex, paintingsPerPage } = state.museum;
   return paintings.slice(startIndex, startIndex + paintingsPerPage);
@@ -73,7 +86,5 @@ export const selectIsLastPage = (state) => {
   const { startIndex, paintingsPerPage, paintings } = state.museum;
   return startIndex + paintingsPerPage >= paintings.length;
 };
-export const selectMuseumStatus = (state) => state.museum.status;
-export const selectMuseumError = (state) => state.museum.error;
 
 export default museumSlice.reducer;
