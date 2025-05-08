@@ -15,20 +15,6 @@ import { uploadPaintings } from "./utils/uploadPaintings"; // Import the upload 
 const store = configureReduxStore();
 connectToPersistance(store);
 
-// Initialize Firestore data
-async function initializeFirestoreData() {
-  try {
-    console.log('Checking and uploading paintings data to Firestore if needed...');
-    await uploadPaintings();
-    console.log('Firestore data initialization complete');
-  } catch (error) {
-    console.error('Error initializing Firestore data:', error);
-  }
-}
-
-// Call the initialization function
-initializeFirestoreData();
-
 export function makeRouter() {
   return createHashRouter([
     {
