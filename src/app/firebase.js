@@ -1,8 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore"; // Added
-import { fetchPaintings } from "./store";
-import { setPaintings } from "./slices/museumSlice";
+import { setPaintings, fetchPaintings } from "./slices/museumSlice";
 import { setUser, authLoaded } from "./slices/authSlice";
 
 const firebaseConfig = {

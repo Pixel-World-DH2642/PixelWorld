@@ -9,25 +9,6 @@ import weatherSlice from "./slices/weatherSlice";
 import museumSlice from "./slices/museumSlice";
 import authSlice from "./slices/authSlice";
 import profileSlice from "./slices/profileSlice";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "./firebase";
-
-export const fetchPaintings = createAsyncThunk(
-  "app/fetchPaintings",
-  async (_, thunkAPI) => {
-    try {
-      const paintingsCollection = collection(db, "paintings");
-      const paintingsSnapshot = await getDocs(paintingsCollection);
-      const paintings = paintingsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      return paintings;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
-    }
-  },
-);
 
 const appSlice = createSlice({
   name: "app",
