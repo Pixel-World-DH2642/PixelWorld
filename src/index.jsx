@@ -10,7 +10,6 @@ import { Detail } from "./containers/Detail";
 import { Provider } from "react-redux";
 import configureReduxStore from "./app/store";
 import { connectToPersistance } from "./app/firebase";
-import { uploadPaintings } from "./utils/uploadPaintings"; // Import the upload function
 
 const store = configureReduxStore();
 connectToPersistance(store);
