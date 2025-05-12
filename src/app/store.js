@@ -4,6 +4,7 @@ import paintingSlice from "./slices/paintingSlice";
 import weatherSlice from "./slices/weatherSlice";
 import museumSlice from "./slices/museumSlice";
 import authSlice from "./slices/authSlice";
+import profileSlice from "./slices/profileSlice";
 
 const appSlice = createSlice({
   name: "app",
@@ -30,6 +31,7 @@ export default function configureReduxStore() {
       painting: paintingSlice,
       weather: weatherSlice,
       museum: museumSlice,
+      profile: profileSlice,
     },
     preloadedState: initialState,
   });

@@ -1,130 +1,25 @@
 import { Link, Navigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
+import { PaintingDisplay } from "../components/PaintingDisplay";
 
 export function ProfilePage({
   user,
-  paintings,
-  onChangeDisplayName,
   authStatus,
   authError,
+  paintings,
+  paintingsStatus,
+  paintingsError,
+  onChangeDisplayName,
+  fetchUserPaintings,
 }) {
-  // Dummy data
-  paintings = [
-    {
-      id: "painting1",
-      title: "Beauty",
-      colorMatrix: Array(32)
-        .fill()
-        .map(() =>
-          Array(32)
-            .fill()
-            .map(
-              () =>
-                "#" +
-                Math.floor(Math.random() * 16777215)
-                  .toString(16)
-                  .padStart(6, "0"),
-            ),
-        ),
-      savedQuote: "Art washes away from the soul the dust of everyday life.",
-      author: "PicassoFan123",
-      date: Date.now() - 100000000,
-      authorNotes: "Inspired by the colors of a Spanish sunset.",
-      likedBy: ["user1", "user2", "user3"],
-    },
-    {
-      id: "painting2",
-      title: "Silence in Spring",
-      colorMatrix: Array(32)
-        .fill()
-        .map(() =>
-          Array(32)
-            .fill()
-            .map(
-              () =>
-                "#" +
-                Math.floor(Math.random() * 16777215)
-                  .toString(16)
-                  .padStart(6, "0"),
-            ),
-        ),
-      savedQuote: "Every artist was first an amateur.",
-      author: "art_lover_98",
-      date: Date.now() - 50000000,
-      authorNotes: "My first attempt using only shades of blue.",
-      likedBy: ["user5"],
-    },
-    {
-      id: "painting3",
-      title: "Wind",
-      colorMatrix: Array(32)
-        .fill()
-        .map(() =>
-          Array(32)
-            .fill()
-            .map(
-              () =>
-                "#" +
-                Math.floor(Math.random() * 16777215)
-                  .toString(16)
-                  .padStart(6, "0"),
-            ),
-        ),
-      savedQuote: "Creativity takes courage.",
-      author: "beginner_painter",
-      date: Date.now() - 2000000,
-      authorNotes: "Experimented with pixel symmetry.",
-      likedBy: [],
-    },
-    {
-      id: "painting4",
-      title: "Horse",
-      colorMatrix: Array(32)
-        .fill()
-        .map(() =>
-          Array(32)
-            .fill()
-            .map(
-              () =>
-                "#" +
-                Math.floor(Math.random() * 16777215)
-                  .toString(16)
-                  .padStart(6, "0"),
-            ),
-        ),
-      savedQuote:
-        "Two things are infinite: the universe and human stupidity; and Im not sure about the universe.",
-      author: "Painter345",
-      date: Date.now() - 100000000,
-      authorNotes: "I painted this on a vacation",
-      likedBy: ["user1", "user3"],
-    },
-    {
-      id: "painting5",
-      title: "Love in  the sky",
-      colorMatrix: Array(32)
-        .fill()
-        .map(() =>
-          Array(32)
-            .fill()
-            .map(
-              () =>
-                "#" +
-                Math.floor(Math.random() * 16777215)
-                  .toString(16)
-                  .padStart(6, "0"),
-            ),
-        ),
-      savedQuote: "I love to fly",
-      author: "art_enthuisast_98",
-      date: Date.now() - 50000000,
-      authorNotes: "I like to paint with this app",
-      likedBy: ["user5", "PicassoFan123"],
-    },
-  ];
-
   const [isEditing, setIsEditing] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(user?.displayName || "");
+
+  useEffect(() => {
+    if (user) {
+      fetchUserPaintings(user.uid); // Fetch paintings when user is available
+    }
+  }, [user, fetchUserPaintings]);
 
   // Update local state if user prop changes (e.g., after successful update)
   useEffect(() => {
@@ -172,7 +67,6 @@ export function ProfilePage({
         ></img>
         <div className="pl-4 hover:underline flex text-3xl">Back to world</div>
       </Link>
-
       {/* Profile Info */}
       <div className="flex items-center mb-6 mt-8">
         {/* Profile Picture */}
@@ -226,44 +120,48 @@ export function ProfilePage({
       {/* Gallery */}
       <h1 className="text-4xl font-bold mb-2">Your paintings</h1>
       <div className="border-b-2 border-black mb-8"></div>
-      {paintings && paintings.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {/* Map over the actual paintings array */}
-          {paintings.map((painting) => (
-            <div key={painting.id} className="text-left">
-              <div className="aspect-square border-4 border-black mb-1 overflow-hidden">
-                {painting.colorMatrix.map((row, rowIndex) => (
-                  <div
-                    key={rowIndex}
-                    className="flex"
-                    style={{
-                      height: `${100 / painting.colorMatrix.length}%`,
-                    }}
-                  >
-                    {row.map((color, colIndex) => (
-                      <div
-                        key={`${rowIndex}-${colIndex}`}
-                        style={{
-                          backgroundColor: color,
-                          width: `${100 / row.length}%`,
-                          height: "100%",
-                        }}
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
-              <div
-                className="text-sm truncate"
-                title={painting.title} // Show full title on hover if truncated
-              >
-                {painting.title}
-              </div>
-            </div>
-          ))}
+
+      {/* Handle loading state */}
+      {paintingsStatus === "loading" && (
+        <div className="text-center py-4">Loading your paintings...</div>
+      )}
+
+      {/* Handle error state */}
+      {paintingsStatus === "failed" && (
+        <div className="text-center py-4 text-red-500">
+          Failed to load your paintings: {paintingsError}
         </div>
-      ) : (
-        <p>You haven't created any paintings yet.</p>
+      )}
+
+      {/* Show paintings if available and loaded */}
+      {paintingsStatus === "succeeded" && (
+        <>
+          {paintings && paintings.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {paintings.map((painting) => (
+                <div key={painting.id} className="text-left">
+                  <PaintingDisplay painting={painting} />
+                  <div className="text-sm truncate" title={painting.title}>
+                    {painting.title || "Untitled"}
+                  </div>
+                  <div className="text-xs text-gray-600 truncate">
+                    {painting.authorName || "Unknown artist"}
+                  </div>
+                  {painting.savedQuote && (
+                    <div
+                      className="text-xs italic mt-1 text-gray-600 truncate"
+                      title={painting.savedQuote}
+                    >
+                      "{painting.savedQuote}"
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>You haven't created any paintings yet.</p>
+          )}
+        </>
       )}
     </div>
   );
