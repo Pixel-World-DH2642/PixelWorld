@@ -36,9 +36,5 @@ export function connectToPersistance(store) {
     store.dispatch(authLoaded());
   });
 
-  store.dispatch(fetchPaintings()).then((result) => {
-    if (result.payload) {
-      store.dispatch(setPaintings(result.payload));
-    }
-  });
+  store.dispatch(fetchPaintings());
 }

@@ -1,22 +1,41 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
 export const fetchPaintings = createAsyncThunk(
-  'museum/fetchPaintings',
+  "museum/fetchPaintings",
   async (_, thunkAPI) => {
     try {
       const paintingsCollection = collection(db, "paintings");
       const paintingsSnapshot = await getDocs(paintingsCollection);
-      const paintings = paintingsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const paintings = paintingsSnapshot.docs.map((doc) => {
+        const data = doc.data();
+
+        // Convert Firestore Timestamp objects to serializable format
+        const serializedData = Object.entries(data).reduce(
+          (acc, [key, value]) => {
+            // Check if the value is a Timestamp
+            if (value && typeof value.toDate === "function") {
+              // Convert to ISO string or timestamp number
+              acc[key] = value.toDate().toISOString();
+            } else {
+              acc[key] = value;
+            }
+            return acc;
+          },
+          {},
+        );
+
+        return {
+          id: doc.id,
+          ...serializedData,
+        };
+      });
       return paintings;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 const initialState = {
@@ -25,11 +44,11 @@ const initialState = {
   startIndex: 0,
   paintingsPerPage: 3,
   isLoading: false,
-  error: null
+  error: null,
 };
 
 export const museumSlice = createSlice({
-  name: 'museum',
+  name: "museum",
   initialState,
   reducers: {
     setPaintings: (state, action) => {
@@ -47,7 +66,7 @@ export const museumSlice = createSlice({
       if (state.startIndex > 0) {
         state.startIndex -= state.paintingsPerPage;
       }
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -70,9 +89,9 @@ export const museumSlice = createSlice({
 export const selectMuseumLoading = (state) => state.museum.isLoading;
 export const selectMuseumError = (state) => state.museum.error;
 
-
 // Export actions
-export const { setPaintings, selectPainting, nextPaintings, prevPaintings } = museumSlice.actions;
+export const { setPaintings, selectPainting, nextPaintings, prevPaintings } =
+  museumSlice.actions;
 
 // Selectors
 export const selectAllPaintings = (state) => state.museum.paintings;
