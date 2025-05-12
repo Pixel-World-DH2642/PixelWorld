@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { setUser } from "./slices/authSlice";
+import { setUser, authLoaded } from "./slices/authSlice";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAA_zepBE6w3GCBV1Kr6_Ui43KcEPk-Mlw",
@@ -17,4 +17,19 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const gProvider = new GoogleAuthProvider();
 
-export function connectToPersistance(store) {}
+export function connectToPersistance(store) {
+  // Set up an auth state listener
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log("User is signed in:", user);
+      // User is signed in, extract only the serializable data
+      const { uid, displayName, email, photoURL } = user;
+      store.dispatch(setUser({ uid, displayName, email, photoURL }));
+    } else {
+      // User is signed out
+      store.dispatch(setUser(null));
+    }
+
+    store.dispatch(authLoaded());
+  });
+}

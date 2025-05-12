@@ -49,120 +49,131 @@ export function ProfilePage({
     }
   };
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
+  if (authStatus === "loading") {
+    return (
+      <div className="flex justify-center items-center h-screen font-pixel">
+        <div className="text-2xl">Loading profile...</div>
+      </div>
+    );
   }
 
-  return (
-    <div className="font-pixel p-6 mx-auto w-[512px] md:w-[768px] lg:w-[1024px]">
-      {/* Back Arrow */}
-      <Link
-        to="/world"
-        className="flex transition transform duration-200 pb-4 items-center"
-      >
-        <img
-          src="/assets/back_arrow.png"
-          className="h-8"
-          alt="Back arrow"
-        ></img>
-        <div className="pl-4 hover:underline flex text-3xl">Back to world</div>
-      </Link>
-      {/* Profile Info */}
-      <div className="flex items-center mb-6 mt-8">
-        {/* Profile Picture */}
-        <img
-          src={user.photoURL || "/assets/default_avatar.png"} // Provide a path to a default avatar
-          alt="Profile"
-          className="w-12 h-12 bg-gray-300 rounded-full mr-4 border border-black" // Added border and bg as fallback
-        />
-        <div className="flex items-baseline space-x-2">
-          {!isEditing ? (
-            <>
-              <h1 className="text-3xl font-bold">
-                {user.displayName || user.email || "User"}
-              </h1>
-              <button
-                onClick={handleEditClick}
-                className="text-sm flex items-center hover:underline cursor-pointer"
-                disabled={authStatus === "loading"} // Disable while loading/updating
-              >
-                Edit <span className="ml-1">&#9998;</span>
-              </button>
-            </>
-          ) : (
-            <div className="flex items-center space-x-2">
-              <input
-                type="text"
-                value={newDisplayName}
-                onChange={(e) => setNewDisplayName(e.target.value)}
-                className="text-xl font-bold border border-black px-2 py-1"
-                maxLength={30} // Add a reasonable max length
-              />
-              <button
-                onClick={handleSaveClick}
-                className="text-sm bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded disabled:opacity-50 cursor-pointer"
-                disabled={authStatus === "loading" || !newDisplayName.trim()}
-              >
-                {authStatus === "loading" ? "Saving..." : "Save"}
-              </button>
-              <button
-                onClick={handleCancelClick}
-                className="text-sm bg-gray-400 hover:bg-gray-500 text-white px-2 py-1 rounded cursor-pointer"
-                disabled={authStatus === "loading"}
-              >
-                Cancel
-              </button>
-            </div>
-          )}
+  if (authStatus !== "loading" && !user) {
+    console.log("Auth status: ", authStatus);
+    return <Navigate to="/login" replace />;
+  } else {
+    return (
+      <div className="font-pixel p-6 mx-auto w-[512px] md:w-[768px] lg:w-[1024px]">
+        {/* Back Arrow */}
+        <Link
+          to="/world"
+          className="flex transition transform duration-200 pb-4 items-center"
+        >
+          <img
+            src="/assets/back_arrow.png"
+            className="h-8"
+            alt="Back arrow"
+          ></img>
+          <div className="pl-4 hover:underline flex text-3xl">
+            Back to world
+          </div>
+        </Link>
+        {/* Profile Info */}
+        <div className="flex items-center mb-6 mt-8">
+          {/* Profile Picture */}
+          <img
+            src={user.photoURL || "/assets/default_avatar.png"} // Provide a path to a default avatar
+            alt="Profile"
+            className="w-12 h-12 bg-gray-300 rounded-full mr-4 border border-black" // Added border and bg as fallback
+          />
+          <div className="flex items-baseline space-x-2">
+            {!isEditing ? (
+              <>
+                <h1 className="text-3xl font-bold">
+                  {user.displayName || user.email || "User"}
+                </h1>
+                <button
+                  onClick={handleEditClick}
+                  className="text-sm flex items-center hover:underline cursor-pointer"
+                  disabled={authStatus === "loading"} // Disable while loading/updating
+                >
+                  Edit <span className="ml-1">&#9998;</span>
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={newDisplayName}
+                  onChange={(e) => setNewDisplayName(e.target.value)}
+                  className="text-xl font-bold border border-black px-2 py-1"
+                  maxLength={30} // Add a reasonable max length
+                />
+                <button
+                  onClick={handleSaveClick}
+                  className="text-sm bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded disabled:opacity-50 cursor-pointer"
+                  disabled={authStatus === "loading" || !newDisplayName.trim()}
+                >
+                  {authStatus === "loading" ? "Saving..." : "Save"}
+                </button>
+                <button
+                  onClick={handleCancelClick}
+                  className="text-sm bg-gray-400 hover:bg-gray-500 text-white px-2 py-1 rounded cursor-pointer"
+                  disabled={authStatus === "loading"}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Gallery */}
-      <h1 className="text-4xl font-bold mb-2">Your paintings</h1>
-      <div className="border-b-2 border-black mb-8"></div>
+        {/* Gallery */}
+        <h1 className="text-4xl font-bold mb-2">Your paintings</h1>
+        <div className="border-b-2 border-black mb-8"></div>
 
-      {/* Handle loading state */}
-      {paintingsStatus === "loading" && (
-        <div className="text-center py-4">Loading your paintings...</div>
-      )}
+        {/* Handle loading state */}
+        {paintingsStatus === "loading" && (
+          <div className="text-center py-4">Loading your paintings...</div>
+        )}
 
-      {/* Handle error state */}
-      {paintingsStatus === "failed" && (
-        <div className="text-center py-4 text-red-500">
-          Failed to load your paintings: {paintingsError}
-        </div>
-      )}
+        {/* Handle error state */}
+        {paintingsStatus === "failed" && (
+          <div className="text-center py-4 text-red-500">
+            Failed to load your paintings: {paintingsError}
+          </div>
+        )}
 
-      {/* Show paintings if available and loaded */}
-      {paintingsStatus === "succeeded" && (
-        <>
-          {paintings && paintings.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {paintings.map((painting) => (
-                <div key={painting.id} className="text-left">
-                  <PaintingDisplay painting={painting} />
-                  <div className="text-sm truncate" title={painting.title}>
-                    {painting.title || "Untitled"}
-                  </div>
-                  <div className="text-xs text-gray-600 truncate">
-                    {painting.authorName || "Unknown artist"}
-                  </div>
-                  {painting.savedQuote && (
-                    <div
-                      className="text-xs italic mt-1 text-gray-600 truncate"
-                      title={painting.savedQuote}
-                    >
-                      "{painting.savedQuote}"
+        {/* Show paintings if available and loaded */}
+        {paintingsStatus === "succeeded" && (
+          <>
+            {paintings && paintings.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                {paintings.map((painting) => (
+                  <div key={painting.id} className="text-left">
+                    <PaintingDisplay painting={painting} />
+                    <div className="text-sm truncate" title={painting.title}>
+                      {painting.title || "Untitled"}
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p>You haven't created any paintings yet.</p>
-          )}
-        </>
-      )}
-    </div>
-  );
+                    <div className="text-xs text-gray-600 truncate">
+                      {painting.authorName || "Unknown artist"}
+                    </div>
+                    {painting.savedQuote && (
+                      <div
+                        className="text-xs italic mt-1 text-gray-600 truncate"
+                        title={painting.savedQuote}
+                      >
+                        "{painting.savedQuote}"
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>You haven't created any paintings yet.</p>
+            )}
+          </>
+        )}
+      </div>
+    );
+  }
 }

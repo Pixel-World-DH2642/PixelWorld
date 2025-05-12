@@ -108,7 +108,7 @@ export const updateDisplayName = createAsyncThunk(
 
 const initialState = {
   user: null,
-  status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+  status: "loading", // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
 };
 
@@ -116,14 +116,16 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // Keep setUser if needed for synchronous updates (e.g., from onAuthStateChanged listener)
     setUser: (state, action) => {
-      // Consider serializability check here too if payload can be complex
       state.user = action.payload;
       state.status = action.payload ? "succeeded" : "idle";
       state.error = null;
     },
-    // Removed synchronous signInWithGoogle and logout reducers
+    authLoaded: (state) => {
+      if (state.status === "loading" && !state.user) {
+        state.status = "idle";
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -134,11 +136,11 @@ const authSlice = createSlice({
       })
       .addCase(signInWithGoogle.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.user = action.payload; // Payload is the serializable user data returned by the thunk
+        state.user = action.payload;
       })
       .addCase(signInWithGoogle.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload; // Payload is the error message from rejectWithValue
+        state.error = action.payload;
         state.user = null;
       })
 
@@ -204,10 +206,10 @@ const authSlice = createSlice({
       })
       .addCase(updateDisplayName.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload; // Store the error message
+        state.error = action.payload;
       });
   },
 });
 
-export const { setUser } = authSlice.actions;
+export const { setUser, authLoaded } = authSlice.actions;
 export default authSlice.reducer;
