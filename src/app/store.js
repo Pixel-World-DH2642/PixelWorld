@@ -4,7 +4,7 @@ import {
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 import quoteSlice from "./slices/quoteSlice";
-import paintingSlice from "./slices/paintingSlice";
+import detailSlice from "./slices/detailSlice";
 import weatherSlice from "./slices/weatherSlice";
 import museumSlice from "./slices/museumSlice";
 import authSlice from "./slices/authSlice";
@@ -30,7 +30,7 @@ export default function configureReduxStore() {
       app: appSlice.reducer,
       auth: authSlice,
       quote: quoteSlice,
-      painting: paintingSlice,
+      detail: detailSlice,
       weather: weatherSlice,
       museum: museumSlice,
       profile: profileSlice,

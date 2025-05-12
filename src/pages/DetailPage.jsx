@@ -1,9 +1,19 @@
 import { Link } from "react-router-dom";
 import { PaintingDisplay } from "../components/PaintingDisplay";
 
-export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
-  if (!painting) {
-    return <div className="p-6 text-xl">Loading painting details...</div>;
+export function DetailPage({
+  painting,
+  onLikePainting,
+  onDislikePainting,
+  isLoading,
+  error,
+}) {
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen font-pixel">
+        <div className="text-2xl">Loading painting details...</div>
+      </div>
+    );
   }
   return (
     <section className="font-pixel p-6 mx-auto w-full max-w-[512px] md:max-w-[768px] lg:max-w-[1024px]">
@@ -15,7 +25,7 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
         <div className="pl-4 hover:underline flex text-1xl">Back to museum</div>
       </Link>
       <div className="flex flex-col lg:flex-row gap-8 mt-8">
-        <div className="aspect-square w-full bg-gray-500">
+        <div className="aspect-square w-full">
           <PaintingDisplay painting={painting} />
         </div>
         <div className="">

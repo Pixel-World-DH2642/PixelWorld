@@ -1,21 +1,23 @@
 import React from "react";
 
 export function PaintingDisplay({ painting }) {
+  const EXPECTED_GRID_SIZE = 32; // Changed from 8 to 32
+  const TOTAL_CELLS = EXPECTED_GRID_SIZE * EXPECTED_GRID_SIZE; // 1024
+  const FILL_COLOR = "#000000"; // Changed from light gray to black
+
   if (!painting || !painting.colorMatrix) {
     return (
-      <div className="aspect-square border-4 border-black mb-1 bg-gray-200 flex items-center justify-center">
+      <div className="aspect-square border-4 border-black bg-gray-200 flex items-center justify-center">
         <span>No painting data</span>
       </div>
     );
   }
 
-  // Handle flat array of colors (expected to be 8x8=64 colors)
+  // Handle flat array of colors (expected to be 32x32=1024 colors)
   if (
     Array.isArray(painting.colorMatrix) &&
     !Array.isArray(painting.colorMatrix[0])
   ) {
-    const EXPECTED_GRID_SIZE = 8; // 8x8 grid
-    const TOTAL_CELLS = EXPECTED_GRID_SIZE * EXPECTED_GRID_SIZE; // 64
     const colors = [...painting.colorMatrix];
 
     // Check if we have incomplete data
@@ -24,10 +26,9 @@ export function PaintingDisplay({ painting }) {
         `Incomplete color matrix for painting "${painting.title}". Expected ${TOTAL_CELLS}, got ${colors.length}.`,
       );
 
-      // Fill remaining cells with a neutral color
+      // Fill remaining cells with black
       const remainingCells = TOTAL_CELLS - colors.length;
-      const fillColor = "#EEEEEE"; // Light gray as placeholder
-      colors.push(...Array(remainingCells).fill(fillColor));
+      colors.push(...Array(remainingCells).fill(FILL_COLOR));
     } else if (colors.length > TOTAL_CELLS) {
       console.warn(
         `Oversized color matrix for painting "${painting.title}". Expected ${TOTAL_CELLS}, got ${colors.length}.`,
@@ -37,7 +38,7 @@ export function PaintingDisplay({ painting }) {
     }
 
     return (
-      <div className="aspect-square border-4 border-black mb-1 overflow-hidden">
+      <div className="aspect-square border-4 border-black overflow-hidden">
         <div
           className="grid w-full h-full"
           style={{
@@ -58,12 +59,11 @@ export function PaintingDisplay({ painting }) {
     );
   }
 
-  // Handle 2D array (original format - should be 8x8)
+  // Handle 2D array (original format - should be 32x32)
   if (
     Array.isArray(painting.colorMatrix) &&
     Array.isArray(painting.colorMatrix[0])
   ) {
-    const EXPECTED_GRID_SIZE = 8;
     let adjustedMatrix = [...painting.colorMatrix];
 
     // Check row count
@@ -72,7 +72,7 @@ export function PaintingDisplay({ painting }) {
         `Incomplete row count for painting "${painting.title}". Expected ${EXPECTED_GRID_SIZE}, got ${adjustedMatrix.length}.`,
       );
       // Add missing rows
-      const emptyRow = Array(EXPECTED_GRID_SIZE).fill("#EEEEEE");
+      const emptyRow = Array(EXPECTED_GRID_SIZE).fill(FILL_COLOR);
       while (adjustedMatrix.length < EXPECTED_GRID_SIZE) {
         adjustedMatrix.push([...emptyRow]);
       }
@@ -87,7 +87,7 @@ export function PaintingDisplay({ painting }) {
         // Add missing cells in this row
         return [
           ...row,
-          ...Array(EXPECTED_GRID_SIZE - row.length).fill("#EEEEEE"),
+          ...Array(EXPECTED_GRID_SIZE - row.length).fill(FILL_COLOR),
         ];
       } else if (row.length > EXPECTED_GRID_SIZE) {
         // Trim excess cells in this row

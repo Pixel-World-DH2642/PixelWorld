@@ -15,36 +15,40 @@ const PaintingFrame = ({ colorMatrix = [] }) => {
   // Define a fixed grid structure - 4 rows x 8 columns for 32 elements
   const rows = 4;
   const cols = 8;
-  
+
   // Create a grid display that's always rectangular
   return (
     <div className="border-2 border-black mb-4 aspect-square w-full">
       <div className="w-full h-full flex flex-col">
-        {Array(rows).fill().map((_, rowIndex) => (
-          <div
-            key={rowIndex}
-            className="flex flex-1"
-          >
-            {Array(cols).fill().map((_, colIndex) => {
-              const index = rowIndex * cols + colIndex;
-              return (
-                <div
-                  key={`${rowIndex}-${colIndex}`}
-                  className="flex-1"
-                  style={{
-                    backgroundColor: index < colorMatrix.length ? colorMatrix[index] : "#ffffff",
-                  }}
-                />
-              );
-            })}
-          </div>
-        ))}
+        {Array(rows)
+          .fill()
+          .map((_, rowIndex) => (
+            <div key={rowIndex} className="flex flex-1">
+              {Array(cols)
+                .fill()
+                .map((_, colIndex) => {
+                  const index = rowIndex * cols + colIndex;
+                  return (
+                    <div
+                      key={`${rowIndex}-${colIndex}`}
+                      className="flex-1"
+                      style={{
+                        backgroundColor:
+                          index < colorMatrix.length
+                            ? colorMatrix[index]
+                            : "#ffffff",
+                      }}
+                    />
+                  );
+                })}
+            </div>
+          ))}
       </div>
     </div>
   );
 };
 
-export function MuseumPage() {
+export function MuseumPage({ onSelectPainting }) {
   const dispatch = useDispatch();
   const displayedPaintings = useSelector(selectCurrentPaintings);
   const isFirstPage = useSelector(selectIsFirstPage);
@@ -62,7 +66,7 @@ export function MuseumPage() {
 
   // Handle painting selection
   const handlePaintingSelectACB = (paintingId) => {
-    dispatch(selectPainting(paintingId));
+    onSelectPainting(paintingId);
   };
 
   return (
@@ -73,11 +77,9 @@ export function MuseumPage() {
         className="flex transition transform duration-200 pb-4 items-center"
       >
         <img src="/assets/back_arrow.png" className="h-8" alt="Back" />
-        <div className="pl-4 hover:underline flex text-1xl">
-          Back to world
-        </div>
+        <div className="pl-4 hover:underline flex text-1xl">Back to world</div>
       </Link>
-      
+
       <div className="font-pixel px-6 mx-auto w-[512px] md:w-[768px] lg:w-[1024px]">
         <h1 className="text-6xl font-bold">MUSEUM</h1>
       </div>
@@ -100,7 +102,9 @@ export function MuseumPage() {
         </div>
 
         {/* Paintings - display with proper alignment */}
-        <div className={`flex flex-grow ${displayedPaintings.length < 3 ? "justify-start" : "justify-between"} gap-8`}>
+        <div
+          className={`flex flex-grow ${displayedPaintings.length < 3 ? "justify-start" : "justify-between"} gap-8`}
+        >
           {displayedPaintings.map((painting) => (
             <Link
               to="/details"

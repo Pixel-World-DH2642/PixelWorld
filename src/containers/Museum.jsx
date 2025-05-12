@@ -1,13 +1,14 @@
 import { connect } from "react-redux";
 import { MuseumPage } from "../pages/MuseumPage";
-import { 
-  selectPainting, 
-  nextPaintings, 
+import {
+  selectPainting,
+  nextPaintings,
   prevPaintings,
   selectAllPaintings,
   selectCurrentPaintings,
   selectIsFirstPage,
-  selectIsLastPage
+  selectIsLastPage,
+  selectAndFetchPainting,
 } from "../app/slices/museumSlice.js";
 
 export const Museum = connect(
@@ -17,16 +18,16 @@ export const Museum = connect(
       paintings: selectAllPaintings(state),
       currentPaintings: selectCurrentPaintings(state),
       isFirstPage: selectIsFirstPage(state),
-      isLastPage: selectIsLastPage(state)
+      isLastPage: selectIsLastPage(state),
     };
   },
 
   // Wrapping the actions into dispatch
   function mapDispatchToProps(dispatch) {
     return {
-      onSelectPainting: (id) => dispatch(selectPainting(id)),
+      onSelectPainting: (id) => dispatch(selectAndFetchPainting(id)),
       onNextClick: () => dispatch(nextPaintings()),
-      onPrevClick: () => dispatch(prevPaintings())
+      onPrevClick: () => dispatch(prevPaintings()),
     };
   },
 )(MuseumPage);
