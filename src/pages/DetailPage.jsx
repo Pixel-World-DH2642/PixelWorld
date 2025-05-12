@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { painting } from "../DetailMockData";
+import { PaintingDisplay } from "../components/PaintingDisplay";
 
 export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
   if (!painting) {
@@ -15,27 +15,8 @@ export function DetailPage({ painting, onLikePainting, onDislikePainting }) {
         <div className="pl-4 hover:underline flex text-1xl">Back to museum</div>
       </Link>
       <div className="flex flex-col lg:flex-row gap-8 mt-8">
-        <div className="aspect-square w-full bg-gray-500 border-2">
-          {painting.colorMatrix.map((row, rowIndex) => (
-            <div
-              key={rowIndex}
-              className="flex"
-              style={{
-                height: `${100 / painting.colorMatrix.length}%`,
-              }}
-            >
-              {row.map((color, colIndex) => (
-                <div
-                  key={`${rowIndex}-${colIndex}`}
-                  style={{
-                    backgroundColor: color,
-                    width: `${100 / row.length}%`,
-                    height: "100%",
-                  }}
-                />
-              ))}
-            </div>
-          ))}
+        <div className="aspect-square w-full bg-gray-500">
+          <PaintingDisplay painting={painting} />
         </div>
         <div className="">
           <h1 className="text-4xl pb-1">{painting.title}</h1>

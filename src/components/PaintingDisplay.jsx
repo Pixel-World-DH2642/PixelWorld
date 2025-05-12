@@ -97,7 +97,7 @@ export function PaintingDisplay({ painting }) {
     });
 
     return (
-      <div className="aspect-square border-4 border-black mb-1 overflow-hidden">
+      <div className="aspect-square border-4 border-black overflow-hidden">
         {adjustedMatrix.map((row, rowIndex) => (
           <div
             key={rowIndex}
