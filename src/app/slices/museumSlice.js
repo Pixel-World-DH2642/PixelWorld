@@ -1,129 +1,40 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
 
-// the dummy data for paintings
+export const fetchPaintings = createAsyncThunk(
+  'museum/fetchPaintings',
+  async (_, thunkAPI) => {
+    try {
+      const paintingsCollection = collection(db, "paintings");
+      const paintingsSnapshot = await getDocs(paintingsCollection);
+      const paintings = paintingsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      return paintings;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
 const initialState = {
-  paintings: [
-    {
-        id: "painting1",
-        title: "Beauty",
-        colorMatrix: Array(32)
-          .fill()
-          .map(() =>
-            Array(32)
-              .fill()
-              .map(
-                () =>
-                  "#" +
-                  Math.floor(Math.random() * 16777215)
-                    .toString(16)
-                    .padStart(6, "0"),
-              ),
-          ),
-        savedQuote: "Art washes away from the soul the dust of everyday life.",
-        author: "PicassoFan123",
-        date: Date.now() - 100000000,
-        authorNotes: "Inspired by the colors of a Spanish sunset.",
-        likedBy: ["user1", "user2", "user3"],
-      },
-      {
-        id: "painting2",
-        title: "Silence in Spring",
-        colorMatrix: Array(32)
-          .fill()
-          .map(() =>
-            Array(32)
-              .fill()
-              .map(
-                () =>
-                  "#" +
-                  Math.floor(Math.random() * 16777215)
-                    .toString(16)
-                    .padStart(6, "0"),
-              ),
-          ),
-        savedQuote: "Every artist was first an amateur.",
-        author: "art_lover_98",
-        date: Date.now() - 50000000,
-        authorNotes: "My first attempt using only shades of blue.",
-        likedBy: ["user5"],
-      },
-      {
-        id: "painting3",
-        title: "Wind",
-        colorMatrix: Array(32)
-          .fill()
-          .map(() =>
-            Array(32)
-              .fill()
-              .map(
-                () =>
-                  "#" +
-                  Math.floor(Math.random() * 16777215)
-                    .toString(16)
-                    .padStart(6, "0"),
-              ),
-          ),
-        savedQuote: "Creativity takes courage.",
-        author: "beginner_painter",
-        date: Date.now() - 2000000,
-        authorNotes: "Experimented with pixel symmetry.",
-        likedBy: [],
-      },
-      {
-        id: "painting4",
-        title: "Horse",
-        colorMatrix: Array(32)
-          .fill()
-          .map(() =>
-            Array(32)
-              .fill()
-              .map(
-                () =>
-                  "#" +
-                  Math.floor(Math.random() * 16777215)
-                    .toString(16)
-                    .padStart(6, "0"),
-              ),
-          ),
-        savedQuote:
-          "Two things are infinite: the universe and human stupidity; and Im not sure about the universe.",
-        author: "Painter345",
-        date: Date.now() - 100000000,
-        authorNotes: "I painted this on a vacation",
-        likedBy: ["user1", "user3"],
-      },
-      {
-        id: "painting5",
-        title: "Love in  the sky",
-        colorMatrix: Array(32)
-          .fill()
-          .map(() =>
-            Array(32)
-              .fill()
-              .map(
-                () =>
-                  "#" +
-                  Math.floor(Math.random() * 16777215)
-                    .toString(16)
-                    .padStart(6, "0"),
-              ),
-          ),
-        savedQuote: "I love to fly",
-        author: "art_enthuisast_98",
-        date: Date.now() - 50000000,
-        authorNotes: "I like to paint with this app",
-        likedBy: ["user5", "PicassoFan123"],
-      },
-  ],
+  paintings: [],
   selectedPaintingId: null,
   startIndex: 0,
-  paintingsPerPage: 3
+  paintingsPerPage: 3,
+  isLoading: false,
+  error: null
 };
 
 export const museumSlice = createSlice({
   name: 'museum',
   initialState,
   reducers: {
+    setPaintings: (state, action) => {
+      state.paintings = action.payload;
+    },
     selectPainting: (state, action) => {
       state.selectedPaintingId = action.payload;
     },
@@ -138,10 +49,30 @@ export const museumSlice = createSlice({
       }
     }
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchPaintings.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchPaintings.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.paintings = action.payload;
+      })
+      .addCase(fetchPaintings.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+  },
 });
 
+// Add new selectors
+export const selectMuseumLoading = (state) => state.museum.isLoading;
+export const selectMuseumError = (state) => state.museum.error;
+
+
 // Export actions
-export const { selectPainting, nextPaintings, prevPaintings } = museumSlice.actions;
+export const { setPaintings, selectPainting, nextPaintings, prevPaintings } = museumSlice.actions;
 
 // Selectors
 export const selectAllPaintings = (state) => state.museum.paintings;

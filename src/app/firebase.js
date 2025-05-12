@@ -1,6 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore"; // Added
+import { fetchPaintings } from "./store";
+import { setPaintings } from "./slices/museumSlice";
 import { setUser, authLoaded } from "./slices/authSlice";
 
 const firebaseConfig = {
@@ -18,6 +20,8 @@ export const db = getFirestore(app);
 export const gProvider = new GoogleAuthProvider();
 
 export function connectToPersistance(store) {
+  console.log("Connecting to Firestore...");
+
   // Set up an auth state listener
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -31,5 +35,11 @@ export function connectToPersistance(store) {
     }
 
     store.dispatch(authLoaded());
+  });
+
+  store.dispatch(fetchPaintings()).then((result) => {
+    if (result.payload) {
+      store.dispatch(setPaintings(result.payload));
+    }
   });
 }
