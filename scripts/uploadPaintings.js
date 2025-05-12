@@ -1,5 +1,27 @@
-import { db } from "/src/app/firebase.js";
-import { collection, doc, setDoc, getDocs, query } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  query,
+} from "firebase/firestore";
+import { createInterface } from "readline";
+
+// Firebase configuration - Update this with your Firebase project configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAA_zepBE6w3GCBV1Kr6_Ui43KcEPk-Mlw",
+  authDomain: "pixelworld-45efc.firebaseapp.com",
+  projectId: "pixelworld-45efc",
+  storageBucket: "pixelworld-45efc.firebasestorage.app",
+  messagingSenderId: "403838004561",
+  appId: "1:403838004561:web:2944be12f8ca24c4d23770",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // The dummy data for paintings
 const paintings = [
@@ -41,9 +63,10 @@ const paintings = [
       "#B0C4DE",
     ],
     savedQuote: "Art washes away from the soul the dust of everyday life.",
-    author: "PicassoFan123",
+    authorName: "Pablo Enthusiast",
+    userId: "user123",
     date: Date.now() - 100000000,
-    authorNotes: "Inspired by the colors of a Spanish sunset.",
+    notes: "Inspired by the colors of a Spanish sunset.",
     likedBy: ["user1", "user2", "user3"],
   },
   {
@@ -84,9 +107,10 @@ const paintings = [
       "#008B8B",
     ],
     savedQuote: "Every artist was first an amateur.",
-    author: "art_lover_98",
+    authorName: "Art Explorer",
+    userId: "user456",
     date: Date.now() - 50000000,
-    authorNotes: "My first attempt using only shades of blue.",
+    notes: "My first attempt using only shades of blue.",
     likedBy: ["user5"],
   },
   {
@@ -127,9 +151,10 @@ const paintings = [
       "#FFFF00",
     ],
     savedQuote: "Creativity takes courage.",
-    author: "beginner_painter",
+    authorName: "Novice Artist",
+    userId: "user789",
     date: Date.now() - 2000000,
-    authorNotes: "Experimented with pixel symmetry.",
+    notes: "Experimented with pixel symmetry.",
     likedBy: [],
   },
   {
@@ -171,14 +196,15 @@ const paintings = [
     ],
     savedQuote:
       "Two things are infinite: the universe and human stupidity; and Im not sure about the universe.",
-    author: "Painter345",
+    authorName: "Digital Painter",
+    userId: "user321",
     date: Date.now() - 100000000,
-    authorNotes: "I painted this on a vacation",
+    notes: "I painted this on a vacation",
     likedBy: ["user1", "user3"],
   },
   {
     id: "5",
-    title: "Love in  the sky",
+    title: "Love in the sky",
     colorMatrix: [
       "#FF5733",
       "#C70039",
@@ -214,10 +240,11 @@ const paintings = [
       "#E9967A",
     ],
     savedQuote: "I love to fly",
-    author: "art_enthuisast_98",
+    authorName: "Sky Enthusiast",
+    userId: "user555",
     date: Date.now() - 50000000,
-    authorNotes: "I like to paint with this app",
-    likedBy: ["user5", "PicassoFan123"],
+    notes: "I like to paint with this app",
+    likedBy: ["user5", "user123"],
   },
 ];
 
@@ -234,12 +261,17 @@ async function uploadPaintings() {
     // Check if paintings already exist
     const existingCount = await checkExistingPaintings();
 
-    // if (existingCount > 0) {
-    //   console.log(
-    //     `Found ${existingCount} existing paintings. Skipping upload.`,
-    //   );
-    //   return;
-    // }
+    if (existingCount > 0) {
+      console.log(`Found ${existingCount} existing paintings in the database.`);
+      const confirmation = await promptForConfirmation(
+        "Continue with upload? This may create duplicates. (y/n): ",
+      );
+
+      if (!confirmation) {
+        console.log("Upload cancelled.");
+        process.exit(0);
+      }
+    }
 
     const paintingsCollection = collection(db, "paintings");
 
@@ -263,7 +295,26 @@ async function uploadPaintings() {
     console.log("All paintings uploaded successfully!");
   } catch (error) {
     console.error("Error uploading paintings:", error);
+  } finally {
+    process.exit(0);
   }
 }
 
-export { uploadPaintings };
+// Simple function to get user confirmation
+function promptForConfirmation(question) {
+  const readline = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    readline.question(question, (answer) => {
+      readline.close();
+      resolve(answer.toLowerCase() === "y");
+    });
+  });
+}
+
+// Execute the upload function
+console.log("Starting painting data upload script...");
+uploadPaintings();
