@@ -35,7 +35,10 @@ export function WorldPage({
         <Menu />
         <h1>World Page</h1>
 
-        <ReactP5Wrapper sketch={sketch} weatherData={weather.parsedData} />
+        <ReactP5Wrapper
+          sketch={sketch}
+          weatherData={weather} //{{ cloudAmt: 5 }} /*{weather.parsedData}*/
+        />
 
         <div className="flex items-center justify-center">
           <button

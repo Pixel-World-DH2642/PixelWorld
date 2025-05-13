@@ -1,3 +1,5 @@
+import { createMicroEngine } from "./microEngine";
+
 export function createActorList(p5, MicroEngine) {
   const mainScene = MicroEngine.CreateScene();
 
@@ -69,7 +71,7 @@ export function createActorList(p5, MicroEngine) {
     return actor;
   }
 
-  function createRectActor() {
+  function createMainCharacterActor(spriteSheet, spriteData) {
     const actor = MicroEngine.Components.Actor(p5.createVector(450, 50));
     actor.addComponent(MicroEngine.Components.RectCollider, {
       geometrySettings: { size: { x: 20, y: 50 } },
@@ -102,6 +104,8 @@ export function createActorList(p5, MicroEngine) {
       distributeForceOverrides: [playerGroundOverride],
     });
     actor.addComponent(GroundMoveComponent);
+
+    /*
     actor.addComponent(MicroEngine.Components.Renderer, {
       render: function () {
         p5.stroke(0);
@@ -114,6 +118,28 @@ export function createActorList(p5, MicroEngine) {
         );
       },
     });
+    */
+
+    actor.addComponent(MicroEngine.Components.Animator, { scale: 4 });
+    const animatorRef = actor.findComponent("Animation");
+    const rightFrames = animatorRef.extractFramesFromSpriteSheet(
+      spriteSheet,
+      spriteData,
+      3,
+      6,
+    );
+    const leftFrames = animatorRef.extractFramesFromSpriteSheet(
+      spriteSheet,
+      spriteData,
+      9,
+      12,
+    );
+    animatorRef.addAnimationState(rightFrames, "WalkRight");
+    animatorRef.addAnimationState(leftFrames, "WalkLeft");
+    animatorRef.addAnimationState([rightFrames[0]], "IdleRight");
+    animatorRef.addAnimationState([leftFrames[0]], "IdleLeft");
+    animatorRef.setAnimationState("WalkRight");
+    //Add Idle...
 
     function GroundMoveComponent(settings, actor, pos) {
       let groundMode = false;
@@ -491,37 +517,102 @@ export function createActorList(p5, MicroEngine) {
   });
    */
 
-  function createSkyLayer() {
-    const actor = MicroEngine.Components.Actor(createVector());
+  function createSkyLayerActor() {
+    const actor = MicroEngine.Components.Actor(p5.createVector());
+    actor.addComponent(SkyRendererComponent);
 
-    const skyCanvas = p5.createGraphics(p5.width, p5.height);
-    const scribble = MicroEngine.CreateScribbleInstance(skyCanvas); //new Scribble(skyCanvas);
-    scribble.bowing = 5;
+    function SkyRendererComponent(settings, actor, pos) {
+      const skyCanvas = p5.createGraphics(p5.width, p5.height);
+      const scribble = MicroEngine.CreateScribbleInstance(skyCanvas); //new Scribble(skyCanvas);
+      scribble.bowing = 5;
+      let baseColor = { r: 30, g: 40, b: 220 };
+      let colorRandomization = {
+        r: { min: -20, max: 20 },
+        g: { min: -10, max: 10 },
+        b: { min: -30, max: 10 },
+      };
 
-    function renderSky() {
-      for (let i = 0; i < 8; i++) {
-        skyCanvas.strokeWeight(20 + p5.random(-7, 30));
-        skyCanvas.stroke(
-          30 + p5.random(-20, 20),
-          40 + p5.random(-10, 10),
-          220 + p5.random(-30, 10),
-        );
-        scribble.scribbleLine(0, i * 20, p5.width, i * 20);
+      generateSky();
+
+      function generateSky() {
+        skyCanvas.background(baseColor.r, baseColor.g, baseColor.b);
+        for (let i = 0; i < 8; i++) {
+          skyCanvas.strokeWeight(20 + p5.random(-7, 30));
+          skyCanvas.stroke(
+            baseColor.r +
+              p5.random(colorRandomization.r.min, colorRandomization.r.max),
+            baseColor.g +
+              p5.random(colorRandomization.g.min, colorRandomization.g.max),
+            baseColor.b +
+              p5.random(colorRandomization.b.min, colorRandomization.b.max),
+          );
+          scribble.scribbleLine(0, i * 20, p5.width, i * 20);
+        }
       }
+
+      function displaySky() {
+        p5.image(
+          skyCanvas,
+          -MicroEngine.CameraPanning.x,
+          MicroEngine.CameraPanning.y,
+        );
+      }
+
+      return {
+        type: "SkyRenderer",
+        render: displaySky,
+        generateSky,
+        setColors: function (colorSettings) {
+          baseColor = colorSettings.baseColor ?? baseColor;
+          colorRandomization =
+            colorSettings.colorRandomization ?? colorRandomization;
+          generateSky();
+        },
+      };
     }
 
-    function displaySky() {
-      p5.image(skyCanvas, actor.pos.x, actor.pos.y);
+    mainScene.addActor(actor);
+    return actor;
+  }
+
+  function setEnvironmentWeather(weatherData, skyActor) {
+    if (!weatherData || !skyActor) return;
+
+    const skyRenderer = skyActor.findComponent("SkyRenderer");
+    const cloudLevel6_BaseColor = { r: 190, g: 190, b: 190 };
+    //console.log(weatherData.cloudAmt);
+    switch (weatherData.cloudAmt) {
+      case 0:
+        skyRenderer.setColors({ baseColor: cloudLevel6_BaseColor });
+        break;
+      case 1:
+        skyRenderer.setColors({ baseColor: cloudLevel6_BaseColor });
+        break;
+      case 2:
+        break;
+      case 3:
+        break;
+      case 4:
+        break;
+      case 5:
+        skyRenderer.setColors({ baseColor: cloudLevel6_BaseColor });
+        break;
+      case 6:
+        skyRenderer.setColors({ baseColor: cloudLevel6_BaseColor });
+        break;
     }
   }
 
   //--------------------------------ACTORS-------------------------------------
   return {
+    //Scene
     mainScene,
+    //Actors
     createCanvasActor,
-    createRectActor,
-    createGroundActor,
-
+    createMainCharacterActor,
     createGroundSliceActor,
+    createSkyLayerActor,
+    //Helpers
+    setEnvironmentWeather,
   };
 }

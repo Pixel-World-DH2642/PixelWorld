@@ -452,10 +452,80 @@ export function createMicroEngine(p5) {
     };
   }
 
-  function createAnimatorComponent() {
+  function createAnimatorComponent(settings, actor, pos) {
+    const animationStates = new Map();
+    let currentAnimation = [];
+    let frameIndex = 0;
+    let scale = settings?.scale || 1;
+    let frameLength = settings?.frameLength || 0.1;
+    let animationClock = 0;
+
+    function addAnimationState(frames, name) {
+      animationStates.set(name, frames);
+    }
+
+    function setAnimationState(name) {
+      if (currentAnimation == animationStates.get(name)) return; //Don't reset if same state
+      frameIndex = 0;
+      currentAnimation = animationStates.get(name);
+    }
+
+    function extractFramesFromSpriteSheet(
+      spriteSheet,
+      spriteData,
+      startIndex,
+      endIndex,
+    ) {
+      const frames = [];
+      for (let i = startIndex; i < endIndex; i++) {
+        const imgPos = spriteData.frames[i];
+        const img = spriteSheet.get(
+          imgPos.x,
+          imgPos.y,
+          spriteData.frame_size.w,
+          spriteData.frame_size.h,
+        );
+        frames.push(img);
+      }
+      return frames;
+    }
+
+    function render() {
+      if (animationStates.size < 1 || currentAnimation.length < 1) return;
+
+      const currentFrame = currentAnimation[frameIndex];
+      p5.push();
+      p5.translate(
+        pos.x - (currentFrame.width * scale) / 2,
+        pos.y - (currentFrame.height * scale) / 2,
+      );
+      p5.scale(scale);
+      //p5.noSmooth();
+      p5.image(currentFrame, 0, 0);
+      p5.pop();
+      animationClock += p5.deltaTime / 1000;
+      if (animationClock >= frameLength) {
+        frameIndex =
+          frameIndex >= currentAnimation.length - 1 ? 0 : frameIndex + 1;
+        animationClock = animationClock - frameLength;
+      }
+    }
+
     return {
       get type() {
         return "Animation";
+      },
+      get render() {
+        return render;
+      },
+      get addAnimationState() {
+        return addAnimationState;
+      },
+      get setAnimationState() {
+        return setAnimationState;
+      },
+      get extractFramesFromSpriteSheet() {
+        return extractFramesFromSpriteSheet;
       },
     };
   }
