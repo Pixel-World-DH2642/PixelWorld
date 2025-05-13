@@ -27,7 +27,7 @@ export function DetailPage({
         </div>
       </Link>
       <div className="flex flex-col md:flex-row gap-8 mt-4">
-        <div className="aspect-square w-full md:w-1/2 shrink-0">
+        <div className="aspect-square w-full md:w-1/2 min-w-[250px] shrink-0">
           <PaintingDisplay painting={painting} />
         </div>
         <div className="overflow-y-auto w-full md:w-1/2 md:aspect-square flex flex-col pb-8">

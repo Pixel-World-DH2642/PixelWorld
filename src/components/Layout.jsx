@@ -7,7 +7,7 @@ export function Layout({ children }) {
 
   return (
     <div
-      className="min-h-screen w-full bg-cover bg-center bg-no-repeat p-8 flex justify-center items-center"
+      className="min-h-screen w-full h-full bg-cover bg-center bg-no-repeat p-8 flex justify-center items-center min-w-min"
       style={{
         backgroundImage: 'url("/assets/background.png")',
         imageRendering: "pixelated",

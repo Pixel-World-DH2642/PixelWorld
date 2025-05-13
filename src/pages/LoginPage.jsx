@@ -115,7 +115,7 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
               onClick={() => {
                 onLoginWithGoogle(navigate);
               }}
-              className="w-full flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100 cursor-pointer"
+              className="w-full flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100 cursor-pointer px-2 whitespace-nowrap"
             >
               <i className="bi bi-google pr-2"></i>
               Continue with Google

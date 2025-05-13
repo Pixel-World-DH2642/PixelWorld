@@ -62,8 +62,7 @@ export function ProfilePage({
     return <Navigate to="/login" replace />;
   } else {
     return (
-      <div className="font-pixel max-h-[calc(100vh-8rem)]">
-        {" "}
+      <div className="font-pixel mx-auto w-full max-h-[calc(100vh-8rem)]">
         {/* Back Arrow */}
         <Link
           to="/world"
@@ -79,7 +78,7 @@ export function ProfilePage({
           </div>
         </Link>
         {/* Profile Info */}
-        <div className="flex items-center pb-4">
+        <div className="flex items-center pb-4 w-full">
           {/* Profile Picture */}
           <img
             src={user.photoURL || "/assets/default_avatar.png"} // Provide a path to a default avatar
@@ -128,11 +127,13 @@ export function ProfilePage({
           </div>
         </div>
         {/* Gallery */}
-        <h1 className="text-xl sm:text-3xl font-bold mb-2">Your paintings</h1>
+        <h1 className="text-xl sm:text-3xl font-bold mb-2 w-full">
+          Your paintings
+        </h1>
         <div className="w-full border-b-2 border-black mb-4 sm:mb-8"></div>
         {/* Handle loading state */}
         {paintingsStatus === "loading" && (
-          <div className="w-full min-h-[200px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
+          <div className="w-full min-h-[250px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
             {/* You can add an icon here if you have one, e.g., <img src="/assets/no_paintings_icon.png" alt="No paintings" className="w-16 h-16 mb-4 opacity-50" /> */}
             <p className="text-lg text-gray-500">Loading your paintings...</p>
           </div>
@@ -150,7 +151,7 @@ export function ProfilePage({
         {paintingsStatus === "succeeded" && (
           <div className="w-full">
             {paintings && paintings.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8 min-w-[200px]">
                 {paintings.map((painting) => (
                   <div key={painting.id} className="text-left">
                     <PaintingDisplay painting={painting} />
