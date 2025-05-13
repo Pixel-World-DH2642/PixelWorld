@@ -3,6 +3,8 @@ import { sketch } from "../components/Sketch";
 //import { Link } from "react-router-dom";
 import { Menu } from "../components/Menu";
 import { PixelEditor } from "../components/PixelEditor";
+import { WeatherDashboard } from "../components/weatherDashboard";
+import { useEffect } from "react";
 
 export function WorldPage({
   quote,
@@ -28,6 +30,11 @@ export function WorldPage({
     onGetWeather();
     console.log("weather button");
   }
+
+  useEffect(() => {
+    onGetQuote();
+    onGetWeather();
+  }, []);
 
   return (
     <div>
@@ -60,8 +67,9 @@ export function WorldPage({
           <p>Today's mean precipitation{weather.meanPrecipitation}</p>
         </div>
       </div>
-      <div>
+      <div className="flex">
         <PixelEditor />
+        <WeatherDashboard />
       </div>
     </div>
   );
