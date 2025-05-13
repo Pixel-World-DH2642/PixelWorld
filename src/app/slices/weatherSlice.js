@@ -3,12 +3,19 @@ import { fetchWeatherData } from "../../api/smhiWeatherAPI";
 
 const initialState = {
   weatherData: null,
+  weatherCode: null,
+  weatherTemperature: null,
+  windSpeed: null,
+  airPressure: null,
+  meanPrecipitation: null,
   currentWeather: null,
   timestamp: null,
   status: "idle",
   error: null,
 };
 
+// make it so that it works with geolocation!!
+//if the location is different than Sweden -> display default weather
 export const getWeatherData = createAsyncThunk(
   "weather/getWeatherData",
   async () => {
@@ -29,10 +36,16 @@ const weatherSlice = createSlice({
       })
       .addCase(getWeatherData.fulfilled, (state, action) => {
         state.status = "succeeded";
-        const code = String(action.payload.weatherData);
+        const code = String(action.payload.weatherCode);
         state.weatherCode = code;
         state.weatherData = action.payload;
         state.timestamp = action.payload.timestamp;
+
+        //edit this line to pass more const as props to worldpage
+        state.weatherTemperature = action.payload.weatherTemperature;
+        state.windSpeed = action.payload.windSpeed;
+        state.airPressure = action.payload.airPressure;
+        state.meanPrecipitation = action.payload.meanPrecipitation;
 
         let currentWeather = null;
         switch (code) {

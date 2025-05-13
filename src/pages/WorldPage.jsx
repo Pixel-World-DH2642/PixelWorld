@@ -54,6 +54,10 @@ export function WorldPage({
             Get Weather
           </button>
           <p>Current weather: {weather.currentWeather || "No data yet"}</p>
+          <p>Today's temperature: {weather.weatherTemperature}</p>
+          <p>Today's wind speed{weather.windSpeed}</p>
+          <p> Today's airpressure {weather.airPressure}</p>
+          <p>Today's mean precipitation{weather.meanPrecipitation}</p>
         </div>
       </div>
       <div>
