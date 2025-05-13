@@ -98,25 +98,7 @@ export const museumSlice = createSlice({
   },
 });
 
-// Add new selectors
-export const selectMuseumLoading = (state) => state.museum.isLoading;
-export const selectMuseumError = (state) => state.museum.error;
-
 // Export actions
-export const { setPaintings, selectPainting, nextPaintings, prevPaintings } =
-  museumSlice.actions;
-
-// Selectors
-export const selectAllPaintings = (state) => state.museum.paintings;
-//show the paintings which fit on the screen (max 3 - paintingsPerPage)
-export const selectCurrentPaintings = (state) => {
-  const { paintings, startIndex, paintingsPerPage } = state.museum;
-  return paintings.slice(startIndex, startIndex + paintingsPerPage);
-};
-export const selectIsFirstPage = (state) => state.museum.startIndex === 0;
-export const selectIsLastPage = (state) => {
-  const { startIndex, paintingsPerPage, paintings } = state.museum;
-  return startIndex + paintingsPerPage >= paintings.length;
-};
+export const { setPaintings, selectPainting, nextPaintings, prevPaintings } = museumSlice.actions;
 
 export default museumSlice.reducer;

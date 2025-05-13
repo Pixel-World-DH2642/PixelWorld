@@ -1,14 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  selectCurrentPaintings,
-  selectIsFirstPage,
-  selectIsLastPage,
-  nextPaintings,
-  prevPaintings,
-  selectPainting,
-} from "../app/slices/museumSlice";
 
 // Separate PaintingFrame component
 const PaintingFrame = ({ colorMatrix = [] }) => {
@@ -48,22 +39,7 @@ const PaintingFrame = ({ colorMatrix = [] }) => {
   );
 };
 
-export function MuseumPage({ onSelectPainting }) {
-  const dispatch = useDispatch();
-  const displayedPaintings = useSelector(selectCurrentPaintings);
-  const isFirstPage = useSelector(selectIsFirstPage);
-  const isLastPage = useSelector(selectIsLastPage);
-
-  // Handle right arrow click to scroll to next set of paintings
-  const handleNextClickACB = () => {
-    dispatch(nextPaintings());
-  };
-
-  // Handle left arrow click to scroll back to the previous set of paintings
-  const handlePrevClickACB = () => {
-    dispatch(prevPaintings());
-  };
-
+export function MuseumPage({ currentPaintings, isFirstPage, isLastPage, onPrevClick, onNextClick, onSelectPainting }) {
   // Handle painting selection
   const handlePaintingSelectACB = (paintingId) => {
     onSelectPainting(paintingId);
@@ -89,7 +65,7 @@ export function MuseumPage({ onSelectPainting }) {
         {/* Left Arrow */}
         <div className="mr-6 flex-shrink-0 self-center">
           <button
-            onClick={handlePrevClickACB}
+            onClick={onPrevClick}
             className={`${!isFirstPage ? "" : "opacity-50 cursor-not-allowed"}`}
             disabled={isFirstPage}
           >
@@ -103,13 +79,13 @@ export function MuseumPage({ onSelectPainting }) {
 
         {/* Paintings - display with proper alignment */}
         <div
-          className={`flex flex-grow ${displayedPaintings.length < 3 ? "justify-start" : "justify-between"} gap-8`}
+          className={`flex flex-grow ${currentPaintings.length < 3 ? "justify-start" : "justify-between"} gap-8`}
         >
-          {displayedPaintings.map((painting) => (
+          {currentPaintings.map((painting) => (
             <Link
               to="/details"
               key={painting.id}
-              className={`flex flex-col ${displayedPaintings.length < 3 ? "w-[30%]" : "w-[31%]"} p-6 shadow-2xl `}
+              className={`flex flex-col ${currentPaintings.length < 3 ? "w-[30%]" : "w-[31%]"} p-6 shadow-2xl `}
               onClick={() => handlePaintingSelectACB(painting.id)}
             >
               <PaintingFrame colorMatrix={painting.colorMatrix} />
@@ -128,7 +104,7 @@ export function MuseumPage({ onSelectPainting }) {
         {/* Right Arrow */}
         <div className="ml-4 flex-shrink-0 self-center">
           <button
-            onClick={handleNextClickACB}
+            onClick={onNextClick}
             className={`${!isLastPage ? "" : "opacity-50 cursor-not-allowed"}`}
             disabled={isLastPage}
           >
