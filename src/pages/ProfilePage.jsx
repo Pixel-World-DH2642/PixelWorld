@@ -62,7 +62,8 @@ export function ProfilePage({
     return <Navigate to="/login" replace />;
   } else {
     return (
-      <div className="font-pixel">
+      <div className="font-pixel max-h-[calc(100vh-8rem)]">
+        {" "}
         {/* Back Arrow */}
         <Link
           to="/world"
@@ -126,11 +127,9 @@ export function ProfilePage({
             )}
           </div>
         </div>
-
         {/* Gallery */}
         <h1 className="text-xl sm:text-3xl font-bold mb-2">Your paintings</h1>
         <div className="w-full border-b-2 border-black mb-4 sm:mb-8"></div>
-
         {/* Handle loading state */}
         {paintingsStatus === "loading" && (
           <div className="w-full min-h-[200px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
@@ -138,7 +137,6 @@ export function ProfilePage({
             <p className="text-lg text-gray-500">Loading your paintings...</p>
           </div>
         )}
-
         {/* Handle error state */}
         {paintingsStatus === "failed" && (
           <div className="w-full min-h-[200px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
@@ -148,7 +146,6 @@ export function ProfilePage({
             </p>
           </div>
         )}
-
         {/* Show paintings if available and loaded */}
         {paintingsStatus === "succeeded" && (
           <div className="w-full">

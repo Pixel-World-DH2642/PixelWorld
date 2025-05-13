@@ -16,7 +16,7 @@ export function DetailPage({
     );
   }
   return (
-    <section className="font-pixel mx-auto w-full">
+    <section className="font-pixel mx-auto w-full max-h-[calc(100vh-8rem)]">
       <Link
         to="/museum"
         className="flex transition transform duration-200 pb-4 items-center"
@@ -30,8 +30,8 @@ export function DetailPage({
         <div className="aspect-square w-full md:w-1/2 shrink-0">
           <PaintingDisplay painting={painting} />
         </div>
-        <div className="w-full md:w-1/2 aspect-square flex flex-col">
-          <div className="overflow-y-auto w-full h-full">
+        <div className="overflow-y-auto w-full md:w-1/2 md:aspect-square flex flex-col pb-8">
+          <div className="w-full h-full">
             <h1 className="text-xl sm:text-3xl pb-1">{painting.title}</h1>
             <div className="pb-2">
               <span>"{painting.savedQuote}"</span>
@@ -49,7 +49,7 @@ export function DetailPage({
               >
                 <img src="/assets/heart.png" className="w-10 h-10"></img>
               </button>
-              <span className=" flex items-center text-0.5xl">10</span>
+              <span className="flex items-center text-0.5xl">10</span>
             </div>
             <div>
               <span className="font-bold">Comments</span>
@@ -72,9 +72,7 @@ export function DetailPage({
                 </span>
               </div>
               <div>
-                <span className="pb-3">
-                  Painter 123: This is super awesome!
-                </span>
+                <span className="">Painter 123: This is super awesome!</span>
               </div>
             </div>
           </div>
