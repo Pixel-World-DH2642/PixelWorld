@@ -26,13 +26,7 @@ export function WorldPage({
     onGetQuote();
   }
 
-  function getWeather() {
-    onGetWeather();
-    console.log("weather button");
-  }
-
   useEffect(() => {
-    onGetQuote();
     onGetWeather();
   }, []);
 
@@ -52,19 +46,6 @@ export function WorldPage({
             Get a new quote
           </button>
           <p>Quote of the day: {quote.content}</p>
-        </div>
-        <div className="flex items-center justify-center">
-          <button
-            className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-            onClick={getWeather}
-          >
-            Get Weather
-          </button>
-          <p>Current weather: {weather.currentWeather || "No data yet"}</p>
-          <p>Today's temperature: {weather.weatherTemperature}</p>
-          <p>Today's wind speed{weather.windSpeed}</p>
-          <p> Today's airpressure {weather.airPressure}</p>
-          <p>Today's mean precipitation{weather.meanPrecipitation}</p>
         </div>
       </div>
       <div className="flex">
