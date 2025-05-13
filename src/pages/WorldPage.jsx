@@ -3,6 +3,8 @@ import { sketch } from "../components/Sketch";
 //import { Link } from "react-router-dom";
 import { Menu } from "../components/Menu";
 import { PixelEditor } from "../components/PixelEditor";
+import { WeatherDashboard } from "../components/weatherDashboard";
+import { useEffect } from "react";
 
 export function WorldPage({
   quote,
@@ -24,10 +26,9 @@ export function WorldPage({
     onGetQuote();
   }
 
-  function getWeather() {
+  useEffect(() => {
     onGetWeather();
-    console.log("weather button");
-  }
+  }, []);
 
   return (
     <div>
@@ -46,18 +47,10 @@ export function WorldPage({
           </button>
           <p>Quote of the day: {quote.content}</p>
         </div>
-        <div className="flex items-center justify-center">
-          <button
-            className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-            onClick={getWeather}
-          >
-            Get Weather
-          </button>
-          <p>Current weather: {weather.currentWeather || "No data yet"}</p>
-        </div>
       </div>
-      <div>
+      <div className="flex">
         <PixelEditor />
+        <WeatherDashboard />
       </div>
     </div>
   );

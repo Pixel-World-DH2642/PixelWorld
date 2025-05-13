@@ -5,10 +5,27 @@ export async function fetchWeatherData(longitude, latitude) {
   if (!response.ok)
     throw new Error("SMHI API call failed with status: " + response.status);
   const data = await response.json();
-  console.log(data);
-  const weatherCode = data.timeSeries[0].parameters[18].values[0];
+  //console.log(data);
+  const weatherCode = data.timeSeries[2].parameters[18].values[0];
+  const weatherTemperature =
+    data.timeSeries[2].parameters[10].values[0]; /*Celsius*/
+  const windSpeed = data.timeSeries[2].parameters[14].values[0]; /*m/s*/
+  const airPressure = data.timeSeries[2].parameters[11].values[0]; /*hPa*/
+  const meanPrecipitation =
+    data.timeSeries[2].parameters[3].values[0]; /*kg/m2/h*/
+
+  console.log("weather code today is:", weatherCode);
+  console.log("weatherTemperature today is:", weatherTemperature);
+  console.log("wind Speed  today is:", windSpeed);
+  console.log("air pressure today is:", airPressure);
+  console.log("mean precipitation today is:", meanPrecipitation);
   return {
-    weatherData: weatherCode,
+    //weatherData
+    weatherCode,
+    weatherTemperature,
+    windSpeed,
+    airPressure,
+    meanPrecipitation,
     timestamp: Date.now(),
   };
 }
