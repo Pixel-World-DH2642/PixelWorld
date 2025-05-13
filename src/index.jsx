@@ -10,6 +10,7 @@ import { Detail } from "./containers/Detail";
 import { Provider } from "react-redux";
 import configureReduxStore from "./app/store";
 import { connectToPersistance } from "./app/firebase";
+import { Layout } from "./components/Layout";
 
 const store = configureReduxStore();
 connectToPersistance(store);
@@ -18,27 +19,51 @@ export function makeRouter() {
   return createHashRouter([
     {
       path: "/welcome",
-      element: <Welcome />,
+      element: (
+        <Layout>
+          <Welcome />
+        </Layout>
+      ),
     },
     {
       path: "/login",
-      element: <Login />,
+      element: (
+        <Layout>
+          <Login />
+        </Layout>
+      ),
     },
     {
       path: "/world",
-      element: <World />,
+      element: (
+        <Layout>
+          <World />
+        </Layout>
+      ),
     },
     {
       path: "/profile",
-      element: <Profile />,
+      element: (
+        <Layout>
+          <Profile />
+        </Layout>
+      ),
     },
     {
       path: "/museum",
-      element: <Museum />,
+      element: (
+        <Layout>
+          <Museum />
+        </Layout>
+      ),
     },
     {
       path: "/details",
-      element: <Detail />,
+      element: (
+        <Layout>
+          <Detail />
+        </Layout>
+      ),
     },
     {
       path: "/",

@@ -51,7 +51,7 @@ export function ProfilePage({
 
   if (authStatus === "loading") {
     return (
-      <div className="flex justify-center items-center h-screen font-pixel">
+      <div className="flex justify-center items-center font-pixel">
         <div className="text-2xl">Loading profile...</div>
       </div>
     );
@@ -62,23 +62,23 @@ export function ProfilePage({
     return <Navigate to="/login" replace />;
   } else {
     return (
-      <div className="font-pixel p-6 mx-auto w-[512px] md:w-[768px] lg:w-[1024px]">
+      <div className="font-pixel">
         {/* Back Arrow */}
         <Link
           to="/world"
-          className="flex transition transform duration-200 pb-4 items-center"
+          className="flex transition transform duration-200 pb-4 sm:pb-8 items-center"
         >
           <img
             src="/assets/back_arrow.png"
             className="h-8"
             alt="Back arrow"
           ></img>
-          <div className="pl-4 hover:underline flex text-3xl">
+          <div className="pl-4 hover:underline flex text-xl sm:text-3xl">
             Back to world
           </div>
         </Link>
         {/* Profile Info */}
-        <div className="flex items-center mb-6 mt-8">
+        <div className="flex items-center pb-4">
           {/* Profile Picture */}
           <img
             src={user.photoURL || "/assets/default_avatar.png"} // Provide a path to a default avatar
@@ -88,7 +88,7 @@ export function ProfilePage({
           <div className="flex items-baseline space-x-2">
             {!isEditing ? (
               <>
-                <h1 className="text-3xl font-bold">
+                <h1 className="text-xl sm:text-3xl font-bold">
                   {user.displayName || user.email || "User"}
                 </h1>
                 <button
@@ -128,26 +128,32 @@ export function ProfilePage({
         </div>
 
         {/* Gallery */}
-        <h1 className="text-4xl font-bold mb-2">Your paintings</h1>
-        <div className="border-b-2 border-black mb-8"></div>
+        <h1 className="text-xl sm:text-3xl font-bold mb-2">Your paintings</h1>
+        <div className="w-full border-b-2 border-black mb-4 sm:mb-8"></div>
 
         {/* Handle loading state */}
         {paintingsStatus === "loading" && (
-          <div className="text-center py-4">Loading your paintings...</div>
+          <div className="w-full min-h-[200px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
+            {/* You can add an icon here if you have one, e.g., <img src="/assets/no_paintings_icon.png" alt="No paintings" className="w-16 h-16 mb-4 opacity-50" /> */}
+            <p className="text-lg text-gray-500">Loading your paintings...</p>
+          </div>
         )}
 
         {/* Handle error state */}
         {paintingsStatus === "failed" && (
-          <div className="text-center py-4 text-red-500">
-            Failed to load your paintings: {paintingsError}
+          <div className="w-full min-h-[200px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
+            {/* You can add an icon here if you have one, e.g., <img src="/assets/no_paintings_icon.png" alt="No paintings" className="w-16 h-16 mb-4 opacity-50" /> */}
+            <p className="text-lg text-gray-500">
+              Failed to load your paintings: {paintingsError}
+            </p>
           </div>
         )}
 
         {/* Show paintings if available and loaded */}
         {paintingsStatus === "succeeded" && (
-          <>
+          <div className="w-full">
             {paintings && paintings.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
                 {paintings.map((painting) => (
                   <div key={painting.id} className="text-left">
                     <PaintingDisplay painting={painting} />
@@ -169,9 +175,14 @@ export function ProfilePage({
                 ))}
               </div>
             ) : (
-              <p>You haven't created any paintings yet.</p>
+              <div className="w-full min-h-[200px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
+                {/* You can add an icon here if you have one, e.g., <img src="/assets/no_paintings_icon.png" alt="No paintings" className="w-16 h-16 mb-4 opacity-50" /> */}
+                <p className="text-lg text-gray-500">
+                  You haven't created any paintings yet.
+                </p>
+              </div>
             )}
-          </>
+          </div>
         )}
       </div>
     );
