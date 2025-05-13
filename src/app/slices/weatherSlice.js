@@ -9,6 +9,7 @@ const initialState = {
   airPressure: null,
   meanPrecipitation: null,
   currentWeather: null,
+  currentTemperature: null,
   timestamp: null,
   status: "idle",
   error: null,
