@@ -9,7 +9,7 @@ export function WelcomePage({ user, onLogout }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLoader(false);
-    }, 8700);
+    }, 8600);
     return () => clearTimeout(timer);
   }, []);
 
@@ -19,7 +19,7 @@ export function WelcomePage({ user, onLogout }) {
         <img
           src="/assets/pixelWorld-intro-gif.gif"
           alt="Loading..."
-          className="w-64 h-64"
+          className="w-100 h-100"
         />
       </div>
     );
