@@ -142,7 +142,7 @@ export function MuseumPage({
   };
 
   return (
-    <div className="font-pixel max-h-[calc(100vh-8rem)]">
+    <div className="font-pixel max-h-[calc(100vh-8rem)] px-8 pt-8">
       {/* Back Button */}
       <Link
         to="/world"
@@ -154,7 +154,7 @@ export function MuseumPage({
         </div>
       </Link>
 
-      <div className="font-pixel w-full pb-8 lg:pb-4 pt-4">
+      <div className="font-pixel w-full pb-8 lg:pb-12 pt-4">
         <h1 className="text-3xl font-bold mb-4">MUSEUM</h1>
 
         {/* Loading and error states */}

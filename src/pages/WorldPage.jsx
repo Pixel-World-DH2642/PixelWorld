@@ -31,7 +31,7 @@ export function WorldPage({
   }, []);
 
   return (
-    <div className="mx-auto w-full max-h-[calc(100vh-8rem)]">
+    <div className="mx-auto w-full max-h-[calc(100vh-8rem)] px-8 pt-8">
       <div className="flex flex-col items-center justify-center text-center">
         <Menu />
         <h1>World Page</h1>

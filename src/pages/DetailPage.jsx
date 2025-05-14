@@ -13,7 +13,7 @@ export function DetailPage({
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center font-pixel">
+      <div className="flex justify-center items-center font-pixel p-8">
         <div className="text-2xl">Loading painting details...</div>
       </div>
     );
@@ -24,7 +24,7 @@ export function DetailPage({
   }
 
   return (
-    <section className="font-pixel mx-auto w-full max-h-[calc(100vh-8rem)]">
+    <section className="font-pixel mx-auto w-full max-h-[calc(100vh-8rem)] px-8 pt-8">
       <button
         onClick={() => navigate(-1)}
         className="flex transition transform duration-200 items-center cursor-pointer"
@@ -35,7 +35,7 @@ export function DetailPage({
         </div>
       </button>
       <div className="flex flex-col md:flex-row gap-8 mt-4">
-        <div className="aspect-square w-full md:w-1/2 min-w-[250px] shrink-0">
+        <div className="aspect-square w-full md:w-1/2 min-w-[250px] shrink-0 pb-8">
           <PaintingDisplay painting={painting} />
         </div>
         <div className="overflow-y-auto w-full md:w-1/2 md:aspect-square flex flex-col pb-8">

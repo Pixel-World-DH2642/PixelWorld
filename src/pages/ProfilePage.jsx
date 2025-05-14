@@ -56,7 +56,7 @@ export function ProfilePage({
 
   if (authStatus === "loading") {
     return (
-      <div className="flex justify-center items-center font-pixel">
+      <div className="flex justify-center items-center font-pixel p-8">
         <div className="text-2xl">Loading profile...</div>
       </div>
     );
@@ -67,7 +67,7 @@ export function ProfilePage({
     return <Navigate to="/login" replace />;
   } else {
     return (
-      <div className="font-pixel mx-auto w-full max-h-[calc(100vh-8rem)]">
+      <div className="font-pixel mx-auto w-full max-h-[calc(100vh-8rem)] p-8">
         {/* Back Arrow */}
         <Link
           to="/world"
