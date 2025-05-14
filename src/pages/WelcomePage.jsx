@@ -4,7 +4,7 @@ export function WelcomePage({ user, onLogout }) {
   const navigate = useNavigate();
 
   return (
-    <div className="flex">
+    <div className="flex mx-auto w-full max-h-[calc(100vh-8rem)]">
       <h1>Welcome Page</h1>
       <div className="flex items-center justify-start">
         <Link
