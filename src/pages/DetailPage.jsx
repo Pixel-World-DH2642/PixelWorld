@@ -1,5 +1,6 @@
 import { Link, Navigate } from "react-router-dom";
 import { PaintingDisplay } from "../components/PaintingDisplay";
+import { useNavigate } from "react-router-dom";
 
 export function DetailPage({
   painting,
@@ -8,6 +9,8 @@ export function DetailPage({
   isLoading,
   error,
 }) {
+  const navigate = useNavigate();
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center font-pixel">
@@ -22,15 +25,15 @@ export function DetailPage({
 
   return (
     <section className="font-pixel mx-auto w-full max-h-[calc(100vh-8rem)]">
-      <Link
-        to="/museum"
-        className="flex transition transform duration-200 pb-4 items-center"
+      <button
+        onClick={() => navigate(-1)}
+        className="flex transition transform duration-200 items-center cursor-pointer"
       >
         <img src="/assets/back_arrow.png" className="h-8"></img>
         <div className="pl-4 hover:underline flex text-xl sm:text-3xl">
-          Back to museum
+          Back
         </div>
-      </Link>
+      </button>
       <div className="flex flex-col md:flex-row gap-8 mt-4">
         <div className="aspect-square w-full md:w-1/2 min-w-[250px] shrink-0">
           <PaintingDisplay painting={painting} />

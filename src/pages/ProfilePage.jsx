@@ -11,6 +11,7 @@ export function ProfilePage({
   paintingsError,
   onChangeDisplayName,
   fetchUserPaintings,
+  onSelectPainting,
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(user?.displayName || "");
@@ -49,6 +50,10 @@ export function ProfilePage({
     }
   };
 
+  const handlePaintingSelectACB = (paintingId) => {
+    onSelectPainting(paintingId);
+  };
+
   if (authStatus === "loading") {
     return (
       <div className="flex justify-center items-center font-pixel">
@@ -66,7 +71,7 @@ export function ProfilePage({
         {/* Back Arrow */}
         <Link
           to="/world"
-          className="flex transition transform duration-200 pb-4 sm:pb-8 items-center"
+          className="flex transition transform duration-200 items-center"
         >
           <img
             src="/assets/back_arrow.png"
@@ -78,7 +83,7 @@ export function ProfilePage({
           </div>
         </Link>
         {/* Profile Info */}
-        <div className="flex items-center pb-4 w-full">
+        <div className="flex items-center pb-4 pt-4 w-full">
           {/* Profile Picture */}
           <img
             src={user.photoURL || "/assets/default_avatar.png"} // Provide a path to a default avatar
@@ -153,7 +158,12 @@ export function ProfilePage({
             {paintings && paintings.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8 min-w-[200px]">
                 {paintings.map((painting) => (
-                  <div key={painting.id} className="text-left">
+                  <Link
+                    to="/details"
+                    key={painting.id}
+                    className="text-left mb-4"
+                    onClick={() => handlePaintingSelectACB(painting.id)}
+                  >
                     <PaintingDisplay painting={painting} />
                     <div className="text-sm truncate" title={painting.title}>
                       {painting.title || "Untitled"}
@@ -169,7 +179,7 @@ export function ProfilePage({
                         "{painting.savedQuote}"
                       </div>
                     )}
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (

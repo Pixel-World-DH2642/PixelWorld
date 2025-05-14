@@ -20,7 +20,7 @@ export function MuseumPage({
       {/* Back Button */}
       <Link
         to="/world"
-        className="flex transition transform duration-200 pb-4 items-center"
+        className="flex transition transform duration-200 items-center"
       >
         <img src="/assets/back_arrow.png" className="h-8" alt="Back" />
         <div className="pl-4 hover:underline flex text-xl sm:text-3xl">
