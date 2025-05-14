@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { PaintingDisplay } from "../components/PaintingDisplay";
+import { Suspense } from "../components/Suspense";
 
 // Painting Card Component - extracted and reusable
 const PaintingCard = ({ painting, onSelect }) => {
@@ -142,7 +143,7 @@ export function MuseumPage({
   };
 
   return (
-    <div className="font-pixel max-h-[calc(100vh-8rem)] px-8 pt-8">
+    <div className="font-pixel max-h-[calc(100vh-4rem)] px-8 pt-8">
       {/* Back Button */}
       <Link
         to="/world"
@@ -158,7 +159,7 @@ export function MuseumPage({
         <h1 className="text-3xl font-bold mb-4">MUSEUM</h1>
 
         {/* Loading and error states */}
-        {isLoading && <p>Loading paintings...</p>}
+        {isLoading && Suspense("loading", "Loading paintings...")}
         {error && <p className="text-red-500">Error: {error}</p>}
 
         {/* Render paintings based on screen size */}

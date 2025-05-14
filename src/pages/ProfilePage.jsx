@@ -1,6 +1,7 @@
 import { Link, Navigate } from "react-router-dom";
 import React, { useState, useEffect, use } from "react";
 import { PaintingDisplay } from "../components/PaintingDisplay";
+import { Suspense } from "../components/Suspense";
 
 export function ProfilePage({
   user,
@@ -54,20 +55,12 @@ export function ProfilePage({
     onSelectPainting(paintingId);
   };
 
-  if (authStatus === "loading") {
-    return (
-      <div className="flex justify-center items-center font-pixel p-8">
-        <div className="text-2xl">Loading profile...</div>
-      </div>
-    );
-  }
-
   if (authStatus !== "loading" && !user) {
     console.log("Auth status: ", authStatus);
     return <Navigate to="/login" replace />;
   } else {
     return (
-      <div className="font-pixel mx-auto w-full max-h-[calc(100vh-8rem)] p-8">
+      <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] p-8">
         {/* Back Arrow */}
         <Link
           to="/world"
@@ -82,115 +75,130 @@ export function ProfilePage({
             Back to world
           </div>
         </Link>
-        {/* Profile Info */}
-        <div className="flex items-center pb-4 pt-4 w-full">
-          {/* Profile Picture */}
-          <img
-            src={user.photoURL || "/assets/default_avatar.png"} // Provide a path to a default avatar
-            alt="Profile"
-            className="w-12 h-12 bg-gray-300 rounded-full mr-4 border border-black" // Added border and bg as fallback
-          />
-          <div className="flex items-baseline space-x-2">
-            {!isEditing ? (
-              <>
-                <h1 className="text-xl sm:text-3xl font-bold">
-                  {user.displayName || user.email || "User"}
-                </h1>
-                <button
-                  onClick={handleEditClick}
-                  className="text-sm flex items-center hover:underline cursor-pointer"
-                  disabled={authStatus === "loading"} // Disable while loading/updating
-                >
-                  Edit <span className="ml-1">&#9998;</span>
-                </button>
-              </>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  value={newDisplayName}
-                  onChange={(e) => setNewDisplayName(e.target.value)}
-                  className="text-xl font-bold border border-black px-2 py-1"
-                  maxLength={30} // Add a reasonable max length
-                />
-                <button
-                  onClick={handleSaveClick}
-                  className="text-sm bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded disabled:opacity-50 cursor-pointer"
-                  disabled={authStatus === "loading" || !newDisplayName.trim()}
-                >
-                  {authStatus === "loading" ? "Saving..." : "Save"}
-                </button>
-                <button
-                  onClick={handleCancelClick}
-                  className="text-sm bg-gray-400 hover:bg-gray-500 text-white px-2 py-1 rounded cursor-pointer"
-                  disabled={authStatus === "loading"}
-                >
-                  Cancel
-                </button>
+
+        {authStatus === "loading" &&
+          Suspense("loading", "Loading your profile...")}
+
+        {authStatus !== "loading" && (
+          <>
+            {/* Profile Info */}
+            <div className="flex items-center pb-4 pt-4 w-full">
+              {/* Profile Picture */}
+              <img
+                src={user.photoURL || "/assets/default_avatar.png"} // Provide a path to a default avatar
+                alt="Profile"
+                className="w-12 h-12 bg-gray-300 rounded-full mr-4 border border-black" // Added border and bg as fallback
+              />
+              <div className="flex items-baseline space-x-2">
+                {!isEditing ? (
+                  <>
+                    <h1 className="text-xl sm:text-3xl font-bold">
+                      {user.displayName || user.email || "User"}
+                    </h1>
+                    <button
+                      onClick={handleEditClick}
+                      className="text-sm flex items-center hover:underline cursor-pointer"
+                      disabled={authStatus === "loading"} // Disable while loading/updating
+                    >
+                      Edit <span className="ml-1">&#9998;</span>
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      value={newDisplayName}
+                      onChange={(e) => setNewDisplayName(e.target.value)}
+                      className="text-xl font-bold border border-black px-2 py-1"
+                      maxLength={30} // Add a reasonable max length
+                    />
+                    <button
+                      onClick={handleSaveClick}
+                      className="text-sm bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded disabled:opacity-50 cursor-pointer"
+                      disabled={
+                        authStatus === "loading" || !newDisplayName.trim()
+                      }
+                    >
+                      {authStatus === "loading" ? "Saving..." : "Save"}
+                    </button>
+                    <button
+                      onClick={handleCancelClick}
+                      className="text-sm bg-gray-400 hover:bg-gray-500 text-white px-2 py-1 rounded cursor-pointer"
+                      disabled={authStatus === "loading"}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
-        {/* Gallery */}
-        <h1 className="text-xl sm:text-3xl font-bold mb-2 w-full">
-          Your paintings
-        </h1>
-        <div className="w-full border-b-2 border-black mb-4 sm:mb-8"></div>
-        {/* Handle loading state */}
-        {paintingsStatus === "loading" && (
-          <div className="w-full min-h-[250px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
-            {/* You can add an icon here if you have one, e.g., <img src="/assets/no_paintings_icon.png" alt="No paintings" className="w-16 h-16 mb-4 opacity-50" /> */}
-            <p className="text-lg text-gray-500">Loading your paintings...</p>
-          </div>
-        )}
-        {/* Handle error state */}
-        {paintingsStatus === "failed" && (
-          <div className="w-full min-h-[200px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
-            {/* You can add an icon here if you have one, e.g., <img src="/assets/no_paintings_icon.png" alt="No paintings" className="w-16 h-16 mb-4 opacity-50" /> */}
-            <p className="text-lg text-gray-500">
-              Failed to load your paintings: {paintingsError}
-            </p>
-          </div>
-        )}
-        {/* Show paintings if available and loaded */}
-        {paintingsStatus === "succeeded" && (
-          <div className="w-full">
-            {paintings && paintings.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8 min-w-[200px]">
-                {paintings.map((painting) => (
-                  <Link
-                    to="/details"
-                    key={painting.id}
-                    className="text-left mb-4"
-                    onClick={() => handlePaintingSelectACB(painting.id)}
-                  >
-                    <PaintingDisplay painting={painting} />
-                    <div className="text-sm truncate" title={painting.title}>
-                      {painting.title || "Untitled"}
-                    </div>
-                    <div className="text-xs text-gray-600 truncate">
-                      {painting.authorName || "Unknown artist"}
-                    </div>
-                    {painting.savedQuote && (
-                      <div
-                        className="text-xs italic mt-1 text-gray-600 truncate"
-                        title={painting.savedQuote}
-                      >
-                        "{painting.savedQuote}"
-                      </div>
-                    )}
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="w-full min-h-[200px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
+            </div>
+            {/* Gallery */}
+            <h1 className="text-xl sm:text-3xl font-bold mb-2 w-full">
+              Your paintings
+            </h1>
+            <div className="w-full border-b-2 border-black mb-4 sm:mb-8"></div>
+            {/* Handle loading state */}
+            {paintingsStatus === "loading" && (
+              <div className="w-full min-h-[250px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
                 {/* You can add an icon here if you have one, e.g., <img src="/assets/no_paintings_icon.png" alt="No paintings" className="w-16 h-16 mb-4 opacity-50" /> */}
                 <p className="text-lg text-gray-500">
-                  You haven't created any paintings yet.
+                  Loading your paintings...
                 </p>
               </div>
             )}
-          </div>
+            {/* Handle error state */}
+            {paintingsStatus === "failed" && (
+              <div className="w-full min-h-[200px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
+                {/* You can add an icon here if you have one, e.g., <img src="/assets/no_paintings_icon.png" alt="No paintings" className="w-16 h-16 mb-4 opacity-50" /> */}
+                <p className="text-lg text-gray-500">
+                  Failed to load your paintings: {paintingsError}
+                </p>
+              </div>
+            )}
+            {/* Show paintings if available and loaded */}
+            {paintingsStatus === "succeeded" && (
+              <div className="w-full">
+                {paintings && paintings.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8 min-w-[200px]">
+                    {paintings.map((painting) => (
+                      <Link
+                        to="/details"
+                        key={painting.id}
+                        className="text-left mb-4"
+                        onClick={() => handlePaintingSelectACB(painting.id)}
+                      >
+                        <PaintingDisplay painting={painting} />
+                        <div
+                          className="text-sm truncate"
+                          title={painting.title}
+                        >
+                          {painting.title || "Untitled"}
+                        </div>
+                        <div className="text-xs text-gray-600 truncate">
+                          {painting.authorName || "Unknown artist"}
+                        </div>
+                        {painting.savedQuote && (
+                          <div
+                            className="text-xs italic mt-1 text-gray-600 truncate"
+                            title={painting.savedQuote}
+                          >
+                            "{painting.savedQuote}"
+                          </div>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="w-full min-h-[200px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
+                    {/* You can add an icon here if you have one, e.g., <img src="/assets/no_paintings_icon.png" alt="No paintings" className="w-16 h-16 mb-4 opacity-50" /> */}
+                    <p className="text-lg text-gray-500">
+                      You haven't created any paintings yet.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
     );
