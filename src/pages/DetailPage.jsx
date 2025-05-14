@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { PaintingDisplay } from "../components/PaintingDisplay";
 import { useNavigate } from "react-router-dom";
 import { Suspense } from "../components/Suspense";
+import Button from "@mui/material/Button";
 
 export function DetailPage({
   painting,
@@ -9,17 +11,39 @@ export function DetailPage({
   onDislikePainting,
   isLoading,
   error,
+  comments = [],
+  commentsLoading = false,
+  commentsError = null,
+  onAddComment,
+  currentUser,
+  onClearComments,
 }) {
   const navigate = useNavigate();
+  const [newComment, setNewComment] = useState("");
 
   if (!isLoading && !painting) {
     return <Navigate to="/museum" replace />;
   }
 
+  const handleAddComment = () => {
+    if (!newComment.trim() || !currentUser || !painting) return;
+
+    onAddComment(
+      painting.id,
+      currentUser.uid,
+      currentUser.displayName || "Anonymous",
+      newComment,
+    );
+    setNewComment("");
+  };
+
   return (
     <section className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
       <button
-        onClick={() => navigate(-1)}
+        onClick={() => {
+          onClearComments();
+          navigate(-1);
+        }}
         className="flex transition transform duration-200 items-center cursor-pointer"
       >
         <img src="/assets/back_arrow.png" className="h-8"></img>
@@ -27,8 +51,9 @@ export function DetailPage({
           Back
         </div>
       </button>
-      {isLoading && Suspense("loading", "Loading painting details...")}
-      {!isLoading && !error && (
+      {(isLoading || commentsLoading) &&
+        Suspense("loading", "Loading painting details...")}
+      {!isLoading && !commentsLoading && !error && (
         <div className="flex flex-col md:flex-row gap-8 mt-4">
           <div className="aspect-square w-full md:w-1/2 min-w-[250px] shrink-0 pb-8">
             <PaintingDisplay painting={painting} />
@@ -47,35 +72,67 @@ export function DetailPage({
               </div>
               <div className="">
                 <button
-                  onClick={() => onLikePainting("currentUser")}
+                  onClick={() => onLikePainting(currentUser?.uid)}
                   className="text-xl sm:text-3xl hover:scale-110 transition transform duration-200"
                 >
                   <img src="/assets/heart.png" className="w-10 h-10"></img>
                 </button>
-                <span className="flex items-center text-0.5xl">10</span>
+                <span className="flex items-center text-0.5xl">
+                  {painting.likedBy?.length || 0}
+                </span>
               </div>
-              <div>
+
+              {/* Comments Section */}
+              <div className="mt-4">
                 <span className="font-bold">Comments</span>
                 <div className="pt-2 pb-3">
                   <textarea
-                    type="text"
-                    placeholder="Leave your comment"
-                    className="border border-black rounded-md px-2 pt-1 w-full"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder={
+                      currentUser
+                        ? "Leave your comment"
+                        : "Please login to comment"
+                    }
+                    className="border border-black rounded-md px-2 pt-1 w-full min-h-15 mb-2"
+                    disabled={!currentUser}
                   ></textarea>
+                  <Button
+                    variant="outlined"
+                    onClick={handleAddComment}
+                    disabled={
+                      !currentUser || !newComment.trim() || commentsLoading
+                    }
+                  >
+                    {commentsLoading ? "Posting..." : "Post Comment"}
+                  </Button>
                 </div>
 
-                <div>
-                  <span className="pb-3">
-                    Painter 123: This is super awesome!
-                  </span>
-                </div>
-                <div>
-                  <span className="pb-3">
-                    Painter 123: This is super awesome!
-                  </span>
-                </div>
-                <div>
-                  <span className="">Painter 123: This is super awesome!</span>
+                <div className="pb-8">
+                  {commentsLoading && comments.length === 0 ? (
+                    <div>Loading comments...</div>
+                  ) : comments.length > 0 ? (
+                    <div className="space-y-3">
+                      {comments.map((comment) => (
+                        <div key={comment.id} className="border-b pb-2">
+                          <div className="font-semibold">
+                            {comment.authorName}
+                          </div>
+                          <div>{comment.text}</div>
+                          <div className="text-xs text-gray-500">
+                            {new Date(comment.timestamp).toLocaleString()}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-gray-500">No comments yet</div>
+                  )}
+                  {commentsError && (
+                    <div className="text-red-500 mt-2">
+                      Error loading comments: {commentsError}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

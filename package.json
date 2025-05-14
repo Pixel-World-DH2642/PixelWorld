@@ -11,6 +11,9 @@
     "vite": "^5.2.0"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.1.0",
     "@p5-wrapper/react": "^4.4.2",
     "@reduxjs/toolkit": "^2.6.1",
     "@tailwindcss/vite": "^4.1.3",

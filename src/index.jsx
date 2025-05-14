@@ -1,6 +1,8 @@
 import { createRoot } from "react-dom/client";
 import "./styles/global.css";
 import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
+import { ThemeProvider } from "@mui/material/styles";
+
 import { Welcome } from "./containers/Welcome";
 import { Login } from "./containers/Login";
 import { World } from "./containers/World";
@@ -11,6 +13,7 @@ import { Provider } from "react-redux";
 import configureReduxStore from "./app/store";
 import { connectToPersistance } from "./app/firebase";
 import { Layout } from "./components/Layout";
+import muiTheme from "./styles/muiTheme";
 
 const store = configureReduxStore();
 connectToPersistance(store);
@@ -73,7 +76,9 @@ export function makeRouter() {
 }
 
 createRoot(document.getElementById("root")).render(
-  <Provider store={store}>
-    <RouterProvider router={makeRouter()} />
-  </Provider>,
+  <ThemeProvider theme={muiTheme}>
+    <Provider store={store}>
+      <RouterProvider router={makeRouter()} />
+    </Provider>
+  </ThemeProvider>,
 );
