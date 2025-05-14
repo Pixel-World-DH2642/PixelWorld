@@ -155,7 +155,7 @@ export function MuseumPage({
       </Link>
 
       <div className="font-pixel w-full pb-8 lg:pb-4 pt-4">
-        <h1 className="text-6xl font-bold mb-8">MUSEUM</h1>
+        <h1 className="text-3xl font-bold mb-4">MUSEUM</h1>
 
         {/* Loading and error states */}
         {isLoading && <p>Loading paintings...</p>}

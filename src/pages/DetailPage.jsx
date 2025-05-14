@@ -40,7 +40,7 @@ export function DetailPage({
         </div>
         <div className="overflow-y-auto w-full md:w-1/2 md:aspect-square flex flex-col pb-8">
           <div className="w-full h-full">
-            <h1 className="text-xl sm:text-3xl pb-1">{painting.title}</h1>
+            <h1 className="text-3xl pb-1">{painting.title}</h1>
             <div className="pb-2">
               <span>"{painting.savedQuote}"</span>
             </div>
