@@ -9,10 +9,11 @@ import {
 export const Museum = connect(
   // Works like observer --> monitors the change of components, the values come from the selectors in the slice
   function mapStateToProps(state) {
-    const { paintings, startIndex, paintingsPerPage, isLoading, error } = state.museum;
+    const { paintings, startIndex, paintingsPerPage, isLoading, error } =
+      state.museum;
     return {
       paintings,
-      
+
       startIndex,
       paintingsPerPage,
 
@@ -21,8 +22,6 @@ export const Museum = connect(
 
       isFirstPage: startIndex === 0,
       isLastPage: startIndex + paintingsPerPage >= paintings.length,
-
-      
     };
   },
 

@@ -2,21 +2,27 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { PaintingDisplay } from "../components/PaintingDisplay";
 
-// Painting Card Component
+// Painting Card Component - extracted and reusable
 const PaintingCard = ({ painting, onSelect }) => {
   return (
     <Link
       to="/details"
-      className="flex flex-col p-6 shadow-2xl"
+      className="flex flex-col p-6 shadow-xl aspect-[2.2/3] cursor-pointer overflow-hidden"
       onClick={() => onSelect(painting.id)}
     >
+      {/* Fixed height container for the image with aspect ratio preservation */}
       <PaintingDisplay painting={painting} />
-      <h2 className="text-3xl mb-2">{painting.title}</h2>
-      <div className="mb-4 h-17">
-        <p className="text-sm italic">"{painting.savedQuote}"</p>
-        <p className="mt-2 text-sm">- {painting.author}</p>
+
+      {/* Text content container with ellipsis for overflow */}
+      <div className="flex-1 flex flex-col min-h-0">
+        <h2 className="text-2xl">{painting.title}</h2>
+        <p className="mt-1 text-sm text-right font-bold">
+          - {painting.authorName}
+        </p>
+        <p className="text-sm italic line-clamp-2 mt-auto">
+          "{painting.savedQuote}"
+        </p>
       </div>
-      <p className="text-xs leading-tight mt-4">{painting.authorNotes}</p>
     </Link>
   );
 };
@@ -56,27 +62,13 @@ export function MuseumPage({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Calculate paintings per row based on layout
-  const getPaintingsPerRow = () => {
-    switch (layoutType) {
-      case "desktop":
-        return 3;
-      case "tablet":
-        return 2;
-      case "mobile":
-        return 1;
-      default:
-        return 3;
-    }
-  };
-
   // Get current paintings to display
   const getCurrentPaintings = () => {
     if (layoutType === "mobile" || layoutType === "tablet") {
       return paintings;
     } else {
       const startIdx = startIndex || 0;
-      return paintings.slice(startIdx, startIdx + paintingsPerPage); // Use paintingsPerPage from props
+      return paintings.slice(startIdx, startIdx + paintingsPerPage);
     }
   };
 
@@ -86,44 +78,32 @@ export function MuseumPage({
 
     if (layoutType === "desktop") {
       return (
-        // Added return statement
         <div className="flex items-left">
           {/* Left Arrow */}
           <div className="mr-6 flex-shrink-0 self-center">
             <button
               onClick={onPrevClick}
-              className={`${!isFirstPage ? "" : "opacity-50 cursor-not-allowed"}`}
+              className={`${!isFirstPage ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
               disabled={isFirstPage}
             >
               <img
                 src="/assets/left_arrow.png"
-                className="w-10 h-15"
+                className="w-auto h-10"
                 alt="Previous"
               />
             </button>
           </div>
 
           {/* Paintings - display with proper alignment */}
-          <div
-            className={`flex flex-grow ${currentPaintings.length < 3 ? "justify-start" : "justify-between"} gap-8`}
-          >
+          <div className="grid grid-cols-3 gap-4">
             {currentPaintings.map((painting) => (
-              <Link
-                to="/details"
-                key={painting.id}
-                className={`flex flex-col ${currentPaintings.length < 3 ? "w-[30%]" : "w-[31%]"} p-6 shadow-2xl`}
-                onClick={() => onSelectPainting(painting.id)} // Changed to use prop
-              >
-                <PaintingDisplay painting={painting} />
-                <h2 className="text-3xl mb-2">{painting.title}</h2>
-                <div className="mb-4 h-17">
-                  <p className="text-sm italic">"{painting.savedQuote}"</p>
-                  <p className="mt-2 text-sm">- {painting.author}</p>
-                </div>
-                <p className="text-xs leading-tight mt-4">
-                  {painting.authorNotes}
-                </p>
-              </Link>
+              <div key={painting.id}>
+                <PaintingCard painting={painting} onSelect={onSelectPainting} />
+              </div>
+            ))}
+            {/* Add empty placeholders to maintain grid structure */}
+            {[...Array(3 - currentPaintings.length)].map((_, index) => (
+              <div key={`empty-${index}`} className="invisible"></div>
             ))}
           </div>
 
@@ -131,12 +111,12 @@ export function MuseumPage({
           <div className="ml-4 flex-shrink-0 self-center">
             <button
               onClick={onNextClick}
-              className={`${!isLastPage ? "" : "opacity-50 cursor-not-allowed"}`}
+              className={`${!isLastPage ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
               disabled={isLastPage}
             >
               <img
                 src="/assets/right_arrow.png"
-                className="w-10 h-15"
+                className="w-auto h-10"
                 alt="Next"
               />
             </button>
@@ -147,9 +127,8 @@ export function MuseumPage({
       // Tablet/Mobile layout - vertical grid with no arrows
       return (
         <div className="grid gap-8">
-          {/* Calculate grid columns based on layout */}
           <div
-            className={`grid grid-cols-1 ${layoutType === "tablet" ? "md:grid-cols-2" : ""} gap-8`}
+            className={`grid grid-cols-1 ${layoutType === "tablet" ? "md:grid-cols-2" : ""} gap-4`}
           >
             {paintings.map((painting) => (
               <div key={painting.id}>
@@ -163,21 +142,27 @@ export function MuseumPage({
   };
 
   return (
-    <div className="font-pixel p-6 max-h-[calc(100vh-8rem)]">
+    <div className="font-pixel max-h-[calc(100vh-8rem)]">
       {/* Back Button */}
       <Link
         to="/world"
-        className="flex transition transform duration-200 pb-4 items-center"
+        className="flex transition transform duration-200 items-center"
       >
         <img src="/assets/back_arrow.png" className="h-8" alt="Back" />
-        <div className="pl-4 hover:underline flex text-1xl">Back to world</div>
+        <div className="pl-4 hover:underline flex text-xl sm:text-3xl">
+          Back to world
+        </div>
       </Link>
 
-      <div className="font-pixel px-6 mx-auto w-full max-w-[1024px]">
+      <div className="font-pixel w-full pb-8 lg:pb-4 pt-4">
         <h1 className="text-6xl font-bold mb-8">MUSEUM</h1>
 
+        {/* Loading and error states */}
+        {isLoading && <p>Loading paintings...</p>}
+        {error && <p className="text-red-500">Error: {error}</p>}
+
         {/* Render paintings based on screen size */}
-        {renderPaintings()}
+        {!isLoading && !error && renderPaintings()}
       </div>
     </div>
   );
