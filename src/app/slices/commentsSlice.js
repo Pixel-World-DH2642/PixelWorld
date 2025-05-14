@@ -6,6 +6,8 @@ import {
   where,
   orderBy,
   getDocs,
+  deleteDoc,
+  doc,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -61,6 +63,20 @@ export const addComment = createAsyncThunk(
   },
 );
 
+export const deleteComment = createAsyncThunk(
+  "comments/deleteComment",
+  async ({ commentId, paintingId }, { rejectWithValue, dispatch }) => {
+    try {
+      await deleteDoc(doc(db, "comments", commentId));
+      // Refresh comments list
+      dispatch(fetchComments(paintingId));
+      return commentId;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  },
+);
+
 const commentsSlice = createSlice({
   name: "comments",
   initialState: {
@@ -91,6 +107,11 @@ const commentsSlice = createSlice({
       .addCase(addComment.pending, (state) => {
         // Only update status to prevent UI jank
         state.status = "loading";
+      })
+      .addCase(deleteComment.rejected, (state, action) => {
+        console.error("Failed to delete comment:", action.payload);
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });

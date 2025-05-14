@@ -4,23 +4,9 @@ import { likePainting, dislikePainting } from "../app/slices/detailSlice";
 import {
   fetchComments,
   addComment,
+  deleteComment,
   clearComments,
 } from "../app/slices/commentsSlice";
-import { useEffect } from "react";
-
-// Create a wrapper component to handle side effects
-const DetailContainer = (props) => {
-  const { painting, onFetchComments, ...restProps } = props;
-
-  // Fetch comments when painting changes
-  useEffect(() => {
-    if (painting?.id) {
-      onFetchComments(painting.id);
-    }
-  }, [painting?.id, onFetchComments]);
-
-  return <DetailPage painting={painting} {...restProps} />;
-};
 
 export const Detail = connect(
   function mapStateToProps(state) {
@@ -41,7 +27,9 @@ export const Detail = connect(
       onFetchComments: (paintingId) => dispatch(fetchComments(paintingId)),
       onAddComment: (paintingId, userId, userName, text) =>
         dispatch(addComment({ paintingId, userId, userName, text })),
+      onDeleteComment: (commentId, paintingId) =>
+        dispatch(deleteComment({ commentId, paintingId })),
       onClearComments: () => dispatch(clearComments()),
     };
   },
-)(DetailContainer);
+)(DetailPage);

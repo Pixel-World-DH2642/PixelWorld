@@ -17,6 +17,7 @@ export function DetailPage({
   onAddComment,
   currentUser,
   onClearComments,
+  onDeleteComment,
 }) {
   const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
@@ -51,9 +52,8 @@ export function DetailPage({
           Back
         </div>
       </button>
-      {(isLoading || commentsLoading) &&
-        Suspense("loading", "Loading painting details...")}
-      {!isLoading && !commentsLoading && !error && (
+      {isLoading && Suspense("loading", "Loading painting details...")}
+      {!isLoading && !error && (
         <div className="flex flex-col md:flex-row gap-8 mt-4">
           <div className="aspect-square w-full md:w-1/2 min-w-[250px] shrink-0 pb-8">
             <PaintingDisplay painting={painting} />
@@ -119,8 +119,22 @@ export function DetailPage({
                             {comment.authorName}
                           </div>
                           <div>{comment.text}</div>
-                          <div className="text-xs text-gray-500">
-                            {new Date(comment.timestamp).toLocaleString()}
+                          <div className="flex justify-between items-end">
+                            <div className="text-xs text-gray-500">
+                              {new Date(comment.timestamp).toLocaleString()}
+                            </div>
+                            {currentUser?.uid === comment.authorId && (
+                              <Button
+                                variant="outlined"
+                                color="error"
+                                size="small"
+                                onClick={() =>
+                                  onDeleteComment(comment.id, painting.id)
+                                }
+                              >
+                                Delete
+                              </Button>
+                            )}
                           </div>
                         </div>
                       ))}

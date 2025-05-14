@@ -2,15 +2,14 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { fetchPaintingById } from "./detailSlice";
+import { fetchComments } from "./commentsSlice";
 
 export const selectAndFetchPainting = createAsyncThunk(
   "museum/selectAndFetchPainting",
   async (paintingId, thunkAPI) => {
     console.log("selectAndFetchPainting", paintingId);
-    // First dispatch the action to select the painting in the museum
     thunkAPI.dispatch(selectPainting(paintingId));
-
-    // Then fetch the painting details
+    thunkAPI.dispatch(fetchComments(paintingId));
     return thunkAPI.dispatch(fetchPaintingById(paintingId));
   },
 );
@@ -99,6 +98,7 @@ export const museumSlice = createSlice({
 });
 
 // Export actions
-export const { setPaintings, selectPainting, nextPaintings, prevPaintings } = museumSlice.actions;
+export const { setPaintings, selectPainting, nextPaintings, prevPaintings } =
+  museumSlice.actions;
 
 export default museumSlice.reducer;
