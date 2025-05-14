@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { PaintingDisplay } from "../components/PaintingDisplay";
 
 export function DetailPage({
@@ -15,6 +15,11 @@ export function DetailPage({
       </div>
     );
   }
+
+  if (!isLoading && !painting) {
+    return <Navigate to="/museum" replace />;
+  }
+
   return (
     <section className="font-pixel mx-auto w-full max-h-[calc(100vh-8rem)]">
       <Link
