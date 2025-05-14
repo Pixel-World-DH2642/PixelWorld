@@ -17,7 +17,7 @@ export function WelcomePage({ user, onLogout }) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
         <img
-          src="public\assets\pixelWorld-intro-gif.gif" // Or wherever your gif is
+          src="/assets/pixelWorld-intro-gif.gif"
           alt="Loading..."
           className="w-64 h-64"
         />
