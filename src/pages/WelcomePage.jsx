@@ -1,8 +1,29 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import "../styles/global.css";
 
 export function WelcomePage({ user, onLogout }) {
   const navigate = useNavigate();
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoader(false);
+    }, 8700);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showLoader) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
+        <img
+          src="public\assets\pixelWorld-intro-gif.gif" // Or wherever your gif is
+          alt="Loading..."
+          className="w-64 h-64"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="flex">
