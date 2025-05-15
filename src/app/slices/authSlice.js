@@ -13,6 +13,9 @@ export const signInWithGoogle = createAsyncThunk(
   "auth/signInWithGoogle",
   async (_, { rejectWithValue }) => {
     try {
+      gProvider.setCustomParameters({
+        prompt: "select_account",
+      });
       const userCredential = await signInWithPopup(auth, gProvider);
       console.log("User signed in successfully:", userCredential.user);
       // Return the serializable user data
