@@ -1,7 +1,12 @@
 import { useSelector } from "react-redux";
+import React from "react";
+import { connect } from "react-redux";
 
-export function WeatherDashboard() {
-  const weather = useSelector((state) => state.weather);
+function WeatherDashboard({ weather }) {
+  if (!weather) {
+    return <div>Loading weather data...</div>;
+  }
+  //const weather = useSelector((state) => state.weather);
 
   return (
     <div className="bg-gray-50 border border-gray-500 rounded-xl p-6 w-full max-w-md mx-auto shadow-md font-pixel">
@@ -34,3 +39,11 @@ export function WeatherDashboard() {
     </div>
   );
 }
+
+// 🔁 This connects the Redux store state to component props
+const mapStateToProps = (state) => ({
+  weather: state.weather,
+});
+
+// 🔗 Connect the component to Redux
+export default connect(mapStateToProps)(WeatherDashboard);

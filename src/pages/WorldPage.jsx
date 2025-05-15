@@ -3,7 +3,7 @@ import { sketch } from "../components/Sketch";
 //import { Link } from "react-router-dom";
 import { Menu } from "../components/Menu";
 import { PixelEditor } from "../components/PixelEditor";
-import { WeatherDashboard } from "../components/weatherDashboard";
+import WeatherDashboard from "../components/weatherDashboard";
 import { useEffect } from "react";
 
 export function WorldPage({
