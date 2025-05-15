@@ -1,10 +1,7 @@
 import { connect } from "react-redux";
 import { MuseumPage } from "../pages/MuseumPage";
-import {
-  nextPaintings,
-  prevPaintings,
-  selectAndFetchPainting,
-} from "../app/slices/museumSlice.js";
+import { nextPaintings, prevPaintings } from "../app/slices/museumSlice.js";
+import { setCurrentPaintingId } from "../app/slices/detailSlice.js";
 
 export const Museum = connect(
   // Works like observer --> monitors the change of components, the values come from the selectors in the slice
@@ -28,7 +25,7 @@ export const Museum = connect(
   // Wrapping the actions into dispatch
   function mapDispatchToProps(dispatch) {
     return {
-      onSelectPainting: (id) => dispatch(selectAndFetchPainting(id)),
+      onSelectPainting: (id) => dispatch(setCurrentPaintingId(id)),
       onNextClick: () => dispatch(nextPaintings()),
       onPrevClick: () => dispatch(prevPaintings()),
     };

@@ -1,4 +1,8 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  createSelector,
+} from "@reduxjs/toolkit";
 import {
   collection,
   addDoc,
@@ -10,29 +14,6 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "../firebase";
-
-// Async thunk for fetching comments
-export const fetchComments = createAsyncThunk(
-  "comments/fetchByPaintingId",
-  async (paintingId, { rejectWithValue }) => {
-    try {
-      const commentsRef = collection(db, "comments");
-      const q = query(
-        commentsRef,
-        where("paintingId", "==", paintingId),
-        orderBy("timestamp", "desc"),
-      );
-
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  },
-);
 
 // Async thunk for adding a comment
 export const addComment = createAsyncThunk(
@@ -53,9 +34,6 @@ export const addComment = createAsyncThunk(
 
       const docRef = await addDoc(commentsRef, newComment);
 
-      // After adding, fetch all comments again to ensure we have the latest data
-      dispatch(fetchComments(paintingId));
-
       return { id: docRef.id, ...newComment };
     } catch (error) {
       return rejectWithValue(error.message);
@@ -68,12 +46,18 @@ export const deleteComment = createAsyncThunk(
   async ({ commentId, paintingId }, { rejectWithValue, dispatch }) => {
     try {
       await deleteDoc(doc(db, "comments", commentId));
-      // Refresh comments list
-      dispatch(fetchComments(paintingId));
       return commentId;
     } catch (error) {
       return rejectWithValue(error.message);
     }
+  },
+);
+
+export const getSortedComments = createSelector(
+  (state) => state.comments.items,
+  (comments) => {
+    // Sort by timestamp in descending order (newest first)
+    return [...comments].sort((a, b) => b.timestamp - a.timestamp);
   },
 );
 
@@ -85,6 +69,28 @@ const commentsSlice = createSlice({
     error: null,
   },
   reducers: {
+    addLiveComment: (state, action) => {
+      // Only add if not already present (to prevent duplicates)
+      const exists = state.items.find(
+        (comment) => comment.id === action.payload.id,
+      );
+      if (!exists) {
+        state.items.unshift(action.payload);
+      }
+    },
+    updateLiveComment: (state, action) => {
+      const index = state.items.findIndex(
+        (comment) => comment.id === action.payload.id,
+      );
+      if (index !== -1) {
+        state.items[index] = action.payload;
+      }
+    },
+    removeLiveComment: (state, action) => {
+      state.items = state.items.filter(
+        (comment) => comment.id !== action.payload,
+      );
+    },
     clearComments: (state) => {
       state.items = [];
       state.status = "idle";
@@ -93,19 +99,21 @@ const commentsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchComments.pending, (state) => {
+      .addCase(addComment.fulfilled, (state, action) => {
+        state.status = "succeeded";
+      })
+      .addCase(addComment.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchComments.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.items = action.payload;
-      })
-      .addCase(fetchComments.rejected, (state, action) => {
+      .addCase(addComment.rejected, (state, action) => {
+        console.error("Failed to add comment:", action.payload);
         state.status = "failed";
         state.error = action.payload;
       })
-      .addCase(addComment.pending, (state) => {
-        // Only update status to prevent UI jank
+      .addCase(deleteComment.fulfilled, (state, action) => {
+        state.status = "succeeded";
+      })
+      .addCase(deleteComment.pending, (state) => {
         state.status = "loading";
       })
       .addCase(deleteComment.rejected, (state, action) => {
@@ -116,6 +124,11 @@ const commentsSlice = createSlice({
   },
 });
 
-export const { clearComments } = commentsSlice.actions;
+export const {
+  addLiveComment,
+  updateLiveComment,
+  removeLiveComment,
+  clearComments,
+} = commentsSlice.actions;
 
 export default commentsSlice.reducer;

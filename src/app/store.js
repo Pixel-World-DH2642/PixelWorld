@@ -10,6 +10,8 @@ import museumSlice from "./slices/museumSlice";
 import authSlice from "./slices/authSlice";
 import profileSlice from "./slices/profileSlice";
 import commentsSlice from "./slices/commentsSlice";
+import firebaseListenerMiddleware from "./middleware/firebaseListenerMiddleware";
+import { detailListenerMiddleware } from "./middleware/detailListenerMiddleware";
 
 const appSlice = createSlice({
   name: "app",
@@ -37,6 +39,10 @@ export default function configureReduxStore() {
       profile: profileSlice,
       comments: commentsSlice,
     },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware()
+        .concat(detailListenerMiddleware.middleware)
+        .concat(firebaseListenerMiddleware),
     preloadedState: initialState,
   });
 }

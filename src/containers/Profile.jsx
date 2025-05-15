@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import { ProfilePage } from "../pages/ProfilePage";
 import { updateDisplayName } from "../app/slices/authSlice"; // Import the action
 import { fetchUserPaintings } from "../app/slices/profileSlice";
-import { selectAndFetchPainting } from "../app/slices/museumSlice";
+import { setCurrentPaintingId } from "../app/slices/detailSlice";
 
 export const Profile = connect(
   function mapStateToProps(state) {
@@ -24,7 +24,7 @@ export const Profile = connect(
         dispatch(fetchUserPaintings(userId));
       },
       onSelectPainting: (id) => {
-        dispatch(selectAndFetchPainting(id));
+        dispatch(setCurrentPaintingId(id));
       },
     };
   },

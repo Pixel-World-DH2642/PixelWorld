@@ -3,7 +3,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 export const fetchPaintingById = createAsyncThunk(
-  "painting/fetchPaintingById",
+  "detail/fetchPaintingById",
   async (paintingId, thunkAPI) => {
     try {
       const paintingDoc = doc(db, "paintings", paintingId);
@@ -41,15 +41,19 @@ export const fetchPaintingById = createAsyncThunk(
 );
 
 const initialState = {
+  currentPaintingId: null,
   currentPainting: null,
   isLoading: false,
   error: null,
 };
 
 const detailSlice = createSlice({
-  name: "painting",
+  name: "detail",
   initialState,
   reducers: {
+    setCurrentPaintingId: (state, action) => {
+      state.currentPaintingId = action.payload;
+    },
     setPainting: (state, action) => {
       state.currentPainting = action.payload;
     },
@@ -82,6 +86,10 @@ const detailSlice = createSlice({
   },
 });
 
-export const { setPainting, likePainting, dislikePainting } =
-  detailSlice.actions;
+export const {
+  setCurrentPaintingId,
+  setPainting,
+  likePainting,
+  dislikePainting,
+} = detailSlice.actions;
 export default detailSlice.reducer;
