@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { PaintingDisplay } from "./PaintingDisplay";
 
 export function SubmitModal({
@@ -11,15 +11,70 @@ export function SubmitModal({
 }) {
   const [includeQuote, setIncludeQuote] = useState(true);
   const [notes, setNotes] = useState("");
+  const [title, setTitle] = useState(painting?.title || "");
+  const [error, setError] = useState(null);
   if (!isOpen) return null;
 
   const handleSubmit = () => {
-    // TODO: prepare the painting object for upload
+    // Reset any previous errors
+    setError(null);
+
+    // Validate painting data
+    if (!painting) {
+      setError("No painting data available");
+      return;
+    }
+
+    // Check if colorMatrix exists and is an array
+    if (!painting.colorMatrix || !Array.isArray(painting.colorMatrix)) {
+      setError("Invalid painting data: color matrix is missing");
+      return;
+    }
+
+    // Check if matrix is the correct size (32x32 = 1024 elements)
+    if (painting.colorMatrix.length !== 1024) {
+      setError(
+        `Invalid color matrix: expected 1024 elements, got ${painting.colorMatrix.length}`,
+      );
+      return;
+    }
+
+    // Check for required fields
+    if (!title.trim()) {
+      setError("Title is required");
+      return;
+    }
+
+    if (!painting.userId) {
+      setError("User ID is required");
+      return;
+    }
+
+    if (!painting.authorName) {
+      setError("Author name is required");
+      return;
+    }
+
+    // Prepare the painting object for submission
+    const submissionData = {
+      title: title.trim(),
+      colorMatrix: painting.colorMatrix,
+      authorName: painting.authorName,
+      userId: painting.userId,
+      date: Date.now(),
+      notes: notes || "",
+    };
+
+    // Add quote if included
+    if (includeQuote && quote && quote.content) {
+      submissionData.savedQuote = quote.content;
+    }
+
+    // Submit the painting if validation passes
+    console.log("Submitting painting:", submissionData);
+    onSubmitPainting(submissionData);
     onClose();
   };
-
-  console.log("SubmitModal", painting);
-  console.log("SubmitModal quote", quote);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -29,6 +84,29 @@ export function SubmitModal({
         <div className="mb-4">
           <PaintingDisplay painting={painting} />
         </div>
+
+        {/* Display validation error if any */}
+        {error && (
+          <div className="mb-4 p-2 bg-red-100 text-red-700 rounded border border-red-300">
+            {error}
+          </div>
+        )}
+
+        {/* Painting Title Input */}
+        <div className="mb-4">
+          <TextField
+            label="Painting Title"
+            variant="outlined"
+            fullWidth
+            required
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter a title for your masterpiece"
+            error={error && error.includes("Title")}
+            className="mb-2"
+          />
+        </div>
+
         {quote.content && (
           <div className="mb-4">
             <p className="mb-2 font-semibold">Inspired by quote:</p>
@@ -48,15 +126,17 @@ export function SubmitModal({
         )}
 
         <div className="mb-4">
-          <label className="block font-semibold mb-2">
-            Add your notes about this painting:
-          </label>
-          <textarea
+          <TextField
+            label="Notes about this painting"
+            variant="outlined"
+            fullWidth
+            multiline
+            rows={4}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Share your inspiration, technique, or story behind this artwork..."
-            className="w-full p-2 border border-gray-300 rounded resize-none h-24 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          ></textarea>
+            className="mb-2"
+          />
         </div>
 
         <div className="mb-4">
