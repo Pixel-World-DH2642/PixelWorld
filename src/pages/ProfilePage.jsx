@@ -9,7 +9,7 @@ export function ProfilePage({
   authStatus,
   authError,
   paintings,
-  paintingsStatus,
+  paintingsStatus: paintingsLoading,
   paintingsError,
   onChangeDisplayName,
   fetchUserPaintings,
@@ -126,7 +126,7 @@ export function ProfilePage({
             </h1>
             <div className="w-full border-b-2 border-black mb-4 sm:mb-8"></div>
             {/* Handle loading state */}
-            {paintingsStatus === "loading" && (
+            {paintingsLoading && !paintingsError && (
               <div className="w-full min-h-[250px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
                 {/* You can add an icon here if you have one, e.g., <img src="/assets/no_paintings_icon.png" alt="No paintings" className="w-16 h-16 mb-4 opacity-50" /> */}
                 <p className="text-lg text-gray-500">
@@ -135,7 +135,7 @@ export function ProfilePage({
               </div>
             )}
             {/* Handle error state */}
-            {paintingsStatus === "failed" && (
+            {paintingsError && (
               <div className="w-full min-h-[200px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
                 {/* You can add an icon here if you have one, e.g., <img src="/assets/no_paintings_icon.png" alt="No paintings" className="w-16 h-16 mb-4 opacity-50" /> */}
                 <p className="text-lg text-gray-500">
@@ -144,7 +144,7 @@ export function ProfilePage({
               </div>
             )}
             {/* Show paintings if available and loaded */}
-            {paintingsStatus === "succeeded" && (
+            {!paintingsLoading && !paintingsError && (
               <div className="w-full">
                 {paintings && paintings.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8 min-w-[200px]">

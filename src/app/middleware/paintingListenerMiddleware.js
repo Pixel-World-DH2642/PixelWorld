@@ -1,11 +1,14 @@
 import { createListenerMiddleware } from "@reduxjs/toolkit";
-import { setCurrentPaintingId, fetchPaintingById } from "../slices/detailSlice";
-import { fetchPaintings, setStartIndex } from "../slices/museumSlice";
+import {
+  selectPainting,
+  fetchPaintingById,
+  fetchAllPaintings,
+} from "../slices/paintingsSlice";
 
 export const paintingListenerMiddleware = createListenerMiddleware();
 
 paintingListenerMiddleware.startListening({
-  actionCreator: setCurrentPaintingId,
+  actionCreator: selectPainting,
   effect: async (action, listenerApi) => {
     const { payload } = action;
     console.log("Current painting ID set to:", payload);
@@ -16,12 +19,12 @@ paintingListenerMiddleware.startListening({
 });
 
 paintingListenerMiddleware.startListening({
-  matcher: (action) => action.type === "detail/deletePainting/fulfilled",
+  matcher: (action) => action.type === "paintings/deletePainting/fulfilled",
   effect: async (action, listenerApi) => {
     console.log("Painting deleted successfully, refreshing painting list");
 
     // Refresh the paintings list
-    await listenerApi.dispatch(fetchPaintings());
+    await listenerApi.dispatch(fetchAllPaintings());
 
     // After fetching the updated paintings list, check if the current page is empty
     const state = listenerApi.getState();
@@ -35,13 +38,13 @@ paintingListenerMiddleware.startListening({
         "Current page is now empty, navigating to previous page, index:",
         newStartIndex,
       );
-      listenerApi.dispatch(setStartIndex(newStartIndex));
+      // listenerApi.dispatch(setStartIndex(newStartIndex));
     }
   },
 });
 
 paintingListenerMiddleware.startListening({
-  matcher: (action) => action.type === "detail/deletePainting/rejected",
+  matcher: (action) => action.type === "paintings/deletePainting/rejected",
   effect: async (action, listenerApi) => {
     console.error("Failed to delete painting:", action.error);
   },

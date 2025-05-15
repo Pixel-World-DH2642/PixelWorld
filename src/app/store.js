@@ -4,13 +4,11 @@ import {
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 import quoteSlice from "./slices/quoteSlice";
-import detailSlice from "./slices/detailSlice";
 import weatherSlice from "./slices/weatherSlice";
-import museumSlice from "./slices/museumSlice";
 import authSlice from "./slices/authSlice";
-import profileSlice from "./slices/profileSlice";
 import commentsSlice from "./slices/commentsSlice";
 import likeSlice from "./slices/likeSlice";
+import paintingsSlice from "./slices/paintingsSlice";
 import firebaseListenerMiddleware from "./middleware/firebaseListenerMiddleware";
 import { paintingListenerMiddleware } from "./middleware/paintingListenerMiddleware";
 
@@ -34,12 +32,10 @@ export default function configureReduxStore() {
       app: appSlice.reducer,
       auth: authSlice,
       quote: quoteSlice,
-      detail: detailSlice,
       weather: weatherSlice,
-      museum: museumSlice,
-      profile: profileSlice,
       comments: commentsSlice,
       likes: likeSlice,
+      paintings: paintingsSlice,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()

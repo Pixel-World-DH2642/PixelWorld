@@ -1,8 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore"; // Added
-import { setPaintings, fetchPaintings } from "./slices/museumSlice";
 import { setUser, authLoaded } from "./slices/authSlice";
+import { fetchAllPaintings } from "./slices/paintingsSlice";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAA_zepBE6w3GCBV1Kr6_Ui43KcEPk-Mlw",
@@ -36,5 +36,5 @@ export function connectToPersistance(store) {
     store.dispatch(authLoaded());
   });
 
-  store.dispatch(fetchPaintings());
+  store.dispatch(fetchAllPaintings());
 }

@@ -1,8 +1,11 @@
 import { connect } from "react-redux";
 import { ProfilePage } from "../pages/ProfilePage";
-import { updateDisplayName } from "../app/slices/authSlice"; // Import the action
-import { fetchUserPaintings } from "../app/slices/profileSlice";
-import { setCurrentPaintingId } from "../app/slices/detailSlice";
+import { updateDisplayName } from "../app/slices/authSlice";
+import {
+  fetchUserPaintings,
+  selectPainting,
+  selectUserPaintings,
+} from "../app/slices/paintingsSlice";
 
 export const Profile = connect(
   function mapStateToProps(state) {
@@ -10,9 +13,12 @@ export const Profile = connect(
       user: state.auth.user,
       authStatus: state.auth.status,
       authError: state.auth.error,
-      paintings: state.profile.userPaintings,
-      paintingsStatus: state.profile.userPaintingsStatus,
-      paintingsError: state.profile.userPaintingsError,
+      // Get user paintings from the normalized store
+      paintings: state.auth.user
+        ? selectUserPaintings(state, state.auth.user.uid)
+        : [],
+      paintingsLoading: state.paintings.loading,
+      paintingsError: state.paintings.error,
     };
   },
   function mapDispatchToProps(dispatch) {
@@ -24,7 +30,7 @@ export const Profile = connect(
         dispatch(fetchUserPaintings(userId));
       },
       onSelectPainting: (id) => {
-        dispatch(setCurrentPaintingId(id));
+        dispatch(selectPainting(id));
       },
     };
   },

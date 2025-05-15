@@ -168,7 +168,7 @@ const firebaseListenerMiddleware = (store) => (next) => (action) => {
     }
   }
   // Watch for painting selection changes to auto-start listeners
-  else if (action.type === "detail/setCurrentPaintingId" && action.payload) {
+  else if (action.type === "paintings/selectPainting" && action.payload) {
     const paintingId = action.payload;
     const state = store.getState();
     const userId = state.auth?.user?.uid;

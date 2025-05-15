@@ -29,20 +29,17 @@ const PaintingCard = ({ painting, onSelect }) => {
   );
 };
 
-export function MuseumPage({
-  paintings,
-  startIndex,
-  paintingsPerPage,
-  isFirstPage,
-  isLastPage,
-  onPrevClick,
-  onNextClick,
-  onSelectPainting,
-  isLoading,
-  error,
-}) {
+export function MuseumPage({ paintings, onSelectPainting, isLoading, error }) {
+  // Local state for pagination
+  const [startIndex, setStartIndex] = useState(0);
+  const [paintingsPerPage, setPaintingsPerPage] = useState(3);
+
   // Responsive layout state
   const [layoutType, setLayoutType] = useState("desktop");
+
+  // Derived pagination state
+  const isFirstPage = startIndex === 0;
+  const isLastPage = startIndex + paintingsPerPage >= paintings.length;
 
   // Calculate number of paintings per row based on screen width
   useEffect(() => {
@@ -64,13 +61,25 @@ export function MuseumPage({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Pagination handlers
+  const handleNextClick = () => {
+    if (!isLastPage) {
+      setStartIndex(startIndex + paintingsPerPage);
+    }
+  };
+
+  const handlePrevClick = () => {
+    if (!isFirstPage) {
+      setStartIndex(startIndex - paintingsPerPage);
+    }
+  };
+
   // Get current paintings to display
   const getCurrentPaintings = () => {
     if (layoutType === "mobile" || layoutType === "tablet") {
       return paintings;
     } else {
-      const startIdx = startIndex || 0;
-      return paintings.slice(startIdx, startIdx + paintingsPerPage);
+      return paintings.slice(startIndex, startIndex + paintingsPerPage);
     }
   };
 
@@ -84,7 +93,7 @@ export function MuseumPage({
           {/* Left Arrow */}
           <div className="mr-6 flex-shrink-0 self-center">
             <button
-              onClick={onPrevClick}
+              onClick={handlePrevClick}
               className={`${!isFirstPage ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
               disabled={isFirstPage}
             >
@@ -112,7 +121,7 @@ export function MuseumPage({
           {/* Right Arrow */}
           <div className="ml-4 flex-shrink-0 self-center">
             <button
-              onClick={onNextClick}
+              onClick={handleNextClick}
               className={`${!isLastPage ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
               disabled={isLastPage}
             >
