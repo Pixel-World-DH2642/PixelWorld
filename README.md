@@ -6,6 +6,29 @@ PixelWorld is a web application that encourages creativity and sharing through p
 
 When ready, users can visit the Museum to browse and appreciate paintings uploaded by others, each showcasing its quote and a personal description from the artist. Users can also upload their own paintings to share their art and inspiration with the community.
 
+### Core functionalities
+
+- **Quote of the Day**: Users receive a daily quote to inspire their pixel art creations.
+- **Dynamic Weather**: The environment's weather reflects the user's actual geolocation, enhancing immersion.
+- **Drawing Your Painting**: Users can create pixel art on a 32×32 canvas, using a simple drawing tool.
+- **Painting Submission**: Users can upload their own pixel art, attaching a quote and personal description.
+- **Museum**: A gallery where users can like and comment on paintings created by others, each with its own quote and description. The likes and comments are real-time updated.
+- **User Profile**: Users can view their own paintings, along with their profile information.
+
+### Architecture
+
+- [React](https://react.dev/)
+- [Redux Toolkit](https://redux-toolkit.js.org/)
+- [React Redux](https://react-redux.js.org/)
+- [React Router](https://reactrouter.com/)
+- [Firebase](https://firebase.google.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Material UI](https://mui.com/material-ui/)
+- [P5.js](https://p5js.org/)
+- [P5-wrapper/react](https://github.com/P5-wrapper/react)
+- [Vite](https://vite.dev/)
+- [David](https://gits-15.sys.kth.se/dsegal)'s micro game engine
+
 ### What we have done - 2025.04.14
 
 - Skeleton files and stubs created for the whole structure of the app including [redux toolkit](https://redux-toolkit.js.org/) slices, mapping from redux store to the view and the views
