@@ -9,7 +9,7 @@ export function WelcomePage({ user, onLogout }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLoader(false);
-    }, 8600);
+    }, 5900);
     return () => clearTimeout(timer);
   }, []);
 
@@ -26,9 +26,9 @@ export function WelcomePage({ user, onLogout }) {
   }
 
   return (
-    <div className="flex">
-      <h1>Welcome Page</h1>
-      <div className="flex items-center justify-start">
+    <div className="font-pixel min-h-[calc(100vh-8rem)] flex flex-col justify-center items-center space-y-4">
+      <h1 className="text-6xl">Pixel World</h1>
+      <div className="flex items-center">
         <Link
           className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
           to="/login"
