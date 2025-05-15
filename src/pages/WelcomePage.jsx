@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { NavBar } from "../components/NavBar";
 
 export function WelcomePage({ user, onLogout }) {
   const navigate = useNavigate();

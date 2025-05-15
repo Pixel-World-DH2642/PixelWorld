@@ -5,6 +5,7 @@ import { Menu } from "../components/Menu";
 import { PixelEditor } from "../components/PixelEditor";
 import { WeatherDashboard } from "../components/weatherDashboard";
 import { useEffect } from "react";
+import { NavBar } from "../components/NavBar";
 
 export function WorldPage({
   quote,
@@ -31,7 +32,8 @@ export function WorldPage({
   }, []);
 
   return (
-    <div className="mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
+    <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
+      <NavBar />
       <div className="flex flex-col items-center justify-center text-center">
         <Menu />
         <h1>World Page</h1>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { PaintingDisplay } from "../components/PaintingDisplay";
 import { Suspense } from "../components/Suspense";
+import { NavBar } from "../components/NavBar";
 
 // Painting Card Component - extracted and reusable
 const PaintingCard = ({ painting, onSelect }) => {
@@ -144,16 +145,7 @@ export function MuseumPage({
 
   return (
     <div className="font-pixel max-h-[calc(100vh-4rem)] px-8 pt-8">
-      {/* Back Button */}
-      <Link
-        to="/world"
-        className="flex transition transform duration-200 items-center"
-      >
-        <img src="/assets/back_arrow.png" className="h-8" alt="Back" />
-        <div className="pl-4 hover:underline flex text-xl sm:text-3xl">
-          Back to world
-        </div>
-      </Link>
+      <NavBar />
 
       <div className="font-pixel w-full pb-8 lg:pb-12 pt-4">
         <h1 className="text-3xl font-bold mb-4">MUSEUM</h1>

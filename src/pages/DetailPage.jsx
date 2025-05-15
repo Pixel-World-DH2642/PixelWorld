@@ -4,6 +4,7 @@ import { PaintingDisplay } from "../components/PaintingDisplay";
 import { useNavigate } from "react-router-dom";
 import { Suspense } from "../components/Suspense";
 import Button from "@mui/material/Button";
+import { NavBar } from "../components/NavBar";
 
 export function DetailPage({
   painting,
@@ -43,19 +44,13 @@ export function DetailPage({
 
   return (
     <section className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
-      <button
-        onClick={() => {
+      <NavBar
+        beforeNavigate={() => {
           onClearComments();
           onClearLikes();
-          navigate(-1);
         }}
-        className="flex transition transform duration-200 items-center cursor-pointer"
-      >
-        <img src="/assets/back_arrow.png" className="h-8"></img>
-        <div className="pl-4 hover:underline flex text-xl sm:text-3xl">
-          Back
-        </div>
-      </button>
+      />
+
       {isLoading && Suspense("loading", "Loading painting details...")}
       {!isLoading && !error && (
         <div className="flex flex-col md:flex-row gap-8 mt-4">

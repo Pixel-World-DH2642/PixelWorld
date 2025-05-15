@@ -1,7 +1,8 @@
 import { Link, Navigate } from "react-router-dom";
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { PaintingDisplay } from "../components/PaintingDisplay";
 import { Suspense } from "../components/Suspense";
+import { NavBar } from "../components/NavBar";
 
 export function ProfilePage({
   user,
@@ -61,20 +62,7 @@ export function ProfilePage({
   } else {
     return (
       <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] p-8">
-        {/* Back Arrow */}
-        <Link
-          to="/world"
-          className="flex transition transform duration-200 items-center"
-        >
-          <img
-            src="/assets/back_arrow.png"
-            className="h-8"
-            alt="Back arrow"
-          ></img>
-          <div className="pl-4 hover:underline flex text-xl sm:text-3xl">
-            Back to world
-          </div>
-        </Link>
+        <NavBar showProfile={false} />
 
         {authStatus === "loading" &&
           Suspense("loading", "Loading your profile...")}
