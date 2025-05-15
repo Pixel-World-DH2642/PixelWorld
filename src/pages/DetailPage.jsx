@@ -57,6 +57,47 @@ export function DetailPage({
     setNewComment("");
   };
 
+  const handleDeleteComment = (commentId) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: "Delete Comment",
+      message:
+        "Are you sure you want to delete this comment? This action cannot be undone.",
+      isLoading: false,
+      onConfirm: () => {
+        // Set loading state
+        setConfirmDialog((prev) => ({
+          ...prev,
+          isLoading: true,
+        }));
+
+        onDeleteComment(commentId, painting.id)
+          .then(() => {
+            // Close dialog
+            setConfirmDialog((prev) => ({
+              ...prev,
+              isOpen: false,
+              isLoading: false,
+            }));
+          })
+          .catch((error) => {
+            // Reset loading state
+            setConfirmDialog((prev) => ({
+              ...prev,
+              isLoading: false,
+              isOpen: false,
+            }));
+            // Show error dialog
+            setErrorDialog({
+              isOpen: true,
+              title: "Error",
+              message: `Error deleting comment: ${error}`,
+            });
+          });
+      },
+    });
+  };
+
   const handleDeletePainting = () => {
     setConfirmDialog({
       isOpen: true,
@@ -252,9 +293,7 @@ export function DetailPage({
                                 variant="outlined"
                                 color="error"
                                 size="small"
-                                onClick={() =>
-                                  onDeleteComment(comment.id, painting.id)
-                                }
+                                onClick={() => handleDeleteComment(comment.id)}
                               >
                                 Delete
                               </Button>
