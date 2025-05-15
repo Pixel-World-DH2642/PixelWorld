@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../app/slices/authSlice";
 
 export function NavBar({
+  enableBack = true,
   backLocation,
-  onBack,
   beforeNavigate,
   showProfile = true,
 }) {
@@ -28,24 +28,27 @@ export function NavBar({
 
   return (
     <div className="flex flex-col items-end justify-between border-b pb-2 gap-4">
-      <button
-        onClick={() => {
-          if (beforeNavigate) {
-            beforeNavigate();
-          }
-          if (backLocation) {
-            navigate("/" + backLocation);
-          } else {
-            navigate(-1);
-          }
-        }}
-        className="flex transition self-start gap-2 transform duration-200 items-center cursor-pointer"
-      >
-        <img src="/assets/back_arrow.png" className="h-4 sm:h-6"></img>
-        <div className=" hover:underline flex text-xl sm:text-3xl">
-          Back{backLocation ? " to " + backLocation : ""}
-        </div>
-      </button>
+      {enableBack && (
+        <button
+          onClick={() => {
+            if (beforeNavigate) {
+              beforeNavigate();
+            }
+            if (backLocation) {
+              navigate("/" + backLocation);
+            } else {
+              navigate(-1);
+            }
+          }}
+          className="flex transition self-start gap-2 transform duration-200 items-center cursor-pointer"
+        >
+          <img src="/assets/back_arrow.png" className="h-4 sm:h-6"></img>
+          <div className=" hover:underline flex text-xl sm:text-3xl">
+            Back{backLocation ? " to " + backLocation : ""}
+          </div>
+        </button>
+      )}
+
       {user && (
         <div className="flex items-center justify-end gap-2 sm:gap-4">
           {showProfile && (

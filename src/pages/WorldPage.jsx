@@ -1065,7 +1065,7 @@ export function WorldPage({
 
   return (
     <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
-      <NavBar />
+      <NavBar enableBack={false} />
       <div className="flex flex-col items-center justify-center text-center">
         <Menu />
         <h1>World Page</h1>
