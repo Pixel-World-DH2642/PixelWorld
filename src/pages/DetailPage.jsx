@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { PaintingDisplay } from "../components/PaintingDisplay";
 import { useNavigate } from "react-router-dom";
+import { TextField } from "@mui/material";
 import { Suspense } from "../components/Suspense";
 import Button from "@mui/material/Button";
 import { NavBar } from "../components/NavBar";
@@ -249,9 +250,8 @@ export function DetailPage({
 
               {/* Comments Section */}
               <div className="mt-4">
-                <span className="font-bold">Comments</span>
-                <div className="pt-2 pb-3">
-                  <textarea
+                <div className="pb-4 flex flex-col items-start gap-4">
+                  <TextField
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder={
@@ -259,9 +259,13 @@ export function DetailPage({
                         ? "Leave your comment"
                         : "Please login to comment"
                     }
-                    className="border border-black rounded-md px-2 pt-1 w-full min-h-15 mb-2"
                     disabled={!currentUser}
-                  ></textarea>
+                    multiline
+                    fullWidth
+                    minRows={3}
+                    variant="outlined"
+                    label="Comment"
+                  />
                   <Button
                     variant="outlined"
                     onClick={handleAddComment}
@@ -272,7 +276,6 @@ export function DetailPage({
                     {commentsLoading ? "Posting..." : "Post Comment"}
                   </Button>
                 </div>
-
                 <div className="pb-8">
                   {commentsLoading && comments.length === 0 ? (
                     <div>Loading comments...</div>
