@@ -59,18 +59,32 @@ export function DetailPage({
           </div>
           <div className="overflow-y-auto w-full md:w-1/2 md:aspect-square flex flex-col pb-8">
             <div className="w-full h-full">
-              <h1 className="text-3xl pb-1">{painting.title}</h1>
-              <div className="pb-2">
-                <span>"{painting.savedQuote}"</span>
+              <div className="bg-gray-100 p-4 rounded-lg">
+                <h1 className="text-3xl mb-4">{painting.title}</h1>
+
+                {painting.savedQuote && (
+                  <div className="mb-4">
+                    <p className="mb-2 font-semibold">Inspired by quote:</p>
+                    <p className="mb-2 italic bg-gray-300 p-2 rounded">
+                      {painting.savedQuote}
+                    </p>
+                  </div>
+                )}
+                {painting.authorNotes && (
+                  <div className="mb-4">
+                    <p className="mb-2 font-semibold">Author notes:</p>
+                    <p className="mb-2 italic bg-gray-100 p-2 rounded">
+                      {painting.authorNotes}
+                    </p>
+                  </div>
+                )}
+                <div>
+                  <span className="font-bold">
+                    Made by: {painting.authorName}
+                  </span>
+                </div>
               </div>
-              <div>
-                <span className="font-bold">
-                  Made by: {painting.authorName}
-                </span>
-              </div>
-              <div>
-                <span>{painting.authorNotes}</span>
-              </div>
+
               <div className="flex items-center gap-2 my-4">
                 <button
                   onClick={() =>
