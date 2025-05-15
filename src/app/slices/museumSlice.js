@@ -67,6 +67,9 @@ export const museumSlice = createSlice({
         state.startIndex -= state.paintingsPerPage;
       }
     },
+    setStartIndex: (state, action) => {
+      state.startIndex = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -86,7 +89,12 @@ export const museumSlice = createSlice({
 });
 
 // Export actions
-export const { setPaintings, selectPainting, nextPaintings, prevPaintings } =
-  museumSlice.actions;
+export const {
+  setPaintings,
+  selectPainting,
+  nextPaintings,
+  prevPaintings,
+  setStartIndex,
+} = museumSlice.actions;
 
 export default museumSlice.reducer;

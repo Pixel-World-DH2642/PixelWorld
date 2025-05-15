@@ -97,7 +97,7 @@ export function MuseumPage({
           </div>
 
           {/* Paintings - display with proper alignment */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-4 w-full">
             {currentPaintings.map((painting) => (
               <div key={painting.id}>
                 <PaintingCard painting={painting} onSelect={onSelectPainting} />

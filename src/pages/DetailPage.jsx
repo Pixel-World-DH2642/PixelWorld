@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Suspense } from "../components/Suspense";
 import Button from "@mui/material/Button";
 import { NavBar } from "../components/NavBar";
+import { ConfirmationDialog } from "../components/ConfirmationDialog";
 
 export function DetailPage({
   painting,
@@ -22,9 +23,23 @@ export function DetailPage({
   onClearComments,
   onToggleLike,
   onClearLikes,
+  onDeletePainting,
 }) {
   const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
+
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
+
+  const [errorDialog, setErrorDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
 
   if (!isLoading && !painting) {
     return <Navigate to="/museum" replace />;
@@ -42,6 +57,52 @@ export function DetailPage({
     setNewComment("");
   };
 
+  const handleDeletePainting = () => {
+    setConfirmDialog({
+      isOpen: true,
+      title: "Delete Painting",
+      message:
+        "Are you sure you want to delete this painting? This action cannot be undone.",
+      isLoading: false,
+      onConfirm: () => {
+        console.log("Deleting painting with ID:", painting.id);
+
+        // Set loading state
+        setConfirmDialog((prev) => ({
+          ...prev,
+          isLoading: true,
+        }));
+
+        onDeletePainting(painting.id, currentUser.uid)
+          .unwrap()
+          .then(() => {
+            // Close dialog
+            setConfirmDialog((prev) => ({
+              ...prev,
+              isOpen: false,
+              isLoading: false,
+            }));
+            // Navigate away
+            navigate("/museum");
+          })
+          .catch((error) => {
+            // Reset loading state
+            setConfirmDialog((prev) => ({
+              ...prev,
+              isLoading: false,
+              isOpen: false,
+            }));
+            // Show error dialog
+            setErrorDialog({
+              isOpen: true,
+              title: "Error",
+              message: `Error deleting painting: ${error}`,
+            });
+          });
+      },
+    });
+  };
+
   return (
     <section className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
       <NavBar
@@ -49,6 +110,27 @@ export function DetailPage({
           onClearComments();
           onClearLikes();
         }}
+      />
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmDialog.isOpen}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        onConfirm={confirmDialog.onConfirm}
+        onCancel={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+        isLoading={confirmDialog.isLoading}
+      />
+
+      {/* Error Dialog */}
+      <ConfirmationDialog
+        isOpen={errorDialog.isOpen}
+        title={errorDialog.title}
+        message={errorDialog.message}
+        confirmText="OK"
+        confirmColor="primary"
+        onConfirm={() => setErrorDialog({ ...errorDialog, isOpen: false })}
+        onCancel={() => setErrorDialog({ ...errorDialog, isOpen: false })}
       />
 
       {isLoading && Suspense("loading", "Loading painting details...")}
@@ -78,10 +160,24 @@ export function DetailPage({
                     </p>
                   </div>
                 )}
-                <div>
-                  <span className="font-bold">
-                    Made by: {painting.authorName}
-                  </span>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span>Made by: </span>
+                    <span className="font-bold">
+                      {painting.authorName}
+                      {currentUser?.uid === painting.userId ? " [You]" : ""}
+                    </span>
+                  </div>
+                  {currentUser?.uid === painting.userId && (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      color="error"
+                      onClick={handleDeletePainting}
+                    >
+                      Delete Painting
+                    </Button>
+                  )}
                 </div>
               </div>
 

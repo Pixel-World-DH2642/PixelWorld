@@ -7,6 +7,7 @@ import {
   clearComments,
   getSortedComments,
 } from "../app/slices/commentsSlice";
+import { deletePainting } from "../app/slices/detailSlice";
 
 export const Detail = connect(
   function mapStateToProps(state) {
@@ -36,6 +37,11 @@ export const Detail = connect(
       onDeleteComment: (commentId, paintingId) =>
         dispatch(deleteComment({ commentId, paintingId })),
       onClearComments: () => dispatch(clearComments()),
+      onDeletePainting: (paintingId, userId) => {
+        if (userId && paintingId) {
+          return dispatch(deletePainting({ paintingId, userId }));
+        }
+      },
     };
   },
 )(DetailPage);

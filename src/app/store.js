@@ -12,7 +12,7 @@ import profileSlice from "./slices/profileSlice";
 import commentsSlice from "./slices/commentsSlice";
 import likeSlice from "./slices/likeSlice";
 import firebaseListenerMiddleware from "./middleware/firebaseListenerMiddleware";
-import { currentPaintingListenerMiddleware } from "./middleware/detailListenerMiddleware";
+import { paintingListenerMiddleware } from "./middleware/paintingListenerMiddleware";
 
 const appSlice = createSlice({
   name: "app",
@@ -43,8 +43,8 @@ export default function configureReduxStore() {
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
-        .concat(currentPaintingListenerMiddleware.middleware)
-        .concat(firebaseListenerMiddleware),
+        .concat(firebaseListenerMiddleware)
+        .concat(paintingListenerMiddleware.middleware),
     preloadedState: initialState,
   });
 }
