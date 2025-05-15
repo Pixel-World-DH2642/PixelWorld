@@ -145,7 +145,7 @@ export function MuseumPage({
 
   return (
     <div className="font-pixel max-h-[calc(100vh-4rem)] px-8 pt-8">
-      <NavBar />
+      <NavBar backLocation="world" />
 
       <div className="font-pixel w-full pb-8 lg:pb-12 pt-4">
         <h1 className="text-3xl font-bold mb-4">MUSEUM</h1>

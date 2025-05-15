@@ -2,7 +2,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../app/slices/authSlice";
 
-export function NavBar({ beforeNavigate, showProfile = true }) {
+export function NavBar({
+  backLocation,
+  onBack,
+  beforeNavigate,
+  showProfile = true,
+}) {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -28,13 +33,17 @@ export function NavBar({ beforeNavigate, showProfile = true }) {
           if (beforeNavigate) {
             beforeNavigate();
           }
-          navigate(-1);
+          if (backLocation) {
+            navigate("/" + backLocation);
+          } else {
+            navigate(-1);
+          }
         }}
         className="flex transition transform duration-200 items-center cursor-pointer"
       >
         <img src="/assets/back_arrow.png" className="h-8"></img>
         <div className="pl-4 hover:underline flex text-xl sm:text-3xl">
-          Back
+          Back{backLocation ? " to " + backLocation : ""}
         </div>
       </button>
       {user && (
