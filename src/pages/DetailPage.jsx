@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { PaintingDisplay } from "../components/PaintingDisplay";
 import { useNavigate } from "react-router-dom";
@@ -7,17 +7,20 @@ import Button from "@mui/material/Button";
 
 export function DetailPage({
   painting,
-  onLikePainting,
-  onDislikePainting,
   isLoading,
   error,
   comments = [],
   commentsLoading = false,
   commentsError = null,
-  onAddComment,
   currentUser,
-  onClearComments,
+  likesCount,
+  userLiked,
+  likesLoading,
+  onAddComment,
   onDeleteComment,
+  onClearComments,
+  onToggleLike,
+  onClearLikes,
 }) {
   const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
@@ -43,6 +46,7 @@ export function DetailPage({
       <button
         onClick={() => {
           onClearComments();
+          onClearLikes();
           navigate(-1);
         }}
         className="flex transition transform duration-200 items-center cursor-pointer"
@@ -70,15 +74,28 @@ export function DetailPage({
               <div>
                 <span>{painting.authorNotes}</span>
               </div>
-              <div className="">
+              <div className="flex items-center gap-2 my-4">
                 <button
-                  onClick={() => onLikePainting(currentUser?.uid)}
-                  className="text-xl sm:text-3xl hover:scale-110 transition transform duration-200"
+                  onClick={() =>
+                    currentUser?.uid
+                      ? onToggleLike(painting.id, currentUser.uid)
+                      : null
+                  }
+                  className={`cursor-pointer text-xl sm:text-3xl transition transform duration-200 ${userLiked ? "scale-110" : "hover:scale-110"}`}
+                  disabled={!currentUser || likesLoading}
                 >
-                  <img src="/assets/heart.png" className="w-10 h-10"></img>
+                  <img
+                    src={
+                      userLiked
+                        ? "/assets/heart.png"
+                        : "/assets/heart_empty.png"
+                    }
+                    className="w-10 h-10"
+                    alt={userLiked ? "Unlike" : "Like"}
+                  />
                 </button>
                 <span className="flex items-center text-0.5xl">
-                  {painting.likedBy?.length || 0}
+                  {likesLoading ? "..." : likesCount}
                 </span>
               </div>
 

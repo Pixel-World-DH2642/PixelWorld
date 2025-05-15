@@ -57,16 +57,6 @@ const detailSlice = createSlice({
     setPainting: (state, action) => {
       state.currentPainting = action.payload;
     },
-    likePainting: (state, action) => {
-      if (!state.currentPainting.likedBy.includes(action.payload)) {
-        state.currentPainting.likedBy.push(action.payload);
-      }
-    },
-    dislikePainting: (state, action) => {
-      state.currentPainting.likedBy = state.currentPainting.likedBy.filter(
-        (user) => user !== action.payload,
-      );
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -86,10 +76,5 @@ const detailSlice = createSlice({
   },
 });
 
-export const {
-  setCurrentPaintingId,
-  setPainting,
-  likePainting,
-  dislikePainting,
-} = detailSlice.actions;
+export const { setCurrentPaintingId, setPainting } = detailSlice.actions;
 export default detailSlice.reducer;

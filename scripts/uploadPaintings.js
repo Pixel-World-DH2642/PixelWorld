@@ -1059,7 +1059,6 @@ const paintings = [
     userId: "user123",
     date: Date.now() - 100000000,
     notes: "Inspired by the colors of a Spanish sunset.",
-    likedBy: ["user1", "user2", "user3"],
   },
   {
     id: "2",
@@ -2095,7 +2094,6 @@ const paintings = [
     userId: "user456",
     date: Date.now() - 50000000,
     notes: "My first attempt using only shades of blue.",
-    likedBy: ["user5"],
   },
   {
     id: "3",
@@ -3131,7 +3129,6 @@ const paintings = [
     userId: "user789",
     date: Date.now() - 2000000,
     notes: "Experimented with pixel symmetry.",
-    likedBy: [],
   },
   {
     id: "4",
@@ -4168,7 +4165,6 @@ const paintings = [
     userId: "user321",
     date: Date.now() - 100000000,
     notes: "I painted this on a vacation",
-    likedBy: ["user1", "user3"],
   },
   {
     id: "5",
@@ -5204,7 +5200,6 @@ const paintings = [
     userId: "user555",
     date: Date.now() - 50000000,
     notes: "I like to paint with this app",
-    likedBy: ["user5", "user123"],
   },
 ];
 

@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import { DetailPage } from "../pages/DetailPage";
-import { likePainting, dislikePainting } from "../app/slices/detailSlice";
+import { toggleLike, resetLikes } from "../app/slices/likeSlice";
 import {
   addComment,
   deleteComment,
@@ -18,12 +18,19 @@ export const Detail = connect(
       commentsLoading: state.comments.status === "loading",
       commentsError: state.comments.error,
       currentUser: state.auth?.user,
+      likesCount: state.likes.count,
+      userLiked: state.likes.userLiked,
+      likesLoading: state.likes.loading,
     };
   },
   function mapDispatchToProps(dispatch) {
     return {
-      onLikePainting: (userId) => dispatch(likePainting(userId)),
-      onDislikePainting: (userId) => dispatch(dislikePainting(userId)),
+      onToggleLike: (paintingId, userId) => {
+        if (userId && paintingId) {
+          dispatch(toggleLike({ paintingId, userId }));
+        }
+      },
+      onClearLikes: () => dispatch(resetLikes()),
       onAddComment: (paintingId, userId, userName, text) =>
         dispatch(addComment({ paintingId, userId, userName, text })),
       onDeleteComment: (commentId, paintingId) =>

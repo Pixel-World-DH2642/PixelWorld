@@ -1,8 +1,8 @@
 import { createListenerMiddleware } from "@reduxjs/toolkit";
 import { setCurrentPaintingId, fetchPaintingById } from "../slices/detailSlice";
 
-export const detailListenerMiddleware = createListenerMiddleware();
-detailListenerMiddleware.startListening({
+export const currentPaintingListenerMiddleware = createListenerMiddleware();
+currentPaintingListenerMiddleware.startListening({
   actionCreator: setCurrentPaintingId,
   effect: async (action, listenerApi) => {
     const { payload } = action;
