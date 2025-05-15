@@ -50,3 +50,9 @@
   border-width: 1px;
   aspect-ratio: 1/1;
 }
+
+.selected_palette_cell {
+  border-color: rgb(145, 139, 139);
+  border-width: 1px;
+  aspect-ratio: 1/1;
+}

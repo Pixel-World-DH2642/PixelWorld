@@ -8,9 +8,9 @@ export function createActorList(p5, MicroEngine) {
     actor.addComponent(CanvasComponent, null);
 
     function CanvasComponent(settings, actor, pos) {
-      let pixelSize = 16;
-      let rows = Math.floor(size.x / 16);
-      let columns = Math.floor(size.y / 16);
+      let pixelSize = 8;
+      let rows = Math.floor(size.x / pixelSize);
+      let columns = Math.floor(size.y / pixelSize);
 
       const pixelArray = [];
 

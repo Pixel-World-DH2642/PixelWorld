@@ -27,7 +27,7 @@ export function sketch(p5) {
   };
 
   p5.setup = () => {
-    p5.createCanvas(600, 300);
+    p5.createCanvas(800, 400);
     p5.rectMode(p5.CENTER);
     p5.noSmooth();
     //p5.background(30, 40, 220);

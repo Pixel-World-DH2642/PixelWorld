@@ -2,7 +2,7 @@ import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { sketch } from "../components/Sketch";
 //import { Link } from "react-router-dom";
 import { Menu } from "../components/Menu";
-import { PixelEditor } from "../components/PixelEditor";
+import { PixelEditorComponent } from "../components/PixelEditorComponent";
 
 export function WorldPage({
   quote,
@@ -18,15 +18,18 @@ export function WorldPage({
   onSelectColor,
   onSubmitPainting,
   onResetPainting,
+
+  //Add properties and functions from pixel editor slice
+  fromPixelEditor,
 }) {
-  console.log(weather);
+  //console.log(weather);
   function getNewQuote() {
     onGetQuote();
   }
 
   function getWeather() {
     onGetWeather();
-    console.log("weather button");
+    //console.log("weather button");
   }
 
   return (
@@ -39,6 +42,14 @@ export function WorldPage({
           sketch={sketch}
           weatherData={weather} //{{ cloudAmt: 5 }} /*{weather.parsedData}*/
         />
+      </div>
+      <div>
+        <PixelEditorComponent thing={fromPixelEditor} />
+      </div>
+    </div>
+  );
+}
+/*
 
         <div className="flex items-center justify-center">
           <button
@@ -58,10 +69,5 @@ export function WorldPage({
           </button>
           <p>Current weather: {weather.currentWeather || "No data yet"}</p>
         </div>
-      </div>
-      <div>
-        <PixelEditor />
-      </div>
-    </div>
-  );
-}
+
+*/

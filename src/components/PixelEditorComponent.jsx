@@ -1,6 +1,12 @@
 import "../styles/global.css";
+//import "./assets/pixel_editor_assets/pencil_icon.png";
 
-export function PixelEditor(pixelArray) {
+export function PixelEditorComponent({
+  //State Properties
+  colorPaletteArray,
+  //Functions
+  onToolSelect,
+}) {
   //Tools
   //Color Palette
   //Pencil
@@ -21,6 +27,8 @@ export function PixelEditor(pixelArray) {
   const numPaletteSlots = 16;
   const palette = [];
   randomizePalette();
+
+  let selectedPaletteSlot = null;
 
   //Helpers
   function randomColor() {
@@ -44,9 +52,15 @@ export function PixelEditor(pixelArray) {
       : null;
   }
 
-  //Callbacks
+  //Callbacks: Hook into PixelEditor container
   function handlePaletteClickedACB(e) {
-    console.log(e.target.dataset.color);
+    if (!e.target.dataset.color || e.target === selectedPaletteSlot) return;
+    console.log(e.target);
+
+    if (selectedPaletteSlot) selectedPaletteSlot.className = "palette_slot";
+    selectedPaletteSlot = e.target;
+    selectedPaletteSlot.className = "selected_palette_cell";
+    //console.log(e.target.dataset.color);
   }
 
   function handleColorChangeACB(e) {
@@ -97,8 +111,18 @@ export function PixelEditor(pixelArray) {
           <div>Undo</div>
           <div>Redo</div>
           <div>Randomize</div>
-          <div>Pencil</div>
-          <div>Eraser</div>
+          <div>
+            Pencil
+            <div>
+              <img src="assets/pencil_icon_64x64.png" alt="pencil" />
+            </div>
+          </div>
+          <div>
+            Eraser
+            <div>
+              <img src="assets/eraser_icon_64x64.png" alt="pencil" />
+            </div>
+          </div>
           <div>Fill</div>
         </div>
       </div>
