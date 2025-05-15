@@ -10,16 +10,15 @@ export function SubmitModal({
   onSubmitPainting,
   isOpen,
   onClose,
+  paintingSubmission,
 }) {
   const [includeQuote, setIncludeQuote] = useState(true);
   const [notes, setNotes] = useState("");
   const [title, setTitle] = useState(painting?.title || "");
   const [error, setError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   useEffect(() => {
     setError(null);
-    setIsSubmitting(false);
     setIsSuccess(false);
     setTitle(painting?.title || "");
     setNotes("");
@@ -30,7 +29,6 @@ export function SubmitModal({
   const handleSubmit = async () => {
     // Reset any previous errors
     setError(null);
-    setIsSubmitting(true);
 
     try {
       // Validate painting data
@@ -85,17 +83,16 @@ export function SubmitModal({
       }
 
       // Submit the painting if validation passes
-      console.log("Submitting painting:", submissionData);
       await onSubmitPainting(submissionData);
-      setIsSuccess(true);
-      setTimeout(() => {
-        onClose();
-      }, 1500);
+      if (!paintingSubmission.error) {
+        setIsSuccess(true);
+        setTimeout(() => {
+          onClose();
+        }, 1500);
+      }
     } catch (err) {
       console.error("Error submitting painting:", err);
       setError("Failed to submit painting. Please try again.");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -103,7 +100,7 @@ export function SubmitModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full border-4 border-gray-800 max-h-[90vh] overflow-y-auto relative">
         {/* Loading overlay */}
-        {isSubmitting && !isSuccess && (
+        {paintingSubmission.loading && !isSuccess && (
           <div className="absolute inset-0 bg-white/80 flex flex-col items-center justify-center z-10">
             <CircularProgress size={60} />
             <p className="mt-4 text-lg font-semibold">
@@ -150,7 +147,7 @@ export function SubmitModal({
             placeholder="Enter a title for your masterpiece"
             error={error && error.includes("Title")}
             className="mb-2"
-            disabled={isSubmitting || isSuccess}
+            disabled={paintingSubmission.loading || isSuccess}
           />
         </div>
 
@@ -166,7 +163,7 @@ export function SubmitModal({
                 checked={includeQuote}
                 onChange={(e) => setIncludeQuote(e.target.checked)}
                 className="mr-2 h-4 w-4"
-                disabled={isSubmitting || isSuccess}
+                disabled={paintingSubmission.loading || isSuccess}
               />
               <span className="text-sm">Include quote with submission</span>
             </label>
@@ -184,7 +181,7 @@ export function SubmitModal({
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Share your inspiration, technique, or story behind this artwork..."
             className="mb-2"
-            disabled={isSubmitting || isSuccess}
+            disabled={paintingSubmission.loading || isSuccess}
           />
         </div>
 
@@ -203,7 +200,7 @@ export function SubmitModal({
             color="error"
             onClick={onClose}
             className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition-colors"
-            disabled={isSubmitting || isSuccess}
+            disabled={paintingSubmission.loading || isSuccess}
           >
             Cancel
           </Button>
@@ -211,7 +208,7 @@ export function SubmitModal({
             variant="contained"
             onClick={handleSubmit}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            disabled={isSubmitting || isSuccess}
+            disabled={paintingSubmission.loading || isSuccess}
           >
             Submit
           </Button>

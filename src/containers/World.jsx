@@ -13,6 +13,10 @@ export const World = connect(
       user: state.auth.user,
       quote: state.quote.currentQuote,
       weather: state.weather,
+      paintingSubmission: {
+        loading: state.paintings.loading,
+        error: state.paintings.error,
+      },
     };
   },
   function mapDispatchToProps(dispatch) {
@@ -20,7 +24,6 @@ export const World = connect(
       onGetQuote: () => dispatch(fetchDailyQuote()),
       onGetWeather: () => dispatch(getWeatherData()),
       onSubmitPainting: (painting) => {
-        console.log("Submitting painting:", painting);
         return dispatch(uploadPainting(painting)).then(() => {
           return dispatch(fetchAllPaintings());
         });

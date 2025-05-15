@@ -21,6 +21,7 @@ export function WorldPage({
   onSelectColor,
   onSubmitPainting,
   onResetPainting,
+  paintingSubmission,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -1103,6 +1104,7 @@ export function WorldPage({
         onSubmitPainting={onSubmitPainting}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        paintingSubmission={paintingSubmission}
       />
     </div>
   );
