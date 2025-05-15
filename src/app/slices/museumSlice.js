@@ -6,17 +6,29 @@ export const fetchPaintings = createAsyncThunk(
   "museum/fetchPaintings",
   async (_, thunkAPI) => {
     try {
+      // Get paintings
       const paintingsCollection = collection(db, "paintings");
       const paintingsSnapshot = await getDocs(paintingsCollection);
+
+      // Get likes
+      const likesCollection = collection(db, "likes");
+      const likesSnapshot = await getDocs(likesCollection);
+
+      // Count likes per painting
+      const likesCount = {};
+      likesSnapshot.docs.forEach(doc => {
+        const like = doc.data();
+        likesCount[like.paintingId] = (likesCount[like.paintingId] || 0) + 1;
+      });
+
+      // Process paintings with timestamp serialization and add likes count
       const paintings = paintingsSnapshot.docs.map((doc) => {
         const data = doc.data();
 
-        // Convert Firestore Timestamp objects to serializable format
+        // Timestamp serialization
         const serializedData = Object.entries(data).reduce(
           (acc, [key, value]) => {
-            // Check if the value is a Timestamp
             if (value && typeof value.toDate === "function") {
-              // Convert to ISO string or timestamp number
               acc[key] = value.toDate().toISOString();
             } else {
               acc[key] = value;
@@ -26,16 +38,22 @@ export const fetchPaintings = createAsyncThunk(
           {},
         );
 
+        // Add the likes count to the painting data
         return {
           id: doc.id,
           ...serializedData,
+          likesCount: likesCount[doc.id] || 0
         };
       });
-      return paintings;
+
+      // Sort paintings by likes count
+      const sortedPaintings = paintings.sort((a, b) => b.likesCount - a.likesCount);
+
+      return sortedPaintings;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
-  },
+  }
 );
 
 const initialState = {

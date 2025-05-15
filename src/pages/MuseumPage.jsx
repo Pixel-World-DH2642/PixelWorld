@@ -5,7 +5,14 @@ import { Suspense } from "../components/Suspense";
 import { NavBar } from "../components/NavBar";
 
 // Painting Card Component - extracted and reusable
-const PaintingCard = ({ painting, onSelect }) => {
+const PaintingCard = ({ painting, onSelect,onToggleLike, currentUser, userLiked }) => {
+  const handleLikeClick = (e) => {
+    e.preventDefault(); 
+    if (currentUser) {
+      onToggleLike(painting.id, currentUser.uid);
+    }
+  };
+
   return (
     <Link
       to="/details"
@@ -13,6 +20,7 @@ const PaintingCard = ({ painting, onSelect }) => {
       onClick={() => onSelect(painting.id)}
     >
       {/* Fixed height container for the image with aspect ratio preservation */}
+      <div className="relative">
       <PaintingDisplay painting={painting} />
 
       {/* Text content container with ellipsis for overflow */}
@@ -24,6 +32,22 @@ const PaintingCard = ({ painting, onSelect }) => {
         <p className="text-sm italic line-clamp-2 mt-auto">
           "{painting.savedQuote}"
         </p>
+
+        {/* Like button */}
+        <button
+          onClick={handleLikeClick}
+          className={`absolute top-2 right-2 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors ${
+            !currentUser ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={!currentUser}
+          title={!currentUser ? 'Please log in to like paintings' : ''}
+        >
+          <span className="text-xl">
+          {(painting.likesCount || 0)}
+            {userLiked ? '❤️' : '🤍'}
+          </span>
+        </button>
+        </div>
       </div>
     </Link>
   );
@@ -38,8 +62,12 @@ export function MuseumPage({
   onPrevClick,
   onNextClick,
   onSelectPainting,
+  onToggleLike,
   isLoading,
   error,
+  currentUser,
+  userLiked,
+  topPaintings = [], 
 }) {
   // Responsive layout state
   const [layoutType, setLayoutType] = useState("desktop");
@@ -100,7 +128,13 @@ export function MuseumPage({
           <div className="grid grid-cols-3 gap-4 w-full">
             {currentPaintings.map((painting) => (
               <div key={painting.id}>
-                <PaintingCard painting={painting} onSelect={onSelectPainting} />
+                <PaintingCard 
+                  painting={painting} 
+                  onSelect={onSelectPainting}
+                  onToggleLike={onToggleLike}
+                  currentUser={currentUser}
+                  userLiked={userLiked}
+                />
               </div>
             ))}
             {/* Add empty placeholders to maintain grid structure */}
@@ -133,9 +167,15 @@ export function MuseumPage({
             className={`grid grid-cols-1 ${layoutType === "tablet" ? "md:grid-cols-2" : ""} gap-4`}
           >
             {paintings.map((painting) => (
-              <div key={painting.id}>
-                <PaintingCard painting={painting} onSelect={onSelectPainting} />
-              </div>
+      <div key={painting.id}>
+        <PaintingCard 
+          painting={painting} 
+          onSelect={onSelectPainting}
+          onToggleLike={onToggleLike}
+          currentUser={currentUser}
+          userLiked={userLiked}
+        />
+      </div>
             ))}
           </div>
         </div>
@@ -148,6 +188,31 @@ export function MuseumPage({
       <NavBar backLocation="world" />
 
       <div className="font-pixel w-full pb-8 lg:pb-12 pt-4">
+
+        {/* Hall of Fame Section */}
+        {topPaintings && topPaintings.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold mb-6">HALL OF FAME</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {topPaintings.map((painting, index) => (
+                <div key={painting.id} className="relative">
+                  <div className="absolute -top-4 -left-4 w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-black font-bold">
+                    #{index + 1}
+                  </div>
+                  <PaintingCard 
+                    painting={painting} 
+                    onSelect={onSelectPainting}
+                    onToggleLike={onToggleLike}
+                    currentUser={currentUser}
+                    userLiked={userLiked}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+
         <h1 className="text-3xl font-bold mb-4">MUSEUM</h1>
 
         {/* Loading and error states */}
