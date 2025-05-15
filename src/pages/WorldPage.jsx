@@ -1,11 +1,11 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { sketch } from "../components/Sketch";
-//import { Link } from "react-router-dom";
 import { Menu } from "../components/Menu";
 import { PixelEditor } from "../components/PixelEditor";
 import { WeatherDashboard } from "../components/weatherDashboard";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
+import { SubmitModal } from "../components/SubmitModal";
 
 export function WorldPage({
   quote,
@@ -22,6 +22,8 @@ export function WorldPage({
   onSubmitPainting,
   onResetPainting,
 }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   console.log(weather);
   function getNewQuote() {
     onGetQuote();
@@ -49,11 +51,26 @@ export function WorldPage({
           </button>
           <p>Quote of the day: {quote.content}</p>
         </div>
+
+        <button
+          className="mt-4 px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 transition-colors"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Submit Painting
+        </button>
       </div>
       <div className="flex">
         <PixelEditor />
         <WeatherDashboard />
       </div>
+
+      <SubmitModal
+        quote={quote}
+        painting={painting}
+        onSubmitPainting={onSubmitPainting}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }
