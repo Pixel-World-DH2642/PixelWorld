@@ -33,7 +33,7 @@ export const signInWithGoogle = createAsyncThunk(
 // Define the async thunk for sign-up with email/password
 export const signUpWithEmailPassword = createAsyncThunk(
   "auth/signUpWithEmailPassword",
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ email, password, name }, { rejectWithValue }) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -41,6 +41,12 @@ export const signUpWithEmailPassword = createAsyncThunk(
         password,
       );
       console.log("User created successfully:", userCredential.user);
+
+      // Update the user's display name with the provided name
+      await updateProfile(userCredential.user, {
+        displayName: name,
+      });
+      console.log("Display name set to:", name);
 
       // Extract serializable user data
       const { uid, displayName, photoURL } = userCredential.user;

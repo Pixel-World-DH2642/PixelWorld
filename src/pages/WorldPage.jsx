@@ -1061,9 +1061,6 @@ export function WorldPage({
       "#6495ED",
       "#B0C4DE",
     ],
-    authorName: "Pablo Enthusiast",
-    userId: "SUGFsFwraLYI1ScJvCfcMIEhJIE2",
-    date: Date.now() - 100000000,
   };
 
   return (

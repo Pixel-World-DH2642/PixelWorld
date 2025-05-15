@@ -27,7 +27,7 @@ export function NavBar({
   };
 
   return (
-    <div className="flex items-end justify-between border-b pb-2">
+    <div className="flex flex-col items-end justify-between border-b pb-2 gap-4">
       <button
         onClick={() => {
           if (beforeNavigate) {
@@ -39,15 +39,15 @@ export function NavBar({
             navigate(-1);
           }
         }}
-        className="flex transition transform duration-200 items-center cursor-pointer"
+        className="flex transition self-start gap-2 transform duration-200 items-center cursor-pointer"
       >
-        <img src="/assets/back_arrow.png" className="h-8"></img>
-        <div className="pl-4 hover:underline flex text-xl sm:text-3xl">
+        <img src="/assets/back_arrow.png" className="h-4 sm:h-6"></img>
+        <div className=" hover:underline flex text-xl sm:text-3xl">
           Back{backLocation ? " to " + backLocation : ""}
         </div>
       </button>
       {user && (
-        <div className="flex items-center justify-end gap-4">
+        <div className="flex items-center justify-end gap-2 sm:gap-4">
           {showProfile && (
             <button
               onClick={() => {
@@ -61,7 +61,7 @@ export function NavBar({
               <img
                 src={user.photoURL || "/assets/default_avatar.png"} // Provide a path to a default avatar
                 alt="Profile"
-                className="w-8 h-8 bg-gray-300 rounded-full border border-black" // Added border and bg as fallback
+                className="w-6 h-6 sm:w-8 sm:h-8 aspect-square bg-gray-300 rounded-full border border-black hover:scale-110 transition transform duration-200" // Added border and bg as fallback
               />
             </button>
           )}
@@ -69,7 +69,9 @@ export function NavBar({
             onClick={handleSignOut}
             className="flex transition transform duration-200 items-center cursor-pointer"
           >
-            <div className="hover:underline flex text-sm">Sign out</div>
+            <div className="hover:underline flex text-sm sm:text-base">
+              Sign out
+            </div>
           </button>
         </div>
       )}

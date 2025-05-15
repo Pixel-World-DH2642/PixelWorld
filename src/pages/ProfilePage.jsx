@@ -70,54 +70,59 @@ export function ProfilePage({
         {authStatus !== "loading" && (
           <>
             {/* Profile Info */}
-            <div className="flex items-center pb-4 pt-4 w-full">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pb-4 pt-4 w-full">
               {/* Profile Picture */}
               <img
                 src={user.photoURL || "/assets/default_avatar.png"} // Provide a path to a default avatar
                 alt="Profile"
-                className="w-12 h-12 bg-gray-300 rounded-full mr-4 border border-black" // Added border and bg as fallback
+                className="aspect-square w-1/3 sm:w-14 self-center bg-gray-300 rounded-full mr-4 border border-black" // Added border and bg as fallback
               />
-              <div className="flex items-baseline space-x-2">
-                {!isEditing ? (
-                  <>
-                    <h1 className="text-xl sm:text-3xl font-bold">
-                      {user.displayName || user.email || "User"}
-                    </h1>
-                    <button
-                      onClick={handleEditClick}
-                      className="text-sm flex items-center hover:underline cursor-pointer"
-                      disabled={authStatus === "loading"} // Disable while loading/updating
-                    >
-                      Edit <span className="ml-1">&#9998;</span>
-                    </button>
-                  </>
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      value={newDisplayName}
-                      onChange={(e) => setNewDisplayName(e.target.value)}
-                      className="text-xl font-bold border border-black px-2 py-1"
-                      maxLength={30} // Add a reasonable max length
-                    />
-                    <button
-                      onClick={handleSaveClick}
-                      className="text-sm bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded disabled:opacity-50 cursor-pointer"
-                      disabled={
-                        authStatus === "loading" || !newDisplayName.trim()
-                      }
-                    >
-                      {authStatus === "loading" ? "Saving..." : "Save"}
-                    </button>
-                    <button
-                      onClick={handleCancelClick}
-                      className="text-sm bg-gray-400 hover:bg-gray-500 text-white px-2 py-1 rounded cursor-pointer"
-                      disabled={authStatus === "loading"}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
+              <div className="w-full">
+                <div className="flex items-baseline space-x-2">
+                  {!isEditing ? (
+                    <>
+                      <h1 className="text-xl sm:text-3xl font-bold">
+                        {user.displayName || "Anonymous"}
+                      </h1>
+                      <button
+                        onClick={handleEditClick}
+                        className="text-sm flex items-center hover:underline cursor-pointer"
+                        disabled={authStatus === "loading"} // Disable while loading/updating
+                      >
+                        Edit <span className="ml-1">&#9998;</span>
+                      </button>
+                    </>
+                  ) : (
+                    <div className="flex items-center space-x-2 w-full">
+                      <input
+                        type="text"
+                        value={newDisplayName}
+                        onChange={(e) => setNewDisplayName(e.target.value)}
+                        className="font-bold border rounded border-black px-2 py-1 w-full"
+                        maxLength={30} // Add a reasonable max length
+                      />
+                      <button
+                        onClick={handleSaveClick}
+                        className="text-sm bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded disabled:opacity-50 cursor-pointer"
+                        disabled={
+                          authStatus === "loading" || !newDisplayName.trim()
+                        }
+                      >
+                        {authStatus === "loading" ? "Saving..." : "Save"}
+                      </button>
+                      <button
+                        onClick={handleCancelClick}
+                        className="text-sm bg-gray-400 hover:bg-gray-500 text-white px-2 py-1 rounded cursor-pointer"
+                        disabled={authStatus === "loading"}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <h1 className="sm:text-xl break-all overflow-hidden">
+                  {user.email}
+                </h1>
               </div>
             </div>
             {/* Gallery */}

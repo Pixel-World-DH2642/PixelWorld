@@ -9,12 +9,20 @@ import {
   Paper,
   InputAdornment,
   IconButton,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
 import { Google } from "@mui/icons-material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
-export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
+export function LoginPage({
+  onLogin,
+  onLoginWithGoogle,
+  onSignup,
+  loading,
+  error,
+}) {
   const navigate = useNavigate();
   const [showSignup, setShowSignup] = useState(false);
   const [email, setEmail] = useState("");
@@ -28,6 +36,7 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Rest of the validation functions remain unchanged
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -41,6 +50,7 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
     return name.trim().length > 0;
   };
 
+  // Rest of the handler functions remain unchanged
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     onLogin(email, password, navigate);
@@ -114,8 +124,24 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
 
   return (
     <div>
+      {loading && (
+        <div className="fixed inset-0 flex justify-center items-center flex-col gap-4 bg-black/50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <CircularProgress size={60} />
+            <Typography variant="h6" className="mt-4">
+              {showSignup ? "Creating your account..." : "Logging in..."}
+            </Typography>
+          </div>
+        </div>
+      )}
       <div>
         <Paper elevation={3} sx={{ p: 4 }}>
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          )}
+
           {!showSignup ? (
             <>
               <Box
@@ -155,20 +181,18 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton onClick={toggleShowPassword} edge="end">
-                            {showPassword ? (
-                              <VisibilityOffIcon />
-                            ) : (
-                              <VisibilityIcon />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    },
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={toggleShowPassword} edge="end">
+                          {showPassword ? (
+                            <VisibilityOffIcon />
+                          ) : (
+                            <VisibilityIcon />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
                   }}
                 />
 
@@ -267,20 +291,18 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
                   required
                   error={!!passwordError}
                   helperText={passwordError}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton onClick={toggleShowPassword} edge="end">
-                            {showPassword ? (
-                              <VisibilityOffIcon />
-                            ) : (
-                              <VisibilityIcon />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    },
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={toggleShowPassword} edge="end">
+                          {showPassword ? (
+                            <VisibilityOffIcon />
+                          ) : (
+                            <VisibilityIcon />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
                   }}
                 />
 
@@ -294,23 +316,21 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
                   required
                   error={!!passwordMatchError}
                   helperText={passwordMatchError}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={toggleShowConfirmPassword}
-                            edge="end"
-                          >
-                            {showConfirmPassword ? (
-                              <VisibilityOffIcon />
-                            ) : (
-                              <VisibilityIcon />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    },
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={toggleShowConfirmPassword}
+                          edge="end"
+                        >
+                          {showConfirmPassword ? (
+                            <VisibilityOffIcon />
+                          ) : (
+                            <VisibilityIcon />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
                   }}
                 />
 

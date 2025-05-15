@@ -8,7 +8,10 @@ import {
 
 export const Login = connect(
   function mapStateToProps(state) {
-    return {};
+    return {
+      loading: state.auth.status === "loading",
+      error: state.auth.error,
+    };
   },
   function mapDispatchToProps(dispatch) {
     return {
@@ -28,9 +31,11 @@ export const Login = connect(
           console.error("Error during login:", error);
         }
       },
-      onSignup: async (email, password, navigate) => {
+      onSignup: async (email, password, navigate, name) => {
         try {
-          await dispatch(signUpWithEmailPassword({ email, password })).unwrap();
+          await dispatch(
+            signUpWithEmailPassword({ email, password, name }),
+          ).unwrap();
           navigate("/");
         } catch (error) {
           console.error("Error during signup:", error);
