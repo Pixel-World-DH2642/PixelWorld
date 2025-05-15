@@ -129,7 +129,7 @@ export function ProfilePage({
             <h1 className="text-xl sm:text-3xl font-bold mb-2 w-full">
               Your paintings
             </h1>
-            <div className="w-full border-b-2 border-black mb-4 sm:mb-8"></div>
+            <div className="w-full border-b-2 border-black mb-8"></div>
             {/* Handle loading state */}
             {paintingsLoading && !paintingsError && (
               <div className="w-full min-h-[250px] flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-md p-8 my-4 text-center">
@@ -157,7 +157,7 @@ export function ProfilePage({
                       <Link
                         to="/details"
                         key={painting.id}
-                        className="text-left mb-4"
+                        className="text-left mb-4 hover:scale-105 transition-transform duration-200 ease-in-out"
                         onClick={() => handlePaintingSelectACB(painting.id)}
                       >
                         <PaintingDisplay painting={painting} />

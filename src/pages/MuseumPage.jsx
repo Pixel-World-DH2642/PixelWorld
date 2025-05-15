@@ -9,7 +9,7 @@ const PaintingCard = ({ painting, onSelect }) => {
   return (
     <Link
       to="/details"
-      className="flex flex-col p-6 shadow-xl aspect-[2.2/3] cursor-pointer overflow-hidden"
+      className="flex flex-col p-6 shadow-xl aspect-[2.2/3] cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-200 ease-in-out"
       onClick={() => onSelect(painting.id)}
     >
       {/* Fixed height container for the image with aspect ratio preservation */}
