@@ -1,5 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Container,
+  Paper,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import { Google } from "@mui/icons-material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
   const navigate = useNavigate();
@@ -7,9 +20,13 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [passwordMatchError, setPasswordMatchError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,6 +37,10 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
     return password.length >= 6;
   };
 
+  const validateName = (name) => {
+    return name.trim().length > 0;
+  };
+
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     onLogin(email, password, navigate);
@@ -27,6 +48,12 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
 
   const handleSignupSubmit = (e) => {
     e.preventDefault();
+
+    // Validate name
+    if (!validateName(name)) {
+      setNameError("Please enter your name");
+      return;
+    }
 
     // Validate email format
     if (!validateEmail(email)) {
@@ -47,14 +74,20 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
     }
 
     // Clear errors if validation passes
+    setNameError("");
     setEmailError("");
     setPasswordError("");
     setPasswordMatchError("");
 
-    onSignup(email, password, navigate);
+    onSignup(email, password, navigate, name);
   };
 
   // Reset errors when inputs change
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+    setNameError("");
+  };
+
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
     setEmailError("");
@@ -71,138 +104,244 @@ export function LoginPage({ onLogin, onLoginWithGoogle, onSignup }) {
     setPasswordMatchError("");
   };
 
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
-    <div className="max-h-[calc(100vh-4rem)] px-8 pt-8">
-      <div className="pb-8">
-        {!showSignup ? (
-          <>
-            <h1 className="text-3xl font-pixel font-bold mb-6 text-center flex justify-between items-center">
-              <div className="text-left">Log in to Pixelworld</div>
-              <span className="inline-block ml-2">🖌️</span>
-            </h1>
-            <form className="flex flex-col gap-4" onSubmit={handleLoginSubmit}>
-              <div>
-                <label className="block text-sm mb-1">Email Address</label>
-                <input
+    <div>
+      <div>
+        <Paper elevation={3} sx={{ p: 4 }}>
+          {!showSignup ? (
+            <>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 3,
+                }}
+              >
+                <Typography variant="h4" component="h1" fontWeight="bold">
+                  Log in to Pixelworld
+                </Typography>
+                <div className="pl-4 text-3xl">🖌️</div>
+              </Box>
+
+              <Box
+                component="form"
+                onSubmit={handleLoginSubmit}
+                sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+              >
+                <TextField
+                  label="Email Address"
                   type="email"
-                  className="w-full border border-gray-300 rounded-md p-2"
-                  placeholder="Email Address"
+                  fullWidth
+                  variant="outlined"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-              </div>
-              <div>
-                <label className="block text-sm mb-1">Password</label>
-                <input
-                  type="password"
-                  className="w-full border border-gray-300 rounded-md p-2"
-                  placeholder="Password"
+
+                <TextField
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  fullWidth
+                  variant="outlined"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={toggleShowPassword} edge="end">
+                            {showPassword ? (
+                              <VisibilityOffIcon />
+                            ) : (
+                              <VisibilityIcon />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
                 />
-              </div>
-              <button
-                type="submit"
-                className="bg-gray-500 text-white rounded-md py-2 hover:bg-gray-600 border-1 border-gray-800 cursor-pointer"
-              >
-                Log in
-              </button>
-            </form>
 
-            <div className="my-4 text-center">
-              <button
-                onClick={() => {
-                  onLoginWithGoogle(navigate);
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  fullWidth
+                  sx={{ mt: 1 }}
+                >
+                  Log in
+                </Button>
+              </Box>
+
+              <Box sx={{ my: 3 }}>
+                <Button
+                  onClick={() => {
+                    onLoginWithGoogle(navigate);
+                  }}
+                  variant="outlined"
+                  fullWidth
+                  startIcon={<Google />}
+                  sx={{ py: 1 }}
+                >
+                  Continue with Google
+                </Button>
+              </Box>
+
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  Are you new here?
+                </Typography>
+                <Button
+                  onClick={() => setShowSignup(true)}
+                  variant="contained"
+                  color="secondary"
+                  fullWidth
+                >
+                  Create an account
+                </Button>
+              </Box>
+            </>
+          ) : (
+            <>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 3,
                 }}
-                className="w-full flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100 cursor-pointer px-2 whitespace-nowrap"
               >
-                <i className="bi bi-google pr-2"></i>
-                Continue with Google
-              </button>
-            </div>
+                <Typography variant="h4" component="h1" fontWeight="bold">
+                  Create an account
+                </Typography>
+                <div className="pl-4 text-3xl">🖌️</div>
+              </Box>
 
-            <div className="text-center mt-4">
-              <p className="text-sm mb-2 text-left">Are you new here?</p>
-              <button
-                onClick={() => setShowSignup(true)}
-                className="w-full bg-gray-500 text-white rounded-md py-2 hover:bg-gray-700 border-1 border-gray-800 cursor-pointer"
+              <Box
+                component="form"
+                onSubmit={handleSignupSubmit}
+                sx={{ display: "flex", flexDirection: "column", gap: 2 }}
               >
-                Create an account
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <h1 className="text-xl sm:text-3xl font-bold mb-6 text-center flex justify-between items-center w-full">
-              <div className="text-left">Create an account</div>
-              <span className="inline-block ml-2">🖌️</span>
-            </h1>
-            <form className="flex flex-col gap-4" onSubmit={handleSignupSubmit}>
-              <div>
-                <label className="block text-sm mb-1">Email Address</label>
-                <input
+                <TextField
+                  label="Name"
+                  type="text"
+                  fullWidth
+                  variant="outlined"
+                  value={name}
+                  onChange={handleNameChange}
+                  required
+                  error={!!nameError}
+                  helperText={nameError}
+                />
+
+                <TextField
+                  label="Email Address"
                   type="email"
-                  className={`w-full border ${emailError ? "border-red-500" : "border-gray-300"} rounded-md p-2`}
-                  placeholder="Email Address"
+                  fullWidth
+                  variant="outlined"
                   value={email}
                   onChange={handleEmailChange}
                   required
+                  error={!!emailError}
+                  helperText={emailError}
                 />
-                {emailError && (
-                  <p className="text-red-500 text-xs mt-1">{emailError}</p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm mb-1">Password</label>
-                <input
-                  type="password"
-                  className={`w-full border ${passwordError || passwordMatchError ? "border-red-500" : "border-gray-300"} rounded-md p-2`}
-                  placeholder="Password"
+
+                <TextField
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  fullWidth
+                  variant="outlined"
                   value={password}
                   onChange={handlePasswordChange}
                   required
+                  error={!!passwordError}
+                  helperText={passwordError}
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={toggleShowPassword} edge="end">
+                            {showPassword ? (
+                              <VisibilityOffIcon />
+                            ) : (
+                              <VisibilityIcon />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
                 />
-                {passwordError && (
-                  <p className="text-red-500 text-xs mt-1">{passwordError}</p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm mb-1">Confirm Password</label>
-                <input
-                  type="password"
-                  className={`w-full border ${passwordMatchError ? "border-red-500" : "border-gray-300"} rounded-md p-2`}
-                  placeholder="Confirm Password"
+
+                <TextField
+                  label="Confirm Password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  fullWidth
+                  variant="outlined"
                   value={confirmPassword}
                   onChange={handleConfirmPasswordChange}
                   required
+                  error={!!passwordMatchError}
+                  helperText={passwordMatchError}
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={toggleShowConfirmPassword}
+                            edge="end"
+                          >
+                            {showConfirmPassword ? (
+                              <VisibilityOffIcon />
+                            ) : (
+                              <VisibilityIcon />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
                 />
-                {passwordMatchError && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {passwordMatchError}
-                  </p>
-                )}
-              </div>
-              <button
-                type="submit"
-                className="bg-gray-500 text-white rounded-md py-2 hover:bg-gray-600 border-1 border-gray-800 cursor-pointer"
-              >
-                Sign up
-              </button>
-            </form>
 
-            <div className="text-center mt-6">
-              <p className="text-sm mb-2">Already have an account?</p>
-              <button
-                onClick={() => setShowSignup(false)}
-                className="w-full bg-gray-500 text-white rounded-md py-2 hover:bg-gray-700 border-1 border-gray-800 cursor-pointer"
-              >
-                Back to login
-              </button>
-            </div>
-          </>
-        )}
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  fullWidth
+                  sx={{ mt: 1 }}
+                >
+                  Sign up
+                </Button>
+              </Box>
+
+              <Box sx={{ mt: 4, textAlign: "center" }}>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  Already have an account?
+                </Typography>
+                <Button
+                  onClick={() => setShowSignup(false)}
+                  variant="contained"
+                  color="secondary"
+                  fullWidth
+                >
+                  Back to login
+                </Button>
+              </Box>
+            </>
+          )}
+        </Paper>
       </div>
     </div>
   );
