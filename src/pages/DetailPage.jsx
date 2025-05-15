@@ -69,7 +69,9 @@ export function DetailPage({
                 <span>"{painting.savedQuote}"</span>
               </div>
               <div>
-                <span className="font-bold">Made by: {painting.author}</span>
+                <span className="font-bold">
+                  Made by: {painting.authorName}
+                </span>
               </div>
               <div>
                 <span>{painting.authorNotes}</span>
