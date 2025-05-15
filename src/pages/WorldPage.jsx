@@ -12,7 +12,7 @@ export function WorldPage({
   selectedColor,
   painting,
   weather,
-  player,
+  user,
   onGetWeather,
   onGetQuote,
   onSelectQuote,
@@ -1099,6 +1099,7 @@ export function WorldPage({
       <SubmitModal
         quote={quote}
         painting={painting}
+        user={user}
         onSubmitPainting={onSubmitPainting}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

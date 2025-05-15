@@ -186,11 +186,11 @@ export function DetailPage({
               <div className="bg-gray-100 p-4 rounded-lg">
                 <h1 className="text-3xl mb-4">{painting.title}</h1>
 
-                {painting.savedQuote && (
+                {painting.savedQuote.content && (
                   <div className="mb-4">
                     <p className="mb-2 font-semibold">Inspired by quote:</p>
                     <p className="mb-2 italic bg-gray-300 p-2 rounded">
-                      {painting.savedQuote}
+                      {painting.savedQuote.content}
                     </p>
                   </div>
                 )}

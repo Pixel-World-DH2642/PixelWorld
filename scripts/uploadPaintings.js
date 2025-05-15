@@ -1054,10 +1054,13 @@ const paintings = [
       "#6495ED",
       "#B0C4DE",
     ],
-    savedQuote: "Art washes away from the soul the dust of everyday life.",
+    savedQuote: {
+      content: "Art washes away from the soul the dust of everyday life.",
+      author: "Pablo Picasso",
+    },
     authorName: "Pablo Enthusiast",
     userId: "SUGFsFwraLYI1ScJvCfcMIEhJIE2",
-    date: Date.now() - 100000000,
+    createdAt: Date.now() - 100000000,
     notes: "Inspired by the colors of a Spanish sunset.",
   },
   {
@@ -2089,10 +2092,13 @@ const paintings = [
       "#6495ED",
       "#B0C4DE",
     ],
-    savedQuote: "Every artist was first an amateur.",
+    savedQuote: {
+      content: "Every artist was first an amateur.",
+      author: "Ralph Waldo Emerson",
+    },
     authorName: "Art Explorer",
     userId: "SUGFsFwraLYI1ScJvCfcMIEhJIE2",
-    date: Date.now() - 50000000,
+    createdAt: Date.now() - 50000000,
     notes: "My first attempt using only shades of blue.",
   },
   {
@@ -3124,10 +3130,13 @@ const paintings = [
       "#6495ED",
       "#B0C4DE",
     ],
-    savedQuote: "Creativity takes courage.",
+    savedQuote: {
+      content: "Creativity takes courage.",
+      author: "Henri Matisse",
+    },
     authorName: "Novice Artist",
     userId: "SUGFsFwraLYI1ScJvCfcMIEhJIE2",
-    date: Date.now() - 2000000,
+    createdAt: Date.now() - 2000000,
     notes: "Experimented with pixel symmetry.",
   },
   {
@@ -4159,11 +4168,14 @@ const paintings = [
       "#6495ED",
       "#B0C4DE",
     ],
-    savedQuote:
-      "Two things are infinite: the universe and human stupidity; and Im not sure about the universe.",
+    savedQuote: {
+      content:
+        "Two things are infinite: the universe and human stupidity; and Im not sure about the universe.",
+      author: "Albert Einstein",
+    },
     authorName: "Digital Painter",
     userId: "SUGFsFwraLYI1ScJvCfcMIEhJIE2",
-    date: Date.now() - 100000000,
+    createdAt: Date.now() - 100000000,
     notes: "I painted this on a vacation",
   },
   {
@@ -5195,10 +5207,13 @@ const paintings = [
       "#6495ED",
       "#B0C4DE",
     ],
-    savedQuote: "I love to fly",
+    savedQuote: {
+      content: "I love to fly",
+      author: "Sky Painter",
+    },
     authorName: "Sky Enthusiast",
     userId: "SUGFsFwraLYI1ScJvCfcMIEhJIE2",
-    date: Date.now() - 50000000,
+    createdAt: Date.now() - 50000000,
     notes: "I like to paint with this app",
   },
 ];
@@ -5240,7 +5255,7 @@ async function uploadPaintings() {
       await setDoc(paintingDocRef, {
         ...painting,
         // Convert date to a Firestore-friendly format
-        date: new Date(painting.date),
+        createdAt: new Date(painting.createdAt),
       });
       console.log(
         `Uploaded painting: ${painting.title} with document ID: ${painting.id}`,

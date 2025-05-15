@@ -11,6 +11,8 @@ import {
   deleteDoc,
   query,
   where,
+  serverTimestamp,
+  addDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -94,6 +96,44 @@ export const fetchUserPaintings = createAsyncThunk(
         id: doc.id,
         ...normalizeFirestoreData(doc.data()),
       }));
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  },
+);
+
+export const uploadPainting = createAsyncThunk(
+  "paintings/upload",
+  async (paintingData, thunkAPI) => {
+    try {
+      // Validate required fields
+      if (!paintingData.userId || !paintingData.colorMatrix) {
+        throw new Error("Missing required fields for painting upload");
+      }
+
+      // Prepare data for Firestore - convert colorMatrix to string if it's an array/object
+      const firestoreData = {
+        ...paintingData,
+        colorMatrix:
+          Array.isArray(paintingData.colorMatrix) ||
+          typeof paintingData.colorMatrix === "object"
+            ? JSON.stringify(paintingData.colorMatrix)
+            : paintingData.colorMatrix,
+        createdAt: serverTimestamp(),
+      };
+
+      // Add to Firestore
+      const paintingsCollection = collection(db, "paintings");
+      const docRef = await addDoc(paintingsCollection, firestoreData);
+
+      // Get the newly created document to return
+      const snapshot = await getDoc(docRef);
+
+      // Return normalized data
+      return {
+        id: snapshot.id,
+        ...normalizeFirestoreData(snapshot.data()),
+      };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -190,6 +230,20 @@ const paintingsSlice = createSlice({
         paintingsAdapter.upsertMany(state, action.payload);
       })
       .addCase(fetchUserPaintings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Handle uploadPainting
+      .addCase(uploadPainting.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(uploadPainting.fulfilled, (state, action) => {
+        state.loading = false;
+        paintingsAdapter.addOne(state, action.payload);
+      })
+      .addCase(uploadPainting.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
