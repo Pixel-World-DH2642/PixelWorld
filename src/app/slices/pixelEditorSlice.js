@@ -10,8 +10,9 @@ export const TOOL_MODE = {
 const initialState = {
   pixelArray: [],
   colorPaletteArray: [],
-  currentColor: null,
+  currentColor: { r: 0, g: 0, b: 0, a: 255 },
   currentTool: TOOL_MODE.PENCIL,
+  selectedPaletteSlot: 0,
 };
 
 export const pixelEditorSlice = createSlice({
@@ -22,13 +23,16 @@ export const pixelEditorSlice = createSlice({
       state.currentTool = action.payload;
     },
     setCurrentColor: (state, action) => {
-      state.currentColor = action.payload.color;
+      state.currentColor = action.payload;
     },
     updatColorPalette: (state, action) => {
       state.colorPaletteArray[action.payload.index] = state.currentColor;
     },
     setColorPalette: (state, action) => {
       state.colorPaletteArray = action.payload;
+    },
+    setCurrentPaletteSlot: (state, action) => {
+      state.selectedPaletteSlot = action.payload;
     },
     updatePixelArray: (state, action) => {
       state.pixelArray[(action.payload.index.x, action.payload.index.y)] =
@@ -41,7 +45,15 @@ export const pixelEditorSlice = createSlice({
 });
 
 //Actions
-
+export const {
+  setCurrentTool,
+  setCurrentColor,
+  updateColorPalette,
+  setColorPalette,
+  setCurrentPaletteSlot,
+  updatePixelArray,
+  setPixelArray,
+} = pixelEditorSlice.actions;
 //Selectors
 
 export default pixelEditorSlice.reducer;

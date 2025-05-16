@@ -16,7 +16,6 @@ export const PixelEditor = connect(
     return {
       //not sure if we need anything here...
       colorPaletteArray: state.colorPaletteArray,
-
     };
   },
 
@@ -26,10 +25,10 @@ export const PixelEditor = connect(
       onToolSelect: (tool) => dispatch(setCurrentTool(tool)),
       onColorSelect: (color) => dispatch(setCurrentColor(color)),
       onPaletteUpdated: (slotData) => dispatch(updateColorPalette(slotData)),
-      onPaletteInitialize: (paletteData) => dispatch(setColorPalette(paletteData));
+      onPaletteInitialize: (paletteData) =>
+        dispatch(setColorPalette(paletteData)),
       onImageUpdated: (pixelData) => dispatch(updatePixelArray(pixelData)),
       onImageInitialized: (imageData) => dispatch(setPixelArray(imageData)),
-      
     };
   },
 )(PixelEditorComponent);

@@ -69,6 +69,12 @@ export function sketch(p5) {
       props.weatherData.parsedData,
       skyLayerActor,
     );
+
+    if (easel) {
+      easel
+        .findComponent("CanvasComponent")
+        .setCurrentColor(props.currentColor);
+    }
   };
 
   //Super ugly please be time to make better

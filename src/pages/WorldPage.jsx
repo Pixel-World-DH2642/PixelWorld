@@ -18,10 +18,20 @@ export function WorldPage({
   onSelectColor,
   onSubmitPainting,
   onResetPainting,
-
-  //Add properties and functions from pixel editor slice
-  fromPixelEditor,
+  //Pixel Editor Props
+  colorPaletteArray,
+  currentColor,
+  currentTool,
+  selectedPaletteSlot,
+  //Pixel Editor Funcs
+  onToolSelect,
+  onColorSelect,
+  onPaletteUpdated,
+  onPaletteInitialize,
+  onSlotSelected,
+  //Image funcs later, make different slice...
 }) {
+  //console.log(selectedPaletteSlot);
   //console.log(weather);
   function getNewQuote() {
     onGetQuote();
@@ -41,10 +51,23 @@ export function WorldPage({
         <ReactP5Wrapper
           sketch={sketch}
           weatherData={weather} //{{ cloudAmt: 5 }} /*{weather.parsedData}*/
+          currentColor={currentColor}
         />
       </div>
       <div>
-        <PixelEditorComponent thing={fromPixelEditor} />
+        <PixelEditorComponent
+          //Props
+          colorPaletteArray={colorPaletteArray}
+          currentColor={currentColor}
+          currentTool={currentTool}
+          selectedPaletteSlot={selectedPaletteSlot}
+          //Funcs
+          onToolSelect={onToolSelect}
+          onColorSelect={onColorSelect}
+          onPaletteUpdated={onPaletteUpdated}
+          onPaletteInitialize={onPaletteInitialize}
+          onSlotSelected={onSlotSelected}
+        />
       </div>
     </div>
   );

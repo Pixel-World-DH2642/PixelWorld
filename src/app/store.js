@@ -4,7 +4,7 @@ import paintingSlice from "./slices/paintingSlice";
 import weatherSlice from "./slices/weatherSlice";
 import museumSlice from "./slices/museumSlice";
 import authSlice from "./slices/authSlice";
-import { pixelEditorSlice } from "./slices/pixelEditorSlice";
+import pixelEditorSlice from "./slices/pixelEditorSlice";
 
 const appSlice = createSlice({
   name: "app",

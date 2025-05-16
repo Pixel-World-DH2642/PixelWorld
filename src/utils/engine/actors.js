@@ -11,13 +11,14 @@ export function createActorList(p5, MicroEngine) {
       let pixelSize = 8;
       let rows = Math.floor(size.x / pixelSize);
       let columns = Math.floor(size.y / pixelSize);
+      let currentColor = { r: 0, g: 0, b: 0, a: 255 };
 
       const pixelArray = [];
 
       for (let x = 0; x < rows; x++) {
         pixelArray[x] = [];
         for (let y = 0; y < columns; y++) {
-          pixelArray[x][y] = 0;
+          pixelArray[x][y] = { r: 0, g: 0, b: 0, a: 0 };
         }
       }
 
@@ -30,7 +31,7 @@ export function createActorList(p5, MicroEngine) {
 
         const pixCoordX = Math.floor((mx - pos.x + size.x / 2) / pixelSize);
         const pixCoordY = Math.floor((my - pos.y + size.y / 2) / pixelSize);
-        pixelArray[pixCoordX][pixCoordY] = !pixelArray[pixCoordX][pixCoordY];
+        pixelArray[pixCoordX][pixCoordY] = currentColor;
       }
 
       function render() {
@@ -48,7 +49,12 @@ export function createActorList(p5, MicroEngine) {
         for (let x = 0; x < pixelArray.length; x++) {
           for (let y = 0; y < pixelArray[x].length; y++) {
             if (pixelArray[x][y]) {
-              p5.fill(200, 100, 40);
+              p5.fill(
+                pixelArray[x][y].r,
+                pixelArray[x][y].g,
+                pixelArray[x][y].b,
+                pixelArray[x][y].a,
+              );
               p5.rect(
                 x * pixelSize + pixelSize / 2 + pos.x - size.x / 2,
                 y * pixelSize + pixelSize / 2 + pos.y - size.y / 2,
@@ -64,6 +70,9 @@ export function createActorList(p5, MicroEngine) {
         type: "CanvasComponent",
         render,
         processInput,
+        setCurrentColor: function (color) {
+          currentColor = color;
+        },
       };
     }
 
@@ -465,7 +474,7 @@ export function createActorList(p5, MicroEngine) {
         let indexWidth = Math.floor(vertexSpacing) + indexOffset + 2;
         */
         MicroEngine.CameraPanning = { x: 0, y: 0 };
-        console.log(MicroEngine.CameraPanning);
+        //console.log(MicroEngine.CameraPanning);
         for (let i = 0; i < hmap.length; i += vertexSpacing) {
           p5.stroke(0);
           p5.strokeWeight(1);

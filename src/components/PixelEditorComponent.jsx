@@ -1,11 +1,23 @@
+import {
+  setColorPalette,
+  setCurrentPaletteSlot,
+  setCurrentTool,
+} from "../app/slices/pixelEditorSlice";
 import "../styles/global.css";
-//import "./assets/pixel_editor_assets/pencil_icon.png";
+import { TOOL_MODE } from "../app/slices/pixelEditorSlice";
 
 export function PixelEditorComponent({
   //State Properties
   colorPaletteArray,
+  currentColor,
+  currentTool,
+  selectedPaletteSlot,
   //Functions
   onToolSelect,
+  onColorSelect,
+  onPaletteUpdated,
+  onPaletteInitialize,
+  onSlotSelected,
 }) {
   //Tools
   //Color Palette
@@ -26,9 +38,9 @@ export function PixelEditorComponent({
   //Setup
   const numPaletteSlots = 16;
   const palette = [];
-  randomizePalette();
+  initializePalette();
 
-  let selectedPaletteSlot = null;
+  //let selectedPaletteSlot = null;
 
   //Helpers
   function randomColor() {
@@ -48,29 +60,62 @@ export function PixelEditorComponent({
           r: parseInt(result[1], 16),
           g: parseInt(result[2], 16),
           b: parseInt(result[3], 16),
+          a: 255,
         }
       : null;
   }
 
-  //Callbacks: Hook into PixelEditor container
-  function handlePaletteClickedACB(e) {
-    if (!e.target.dataset.color || e.target === selectedPaletteSlot) return;
-    console.log(e.target);
-
-    if (selectedPaletteSlot) selectedPaletteSlot.className = "palette_slot";
-    selectedPaletteSlot = e.target;
-    selectedPaletteSlot.className = "selected_palette_cell";
-    //console.log(e.target.dataset.color);
-  }
-
-  function handleColorChangeACB(e) {
-    console.log(hexToRgb(e.target.value));
+  function initializePalette() {
+    if (colorPaletteArray.length === 0) {
+      onPaletteInitialize(randomizePalette());
+    } else {
+      for (let i = 0; i < numPaletteSlots; i++) {
+        palette[i] = {
+          id: `paletteSlot${i}`,
+          index: i,
+          color: colorPaletteArray[i],
+        };
+      }
+    }
   }
 
   function randomizePalette() {
+    const colorBuffer = [];
     for (let i = 0; i < numPaletteSlots; i++) {
-      palette[i] = { id: `paletteSlot${i}`, color: randomColor() };
+      const color = randomColor();
+      //palette[i] = { id: `paletteSlot${i}`, color };
+      colorBuffer.push(color);
     }
+    return colorBuffer;
+  }
+
+  //Callbacks: Hook into PixelEditor container
+  function handlePaletteClickedACB(e) {
+    if (
+      !e.target.dataset.color ||
+      e.target.dataset.index === selectedPaletteSlot
+    )
+      return;
+
+    document.getElementById(palette[0].id).className = "palette_slot";
+    e.target.className = "selected_palette_cell";
+    onSlotSelected(parseInt(e.target.dataset.index));
+    onColorSelect(hexToRgb(e.target.dataset.color));
+  }
+
+  function handleColorChangeACB(e) {
+    const slot = document.getElementById(palette[selectedPaletteSlot].id);
+    slot.dataset.color = e.target.value;
+    slot.style.backgroundColor = e.target.value;
+    onColorSelect(hexToRgb(e.target.value));
+  }
+
+  function handleEraserSelected() {
+    setCurrentTool(TOOL_MODE.ERASER);
+  }
+
+  function handlePencilSelected() {
+    setCurrentTool(TOOL_MODE.PENCIL);
   }
 
   //Layout
@@ -81,6 +126,7 @@ export function PixelEditorComponent({
       key={slot.id}
       id={slot.id}
       data-color={slot.color}
+      data-index={slot.index}
       style={{ backgroundColor: slot.color }}
     ></div>
   ));
