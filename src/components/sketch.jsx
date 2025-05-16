@@ -9,28 +9,39 @@ export function sketch(p5) {
   MicroEngine.LoadScene(mainScene);
 
   //############################--DEFINE ACTORS--############################//
-  let recto, easel, testPlant1, testPlant2, testPlant3, skyCanvas, scribble;
+  let mainCharacter, easel, skyCanvas, scribble;
 
+  //Preload items
+  let testPlant1, testPlant2, testPlant3;
+  let mainCharSpriteSheet, mainCharSpriteData;
+
+  let skyLayerActor;
   //############################-----------------############################//
 
   p5.preload = () => {
     testPlant1 = p5.loadImage("/assets/flower01.png");
     testPlant2 = p5.loadImage("/assets/grass01.png");
     testPlant3 = p5.loadImage("/assets/moss01.png");
+    mainCharSpriteSheet = p5.loadImage("/assets/game_assets/F_01.png");
+    mainCharSpriteData = p5.loadJSON("/assets/game_assets/character.json");
   };
 
   p5.setup = () => {
-    p5.createCanvas(600, 300, p5.WEBGL);
+    p5.createCanvas(800, 400);
     p5.rectMode(p5.CENTER);
-    p5.background(30, 40, 220);
+    p5.noSmooth();
+    //p5.background(30, 40, 220);
 
-    //ActorList.createGroundActor([testPlant1, testPlant2, testPlant3]);
+    skyLayerActor = ActorList.createSkyLayerActor();
     ActorList.createGroundSliceActor([testPlant1, testPlant2, testPlant3]);
     easel = ActorList.createCanvasActor(p5.createVector(900, 150), {
       x: 128,
       y: 128,
     });
-    recto = ActorList.createRectActor();
+    mainCharacter = ActorList.createMainCharacterActor(
+      mainCharSpriteSheet,
+      mainCharSpriteData,
+    );
 
     MicroEngine.LoadScene(ActorList.mainScene);
 
@@ -53,18 +64,42 @@ export function sketch(p5) {
   };
 
   p5.updateWithProps = (props) => {
-    console.log(props);
+    //console.log(props.weatherData.parsedData);
+    ActorList.setEnvironmentWeather(
+      props.weatherData.parsedData,
+      skyLayerActor,
+    );
+
+    if (easel) {
+      easel
+        .findComponent("CanvasComponent")
+        .setCurrentColor(props.currentColor);
+    }
   };
+
+  //Super ugly please be time to make better
+  let lastKeyPress;
 
   p5.draw = () => {
     p5.background(30, 40, 220);
-    p5.translate(-p5.width / 2, -p5.height / 2);
+    //p5.translate(-p5.width / 2, -p5.height / 2);
 
     //p5.image(skyCanvas, 0, 0);
     MicroEngine.EngineLoop();
 
-    if (p5.keyIsDown(p5.LEFT_ARROW)) recto.findComponent("GroundMove").move(-1);
-    if (p5.keyIsDown(p5.RIGHT_ARROW)) recto.findComponent("GroundMove").move(1);
+    if (p5.keyIsDown(p5.LEFT_ARROW)) {
+      mainCharacter.findComponent("Animation").setAnimationState("WalkLeft");
+      mainCharacter.findComponent("GroundMove").move(-1);
+      lastKeyPress = p5.LEFT_ARROW;
+    } else if (p5.keyIsDown(p5.RIGHT_ARROW)) {
+      mainCharacter.findComponent("Animation").setAnimationState("WalkRight");
+      mainCharacter.findComponent("GroundMove").move(1);
+      lastKeyPress = p5.RIGHT_ARROW;
+    } else if (lastKeyPress == p5.LEFT_ARROW) {
+      mainCharacter.findComponent("Animation").setAnimationState("IdleLeft");
+    } else if (lastKeyPress == p5.RIGHT_ARROW) {
+      mainCharacter.findComponent("Animation").setAnimationState("IdleRight");
+    }
   };
 
   p5.mousePressed = () => {
@@ -74,6 +109,6 @@ export function sketch(p5) {
   p5.keyPressed = () => {
     //console.log("kdjb")
     if (p5.keyIsDown(p5.UP_ARROW))
-      recto.forceComponent.addForce(p5.createVector(0, -3));
+      mainCharacter.forceComponent.addForce(p5.createVector(0, -3));
   };
 }

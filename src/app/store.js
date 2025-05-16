@@ -11,6 +11,7 @@ import likeSlice from "./slices/likeSlice";
 import paintingsSlice from "./slices/paintingsSlice";
 import firebaseListenerMiddleware from "./middleware/firebaseListenerMiddleware";
 import { paintingListenerMiddleware } from "./middleware/paintingListenerMiddleware";
+import pixelEditorSlice from "./slices/pixelEditorSlice";
 
 const appSlice = createSlice({
   name: "app",
@@ -36,6 +37,7 @@ export default function configureReduxStore() {
       comments: commentsSlice,
       likes: likeSlice,
       paintings: paintingsSlice,
+      editor: pixelEditorSlice,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
