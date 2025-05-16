@@ -30,7 +30,7 @@ const PaintingCard = ({ painting, onSelect,onToggleLike, currentUser, userLiked 
           - {painting.authorName}
         </p>
         <p className="text-sm italic line-clamp-2 mt-auto">
-          "{painting.savedQuote}"
+          "{painting.savedQuote.content}"
         </p>
 
         {/* Like button */}
@@ -69,6 +69,8 @@ export function MuseumPage({
   userLiked,
   topPaintings = [], 
 }) {
+  // tab state
+  const [activeTab, setActiveTab] = useState('museum');
   // Responsive layout state
   const [layoutType, setLayoutType] = useState("desktop");
 
@@ -186,15 +188,46 @@ export function MuseumPage({
   return (
     <div className="font-pixel max-h-[calc(100vh-4rem)] px-8 pt-8">
       <NavBar backLocation="world" />
+      {/* Add tab navigation */}
+      <div className="flex space-x-4 mb-6 mt-4">
+        <button
+          className={`px-4 py-2 rounded-t-lg font-bold ${
+            activeTab === 'museum' 
+              ? 'bg-yellow-400 text-black' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+          onClick={() => setActiveTab('museum')}
+        >
+          MUSEUM
+        </button>
+        <button
+          className={`px-4 py-2 rounded-t-lg font-bold ${
+            activeTab === 'hall-of-fame' 
+              ? 'bg-yellow-400 text-black' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+          onClick={() => setActiveTab('hall-of-fame')}
+        >
+          HALL OF FAME
+        </button>
+      </div>
 
-      <div className="font-pixel w-full pb-8 lg:pb-12 pt-4">
-
-        {/* Hall of Fame Section */}
-        {topPaintings && topPaintings.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold mb-6">HALL OF FAME</h2>
+      <div className="font-pixel w-full pb-8 lg:pb-12">
+        {/* Show content based on active tab */}
+        {activeTab === 'museum' ? (
+          <>
+            <h1 className="text-3xl font-bold mb-4">MUSEUM</h1>
+            {/* Loading and error states */}
+            {isLoading && Suspense("loading", "Loading paintings...")}
+            {error && <p className="text-red-500">Error: {error}</p>}
+            {/* Render paintings based on screen size */}
+            {!isLoading && !error && renderPaintings()}
+          </>
+        ) : (
+          <>
+            <h1 className="text-3xl font-bold mb-6">HALL OF FAME</h1>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {topPaintings.map((painting, index) => (
+              {topPaintings.map((painting, index) => (
                 <div key={painting.id} className="relative">
                   <div className="absolute -top-4 -left-4 w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-black font-bold">
                     #{index + 1}
@@ -209,19 +242,10 @@ export function MuseumPage({
                 </div>
               ))}
             </div>
-          </div>
+          </>
         )}
-
-
-        <h1 className="text-3xl font-bold mb-4">MUSEUM</h1>
-
-        {/* Loading and error states */}
-        {isLoading && Suspense("loading", "Loading paintings...")}
-        {error && <p className="text-red-500">Error: {error}</p>}
-
-        {/* Render paintings based on screen size */}
-        {!isLoading && !error && renderPaintings()}
       </div>
     </div>
   );
 }
+
