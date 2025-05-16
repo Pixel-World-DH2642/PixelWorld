@@ -5,7 +5,20 @@ import { Suspense } from "../components/Suspense";
 import { NavBar } from "../components/NavBar";
 
 // Painting Card Component - extracted and reusable
-const PaintingCard = ({ painting, onSelect }) => {
+const PaintingCard = ({
+  painting,
+  onSelect,
+  onToggleLike,
+  currentUser,
+  userLiked,
+}) => {
+  const handleLikeClick = (e) => {
+    e.preventDefault();
+    if (currentUser) {
+      onToggleLike(painting.id, currentUser.uid);
+    }
+  };
+
   return (
     <Link
       to="/details"
@@ -13,27 +26,55 @@ const PaintingCard = ({ painting, onSelect }) => {
       onClick={() => onSelect(painting.id)}
     >
       {/* Fixed height container for the image with aspect ratio preservation */}
-      <PaintingDisplay painting={painting} />
+      <div className="relative">
+        <PaintingDisplay painting={painting} />
 
-      {/* Text content container with ellipsis for overflow */}
-      <div className="flex-1 flex flex-col min-h-0">
-        <h2 className="text-2xl">{painting.title}</h2>
-        <p className="mt-1 text-sm text-right font-bold">
-          - {painting.authorName}
-        </p>
-        <p className="text-sm italic line-clamp-2 mt-auto">
-          "{painting.savedQuote.content}"
-        </p>
+        {/* Text content container with ellipsis for overflow */}
+        <div className="flex-1 flex flex-col min-h-0">
+          <h2 className="text-2xl">{painting.title}</h2>
+          <p className="mt-1 text-sm text-right font-bold">
+            - {painting.authorName}
+          </p>
+          <p className="text-sm italic line-clamp-2 mt-auto">
+            "{painting.savedQuote.content}"
+          </p>
+
+          {/* Like button */}
+          <button
+            onClick={handleLikeClick}
+            className={`absolute top-2 right-2 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors ${
+              !currentUser ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={!currentUser}
+            title={!currentUser ? "Please log in to like paintings" : ""}
+          >
+            <span className="text-xl">
+              {painting.likesCount || 0}
+              {userLiked ? "❤️" : "🤍"}
+            </span>
+          </button>
+        </div>
       </div>
     </Link>
   );
 };
 
-export function MuseumPage({ paintings, onSelectPainting, isLoading, error }) {
+export function MuseumPage({
+  paintings,
+  onSelectPainting,
+  isLoading,
+  error,
+  onToggleLike,
+  currentUser,
+  userLiked,
+  topPaintings,
+}) {
   // Local state for pagination
   const [startIndex, setStartIndex] = useState(0);
   const [paintingsPerPage, setPaintingsPerPage] = useState(3);
 
+  // tab state
+  const [activeTab, setActiveTab] = useState("museum");
   // Responsive layout state
   const [layoutType, setLayoutType] = useState("desktop");
 
@@ -109,7 +150,13 @@ export function MuseumPage({ paintings, onSelectPainting, isLoading, error }) {
           <div className="grid grid-cols-3 gap-4 w-full">
             {currentPaintings.map((painting) => (
               <div key={painting.id}>
-                <PaintingCard painting={painting} onSelect={onSelectPainting} />
+                <PaintingCard
+                  painting={painting}
+                  onSelect={onSelectPainting}
+                  onToggleLike={onToggleLike}
+                  currentUser={currentUser}
+                  userLiked={userLiked}
+                />
               </div>
             ))}
             {/* Add empty placeholders to maintain grid structure */}
@@ -143,7 +190,13 @@ export function MuseumPage({ paintings, onSelectPainting, isLoading, error }) {
           >
             {paintings.map((painting) => (
               <div key={painting.id}>
-                <PaintingCard painting={painting} onSelect={onSelectPainting} />
+                <PaintingCard
+                  painting={painting}
+                  onSelect={onSelectPainting}
+                  onToggleLike={onToggleLike}
+                  currentUser={currentUser}
+                  userLiked={userLiked}
+                />
               </div>
             ))}
           </div>
@@ -155,16 +208,62 @@ export function MuseumPage({ paintings, onSelectPainting, isLoading, error }) {
   return (
     <div className="font-pixel max-h-[calc(100vh-4rem)] px-8 pt-8">
       <NavBar backLocation="world" />
+      {/* Add tab navigation */}
+      <div className="flex space-x-4 mb-6 mt-4">
+        <button
+          className={`px-4 py-2 rounded-t-lg font-bold ${
+            activeTab === "museum"
+              ? "bg-yellow-400 text-black"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+          onClick={() => setActiveTab("museum")}
+        >
+          MUSEUM
+        </button>
+        <button
+          className={`px-4 py-2 rounded-t-lg font-bold ${
+            activeTab === "hall-of-fame"
+              ? "bg-yellow-400 text-black"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+          onClick={() => setActiveTab("hall-of-fame")}
+        >
+          HALL OF FAME
+        </button>
+      </div>
 
-      <div className="font-pixel w-full pb-8 lg:pb-12 pt-4">
-        <h1 className="text-3xl font-bold mb-4">MUSEUM</h1>
-
-        {/* Loading and error states */}
-        {isLoading && Suspense("loading", "Loading paintings...")}
-        {error && <p className="text-red-500">Error: {error}</p>}
-
-        {/* Render paintings based on screen size */}
-        {!isLoading && !error && renderPaintings()}
+      <div className="font-pixel w-full pb-8 lg:pb-12">
+        {/* Show content based on active tab */}
+        {activeTab === "museum" ? (
+          <>
+            <h1 className="text-3xl font-bold mb-4">MUSEUM</h1>
+            {/* Loading and error states */}
+            {isLoading && Suspense("loading", "Loading paintings...")}
+            {error && <p className="text-red-500">Error: {error}</p>}
+            {/* Render paintings based on screen size */}
+            {!isLoading && !error && renderPaintings()}
+          </>
+        ) : (
+          <>
+            <h1 className="text-3xl font-bold mb-6">HALL OF FAME</h1>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {topPaintings.map((painting, index) => (
+                <div key={painting.id} className="relative">
+                  <div className="absolute -top-4 -left-4 w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-black font-bold">
+                    #{index + 1}
+                  </div>
+                  <PaintingCard
+                    painting={painting}
+                    onSelect={onSelectPainting}
+                    onToggleLike={onToggleLike}
+                    currentUser={currentUser}
+                    userLiked={userLiked}
+                  />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

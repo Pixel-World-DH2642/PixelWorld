@@ -273,6 +273,13 @@ export const selectUserPaintings = (state, userId) => {
   );
 };
 
+export const selectTopPaintings = (state, count = 3) => {
+  return selectAllPaintings(state)
+    .slice()
+    .sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0))
+    .slice(0, count);
+};
+
 export const selectSelectedPainting = (state) => {
   return selectPaintingById(state, state.paintings.selectedPaintingId);
 };
