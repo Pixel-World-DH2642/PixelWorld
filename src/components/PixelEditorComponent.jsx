@@ -20,20 +20,25 @@ export function PixelEditorComponent({
   onSlotSelected,
 }) {
   //Tools
-  //Color Palette
-  //Pencil
-  //Eraser
-  //Fill
-  //Color Picker
-  //Color format?
+  //-Clear Drawing
+  //-Fill
+  //-Randomize
+  //-Undo
+  //-Redo
+  //-Mini View
 
   //Persist palette?
 
   //ToDo
-  //-Focus palette cell logic for changing color
-  //-Tool icons
-  //-Tool functions
-  //-Update sketch with props, dataflow
+  //-Tools work in sketch
+  //-Random palette button
+
+  //-Weather
+  //-Drag to draw
+  //-eraser, pencil in sketch
+  //-store drawing in model
+
+  //Quote bot
 
   //Setup
   const numPaletteSlots = 16;
@@ -121,11 +126,15 @@ export function PixelEditorComponent({
   }
 
   function handleEraserSelected() {
-    setCurrentTool(TOOL_MODE.ERASER);
+    onToolSelect(TOOL_MODE.ERASER);
   }
 
   function handlePencilSelected() {
-    setCurrentTool(TOOL_MODE.PENCIL);
+    onToolSelect(TOOL_MODE.PENCIL);
+  }
+
+  function handleRandomizeClicked() {
+    onPaletteInitialize(randomizePalette());
   }
 
   //Layout
@@ -171,20 +180,28 @@ export function PixelEditorComponent({
             </div>
             <div className="flex flex-col items-center justify-center">
               <p>Random</p>
+              <img
+                className="w-10"
+                src="assets/random_icon_64x64.png"
+                alt="randomize palette"
+                onClick={handleRandomizeClicked}
+              />
             </div>
             <div className="flex flex-col items-center justify-center">
               <img
                 className="w-10"
                 src="assets/pencil_icon_64x64.png"
                 alt="pencil"
+                onClick={handlePencilSelected}
               />
               <p>Pencil</p>
             </div>
             <div className="flex flex-col items-center justify-center">
               <img
                 className="w-10"
-                src="assets/eraser_icon_64x64.png"
+                src="assets/eraser_icon_64x64_new.png"
                 alt="eraser"
+                onClick={handleEraserSelected}
               />
               <p>Eraser</p>
             </div>

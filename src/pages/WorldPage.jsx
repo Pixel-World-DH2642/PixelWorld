@@ -42,7 +42,6 @@ export function WorldPage({
 
   const navigate = useNavigate();
 
-  console.log(weather);
   function getNewQuote() {
     onGetQuote();
   }
@@ -1141,7 +1140,11 @@ export function WorldPage({
           <ReactP5Wrapper
             sketch={sketch}
             weatherData={weather} //{{ cloudAmt: 5 }} /*{weather.parsedData}*/
+            //Pixel Editor Props
             currentColor={currentColor}
+            currentTool={currentTool}
+            //Pixel Editor Functions
+            //...Add pixel array data & funcs...
           />
         </div>
         <div className="h-20 w-full border rounded">Play Instructions</div>
