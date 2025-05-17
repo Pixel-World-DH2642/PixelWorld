@@ -4,14 +4,20 @@ import "../styles/global.css";
 
 export function WelcomePage({ user, onLogout }) {
   const navigate = useNavigate();
-  const [showLoader, setShowLoader] = useState(true);
+  const [showLoader, setShowLoader] = useState(() => {
+    return sessionStorage.getItem("hasShownLoader") !== "true";
+  });
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLoader(false);
-    }, 5900);
-    return () => clearTimeout(timer);
-  }, []);
+    if (showLoader) {
+      const timer = setTimeout(() => {
+        setShowLoader(false);
+        sessionStorage.setItem("hasShownLoader", "true");
+      }, 8700);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showLoader]);
 
   if (showLoader) {
     return (
