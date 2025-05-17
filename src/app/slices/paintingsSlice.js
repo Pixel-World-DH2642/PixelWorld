@@ -175,7 +175,8 @@ const paintingsSlice = createSlice({
     selectedPaintingId: null,
     currentPainting: null,
     playerPainting: null,
-    playerPaintingBuffer: [],
+    undoBuffer: [],
+    undoIndex: 0,
   }),
   reducers: {
     selectPainting: (state, action) => {
@@ -190,10 +191,33 @@ const paintingsSlice = createSlice({
       state.currentPainting = null;
     },
     updatePlayerPainting: (state, action) => {
-      state.playerPaintingBuffer.push(state.playerPainting);
-      if (state.playerPaintingBuffer.length > 30)
-        state.playerPaintingBuffer.splice(0, 1);
+      console.log("update painting slice");
+      state.undoBuffer.push(state.playerPainting);
+      if (state.undoBuffer.length > 30) state.undoBuffer.splice(0, 1);
       state.playerPainting = action.payload;
+    },
+    undoEdit: (state) => {
+      state.undoIndex--;
+      if (state.undoIndex + state.undoBuffer.length < 0) {
+        state.undoIndex++;
+        return null;
+      }
+      return state.undoBuffer[state.undoIndex];
+    },
+    redoEdit: (state) => {
+      state.undoIndex++;
+      if (state.undoIndex > 0) {
+        state.undoIndex = 0;
+        return null;
+      }
+      return state.undoBuffer[state.undoIndex];
+    },
+    getUndoStateHint: (state, action) => {
+      const undoHint = { canUndo: true, canRedo: true };
+      if (state.undoIndex + state.undoBuffer.length <= 0)
+        undoHint.canUndo = false;
+      if (state.undoIndex >= 0) undoHint.canRedo = false;
+      return undoHint;
     },
   },
   extraReducers: (builder) => {
@@ -292,5 +316,12 @@ export const selectSelectedPainting = (state) => {
   return selectPaintingById(state, state.paintings.selectedPaintingId);
 };
 
-export const { selectPainting, clearSelectedPainting } = paintingsSlice.actions;
+export const {
+  selectPainting,
+  clearSelectedPainting,
+  updatePlayerPainting,
+  undoEdit,
+  redoEdit,
+  getUndoStateHint,
+} = paintingsSlice.actions;
 export default paintingsSlice.reducer;

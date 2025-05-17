@@ -46,7 +46,7 @@ export function PixelEditorComponent({
   //-eraser, pencil in sketch
   //-store drawing in model
 
-  //Quote bot
+  //Quote bot, access, write out quote one character at a time
 
   //Bugs
   //-sky re-render problem

@@ -1136,7 +1136,10 @@ export function WorldPage({
       <NavBar enableBack={false} title="Pixel World" showProfile={false} />
       <div className="flex flex-col items-center justify-center text-center gap-4 pb-8 pt-4">
         {/* <Menu /> */}
-        <div className="border-4 rounded-xl overflow-auto">
+        <div
+          id="viewport-container"
+          className="border-4 rounded-xl overflow-auto"
+        >
           <ReactP5Wrapper
             sketch={sketch}
             weather={weather} //{{ cloudAmt: 5 }} /*{weather.parsedData}*/
