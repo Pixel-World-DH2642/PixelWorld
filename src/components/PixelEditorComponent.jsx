@@ -30,8 +30,16 @@ export function PixelEditorComponent({
   //Persist palette?
 
   //ToDo
-  //-Tools work in sketch
-  //-Random palette button
+  //-playerPainting -> in the painting slice
+  //-painting data through model not sketch
+  //-optomize painting render
+  //-Quote in world
+  //-Get quote in world
+  //-world overlay instructions
+
+  //pixel editor not color editor
+  //Panel state: quote, weather, pixel > world slice for dynamic context sensitive panel
+  //
 
   //-Weather
   //-Drag to draw
@@ -39,6 +47,11 @@ export function PixelEditorComponent({
   //-store drawing in model
 
   //Quote bot
+
+  //Bugs
+  //-sky re-render problem
+  //-color picker change
+  //
 
   //Setup
   const numPaletteSlots = 16;
