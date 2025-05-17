@@ -42,7 +42,7 @@ export function DetailPage({
           <div className="w-full h-full">
             <h1 className="text-3xl pb-1">{painting.title}</h1>
             <div className="pb-2">
-              <span>"{painting.savedQuote}"</span>
+              <span>"{painting.savedQuote.content}"</span>
             </div>
             <div>
               <span className="font-bold">Made by: {painting.author}</span>

@@ -171,12 +171,12 @@ export function ProfilePage({
                     <div className="text-xs text-gray-600 truncate">
                       {painting.authorName || "Unknown artist"}
                     </div>
-                    {painting.savedQuote && (
+                    {painting.savedQuote.content && (
                       <div
                         className="text-xs italic mt-1 text-gray-600 truncate"
-                        title={painting.savedQuote}
+                        title={painting.savedQuote.content}
                       >
-                        "{painting.savedQuote}"
+                        "{painting.savedQuote.content}"
                       </div>
                     )}
                   </Link>

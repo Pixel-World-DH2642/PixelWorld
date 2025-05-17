@@ -20,7 +20,7 @@ const PaintingCard = ({ painting, onSelect }) => {
           - {painting.authorName}
         </p>
         <p className="text-sm italic line-clamp-2 mt-auto">
-          "{painting.savedQuote}"
+          "{painting.savedQuote.content}"
         </p>
       </div>
     </Link>
