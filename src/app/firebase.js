@@ -3,6 +3,7 @@ import { getAuth, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore"; // Added
 import { setUser, authLoaded } from "./slices/authSlice";
 import { fetchAllPaintings } from "./slices/paintingsSlice";
+import { fetchUserLikes } from "./slices/likeSlice";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAA_zepBE6w3GCBV1Kr6_Ui43KcEPk-Mlw",
@@ -28,6 +29,7 @@ export function connectToPersistance(store) {
       // User is signed in, extract only the serializable data
       const { uid, displayName, email, photoURL } = user;
       store.dispatch(setUser({ uid, displayName, email, photoURL }));
+      store.dispatch(fetchUserLikes(uid));
     } else {
       // User is signed out
       store.dispatch(setUser(null));

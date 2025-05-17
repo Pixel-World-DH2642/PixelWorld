@@ -46,12 +46,33 @@ export const fetchAllPaintings = createAsyncThunk(
   "paintings/fetchAll",
   async (_, thunkAPI) => {
     try {
+      // Fetch all paintings
       const paintingsCollection = collection(db, "paintings");
       const snapshot = await getDocs(paintingsCollection);
 
-      return snapshot.docs.map((doc) => ({
+      // Get all paintings first
+      const paintings = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...normalizeFirestoreData(doc.data()),
+        likesCount: 0, // Initialize with zero likes
+      }));
+
+      // Now get all likes
+      const likesCollection = collection(db, "likes");
+      const likesSnapshot = await getDocs(likesCollection);
+
+      // Create a map to count likes per painting
+      const likesCountMap = {};
+      likesSnapshot.docs.forEach((doc) => {
+        const likeData = doc.data();
+        const paintingId = likeData.paintingId;
+        likesCountMap[paintingId] = (likesCountMap[paintingId] || 0) + 1;
+      });
+
+      // Update paintings with like counts
+      return paintings.map((painting) => ({
+        ...painting,
+        likesCount: likesCountMap[painting.id] || 0,
       }));
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);

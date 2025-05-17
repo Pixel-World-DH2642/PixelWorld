@@ -39,7 +39,7 @@ export function PaintingDisplay({ painting }) {
 
     return (
       <div
-        className="aspect-square border-4 border-black overflow-hidden grid" // Make this the grid container
+        className="aspect-square border-4 border-black overflow-hidden grid flex-shrink-0" // Make this the grid container
         style={{
           gridTemplateColumns: `repeat(${EXPECTED_GRID_SIZE}, 1fr)`,
           gridTemplateRows: `repeat(${EXPECTED_GRID_SIZE}, 1fr)`,

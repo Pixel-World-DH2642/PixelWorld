@@ -10,10 +10,16 @@ const PaintingCard = ({
   onSelect,
   onToggleLike,
   currentUser,
-  userLiked,
+  userLikedPaintings,
+  likesLoading,
 }) => {
+  console.log("PaintingCard", painting);
+  console.log("PaintingCard userLikedPaintings", userLikedPaintings);
+  const userLiked = userLikedPaintings?.includes(painting.id);
+
   const handleLikeClick = (e) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent the click from bubbling up to the Link
     if (currentUser) {
       onToggleLike(painting.id, currentUser.uid);
     }
@@ -22,37 +28,47 @@ const PaintingCard = ({
   return (
     <Link
       to="/details"
-      className="flex flex-col p-6 shadow-xl aspect-[2.2/3] cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-200 ease-in-out"
+      className="flex flex-col p-6 shadow-xl aspect-[2.1/3] cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-200 ease-in-out"
       onClick={() => onSelect(painting.id)}
     >
       {/* Fixed height container for the image with aspect ratio preservation */}
-      <div className="relative">
+      <div className="flex flex-col h-full">
         <PaintingDisplay painting={painting} />
 
-        {/* Text content container with ellipsis for overflow */}
-        <div className="flex-1 flex flex-col min-h-0">
-          <h2 className="text-2xl">{painting.title}</h2>
-          <p className="mt-1 text-sm text-right font-bold">
-            - {painting.authorName}
-          </p>
-          <p className="text-sm italic line-clamp-2 mt-auto">
-            "{painting.savedQuote.content}"
-          </p>
-
+        <div className="flex flex-col justify-between h-full items-stretch">
+          {/* Text content container with ellipsis for overflow */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <h2 className="text-2xl">{painting.title}</h2>
+            <p className="mt-1 text-sm text-right font-bold">
+              - {painting.authorName}
+            </p>
+            <p className="text-sm italic line-clamp-2 mb-auto">
+              "{painting.savedQuote.content}"
+            </p>
+          </div>
           {/* Like button */}
-          <button
-            onClick={handleLikeClick}
-            className={`absolute top-2 right-2 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors ${
-              !currentUser ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={!currentUser}
-            title={!currentUser ? "Please log in to like paintings" : ""}
-          >
-            <span className="text-xl">
-              {painting.likesCount || 0}
-              {userLiked ? "❤️" : "🤍"}
+          <div className="flex items-center self-end">
+            <button
+              onClick={handleLikeClick}
+              className={`cursor-pointer text-xl sm:text-3xl transition transform duration-200 hover:scale-110`}
+              disabled={!currentUser || likesLoading}
+            >
+              <img
+                src={
+                  userLikedPaintings?.includes(painting.id)
+                    ? "/assets/heart.png"
+                    : "/assets/heart_empty.png"
+                }
+                className="w-10 h-10"
+                alt={
+                  userLikedPaintings?.includes(painting.id) ? "Unlike" : "Like"
+                }
+              />
+            </button>
+            <span className="flex items-center text-0.5xl">
+              {likesLoading ? "..." : painting.likesCount}
             </span>
-          </button>
+          </div>
         </div>
       </div>
     </Link>
@@ -66,8 +82,11 @@ export function MuseumPage({
   error,
   onToggleLike,
   currentUser,
-  userLiked,
+  userLikedPaintings,
   topPaintings,
+  onFetchUserLikes,
+  onFetchAllPaintings,
+  likesLoading,
 }) {
   // Local state for pagination
   const [startIndex, setStartIndex] = useState(0);
@@ -84,6 +103,11 @@ export function MuseumPage({
 
   // Calculate number of paintings per row based on screen width
   useEffect(() => {
+    onFetchAllPaintings();
+    if (currentUser) {
+      onFetchUserLikes(currentUser.uid);
+    }
+
     function handleResize() {
       if (window.innerWidth >= 1024) {
         setLayoutType("desktop"); // 3 paintings per row
@@ -155,7 +179,8 @@ export function MuseumPage({
                   onSelect={onSelectPainting}
                   onToggleLike={onToggleLike}
                   currentUser={currentUser}
-                  userLiked={userLiked}
+                  userLikedPaintings={userLikedPaintings}
+                  likesLoading={likesLoading}
                 />
               </div>
             ))}
@@ -195,7 +220,8 @@ export function MuseumPage({
                   onSelect={onSelectPainting}
                   onToggleLike={onToggleLike}
                   currentUser={currentUser}
-                  userLiked={userLiked}
+                  userLikedPaintings={userLikedPaintings}
+                  likesLoading={likesLoading}
                 />
               </div>
             ))}
@@ -211,7 +237,7 @@ export function MuseumPage({
       {/* Add tab navigation */}
       <div className="flex space-x-4 mb-6 mt-4">
         <button
-          className={`px-4 py-2 rounded-t-lg font-bold ${
+          className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
             activeTab === "museum"
               ? "bg-yellow-400 text-black"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -221,7 +247,7 @@ export function MuseumPage({
           MUSEUM
         </button>
         <button
-          className={`px-4 py-2 rounded-t-lg font-bold ${
+          className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
             activeTab === "hall-of-fame"
               ? "bg-yellow-400 text-black"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -255,7 +281,8 @@ export function MuseumPage({
                     onSelect={onSelectPainting}
                     onToggleLike={onToggleLike}
                     currentUser={currentUser}
-                    userLiked={userLiked}
+                    userLikedPaintings={userLikedPaintings}
+                    likesLoading={likesLoading}
                   />
                 </div>
               ))}

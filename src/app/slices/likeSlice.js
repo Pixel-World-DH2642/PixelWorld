@@ -32,7 +32,7 @@ export const toggleLike = createAsyncThunk(
       if (!snapshot.empty) {
         const likeDoc = snapshot.docs[0];
         await deleteDoc(doc(db, "likes", likeDoc.id));
-        return { liked: false };
+        return { liked: false, userId };
       }
 
       // Otherwise, add a new like
@@ -41,7 +41,35 @@ export const toggleLike = createAsyncThunk(
         userId,
         timestamp: serverTimestamp(),
       });
-      return { liked: true };
+      return { liked: true, userId };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  },
+);
+
+export const fetchUserLikes = createAsyncThunk(
+  "likes/fetchUserLikes",
+  async (userId, thunkAPI) => {
+    if (!userId) {
+      return thunkAPI.rejectWithValue("User ID missing");
+    }
+
+    try {
+      const likesQuery = query(
+        collection(db, "likes"),
+        where("userId", "==", userId),
+      );
+      const snapshot = await getDocs(likesQuery);
+
+      // Return a set of painting IDs that the user has liked
+      const userLikes = new Set();
+      snapshot.docs.forEach((doc) => {
+        const likeData = doc.data();
+        userLikes.add(likeData.paintingId);
+      });
+
+      return Array.from(userLikes);
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -51,6 +79,7 @@ export const toggleLike = createAsyncThunk(
 const initialState = {
   count: 0,
   userLiked: false,
+  userLikedPaintings: [],
   loading: false,
   error: null,
 };
@@ -80,6 +109,19 @@ const likeSlice = createSlice({
         // Note: We don't update count here because the listener will handle it
       })
       .addCase(toggleLike.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+      // Fetch user likes
+      .addCase(fetchUserLikes.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUserLikes.fulfilled, (state, action) => {
+        state.userLikedPaintings = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchUserLikes.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       });

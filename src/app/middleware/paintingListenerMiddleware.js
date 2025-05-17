@@ -4,6 +4,7 @@ import {
   fetchPaintingById,
   fetchAllPaintings,
 } from "../slices/paintingsSlice";
+import { fetchUserLikes } from "../slices/likeSlice";
 
 export const paintingListenerMiddleware = createListenerMiddleware();
 
@@ -47,5 +48,15 @@ paintingListenerMiddleware.startListening({
   matcher: (action) => action.type === "paintings/deletePainting/rejected",
   effect: async (action, listenerApi) => {
     console.error("Failed to delete painting:", action.error);
+  },
+});
+
+paintingListenerMiddleware.startListening({
+  matcher: (action) => action.type === "likes/toggleLike/fulfilled",
+  effect: async (action, listenerApi) => {
+    const { payload } = action;
+    console.log("Like status updated successfully:", payload);
+    await listenerApi.dispatch(fetchAllPaintings());
+    await listenerApi.dispatch(fetchUserLikes(payload.userId));
   },
 });

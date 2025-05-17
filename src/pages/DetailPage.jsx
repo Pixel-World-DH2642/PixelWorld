@@ -230,7 +230,7 @@ export function DetailPage({
                       ? onToggleLike(painting.id, currentUser.uid)
                       : null
                   }
-                  className={`cursor-pointer text-xl sm:text-3xl transition transform duration-200 ${userLiked ? "scale-110" : "hover:scale-110"}`}
+                  className={`cursor-pointer text-xl sm:text-3xl transition transform duration-200 hover:scale-110`}
                   disabled={!currentUser || likesLoading}
                 >
                   <img

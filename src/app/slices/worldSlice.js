@@ -8,6 +8,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   currentPanelState: PANEL_STATES.WEATHER,
+  loading: false,
+  error: null,
 };
 
 export const worldSlice = createSlice({

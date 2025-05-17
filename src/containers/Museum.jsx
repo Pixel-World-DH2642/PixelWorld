@@ -4,20 +4,21 @@ import {
   selectPainting,
   selectAllPaintings,
   selectTopPaintings,
+  fetchAllPaintings,
 } from "../app/slices/paintingsSlice.js";
+import { fetchUserLikes } from "../app/slices/likeSlice.js";
 import { toggleLike } from "../app/slices/likeSlice.js";
 
 export const Museum = connect(
   function mapStateToProps(state) {
-    const { userLiked } = state.likes;
-
     return {
       paintings: selectAllPaintings(state),
       isLoading: state.paintings.loading,
       error: state.paintings.error,
       topPaintings: selectTopPaintings(state),
       currentUser: state.auth.user,
-      userLiked,
+      userLikedPaintings: state.likes.userLikedPaintings,
+      likesLoading: state.likes.loading,
     };
   },
 
@@ -28,6 +29,8 @@ export const Museum = connect(
       onPrevClick: () => dispatch(prevPaintings()),
       onToggleLike: (paintingId, userId) =>
         dispatch(toggleLike({ paintingId, userId })),
+      onFetchUserLikes: (userId) => dispatch(fetchUserLikes(userId)),
+      onFetchAllPaintings: () => dispatch(fetchAllPaintings()),
     };
   },
 )(MuseumPage);
