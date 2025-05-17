@@ -56,7 +56,7 @@ export function PixelEditorComponent({
   //Setup
   const numPaletteSlots = 16;
   const palette = [];
-  initializePalette();
+  initializePalette(); // TODO: fix: remove this and put it into the redux
 
   //let selectedPaletteSlot = null;
 
@@ -164,57 +164,59 @@ export function PixelEditorComponent({
   ));
 
   return (
-    <div className="flex flex-col justify-between w-full h-full bg-gray-300 p-2 gap-2">
+    <div className="flex flex-col w-full h-full bg-gray-300 p-2 gap-2">
       <div className="sm:text-xl">Pixel Editor</div>
-      <div
-        className="inline-grid grid-cols-4 gap-1 w-full aspect-square cursor-pointer p-4 bg-gray-100 rounded-md"
-        onClick={handlePaletteClickedACB}
-      >
-        {paletteSlots}
-      </div>
-      <div className="flex items-center justify-center gap-2 text-sm rounded-md bg-gray-100 p-2">
-        <div className="flex flex-col items-center justify-center">
-          <input
-            type="color"
-            id="picker"
-            name="color"
-            value={
-              selectedPaletteSlot !== null
-                ? colorPaletteArray[selectedPaletteSlot]
-                : "#e62465"
-            }
-            className="cursor-pointer"
-            onChange={handleColorChangeACB}
-            disabled={selectedPaletteSlot === null}
-          />
-          <p>Color</p>
+      <div className="flex items-center justify-center gap-2">
+        <div
+          className="inline-grid grid-cols-4 gap-1 h-full aspect-square cursor-pointer p-4 bg-gray-100 rounded-md"
+          onClick={handlePaletteClickedACB}
+        >
+          {paletteSlots}
         </div>
-        <div className="flex flex-col items-center justify-center">
-          <img
-            className="w-10"
-            src="assets/random_icon_64x64.png"
-            alt="randomize palette"
-            onClick={handleRandomizeClicked}
-          />
-          <p>Random</p>
-        </div>
-        <div className="flex flex-col items-center justify-center">
-          <img
-            className="w-10"
-            src="assets/pencil_icon_64x64.png"
-            alt="pencil"
-            onClick={handlePencilSelected}
-          />
-          <p>Pencil</p>
-        </div>
-        <div className="flex flex-col items-center justify-center">
-          <img
-            className="w-10"
-            src="assets/eraser_icon_64x64_new.png"
-            alt="eraser"
-            onClick={handleEraserSelected}
-          />
-          <p>Eraser</p>
+        <div className="flex flex-col items-center justify-center gap-2 text-sm rounded-md bg-gray-100 p-2 h-full">
+          <div className="flex flex-col items-center justify-center">
+            <input
+              type="color"
+              id="picker"
+              name="color"
+              value={
+                selectedPaletteSlot !== null
+                  ? colorPaletteArray[selectedPaletteSlot]
+                  : "#e62465"
+              }
+              className="cursor-pointer"
+              onChange={handleColorChangeACB}
+              disabled={selectedPaletteSlot === null}
+            />
+            <p>Color</p>
+          </div>
+          <div className="flex flex-col items-center justify-center">
+            <img
+              className="w-10"
+              src="assets/random_icon_64x64.png"
+              alt="randomize palette"
+              onClick={handleRandomizeClicked}
+            />
+            <p>Random</p>
+          </div>
+          <div className="flex flex-col items-center justify-center">
+            <img
+              className="w-10"
+              src="assets/pencil_icon_64x64.png"
+              alt="pencil"
+              onClick={handlePencilSelected}
+            />
+            <p>Pencil</p>
+          </div>
+          <div className="flex flex-col items-center justify-center">
+            <img
+              className="w-10"
+              src="assets/eraser_icon_64x64_new.png"
+              alt="eraser"
+              onClick={handleEraserSelected}
+            />
+            <p>Eraser</p>
+          </div>
         </div>
       </div>
     </div>
