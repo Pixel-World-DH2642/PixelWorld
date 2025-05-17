@@ -41,6 +41,8 @@ const weatherSlice = createSlice({
         state.weatherCode = code;
         state.weatherData = action.payload;
         state.timestamp = action.payload.timestamp;
+        console.log("weather data is:", action.payload);
+        state.parsedData = action.payload.parsedData;
 
         //edit this line to pass more const as props to worldpage
         state.weatherTemperature = action.payload.weatherTemperature;

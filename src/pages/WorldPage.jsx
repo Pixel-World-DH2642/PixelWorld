@@ -1139,8 +1139,7 @@ export function WorldPage({
         <div className="border-4 rounded-xl overflow-auto">
           <ReactP5Wrapper
             sketch={sketch}
-            weatherData={weather} //{{ cloudAmt: 5 }} /*{weather.parsedData}*/
-            //Pixel Editor Props
+            weather={weather} //{{ cloudAmt: 5 }} /*{weather.parsedData}*/
             currentColor={currentColor}
             currentTool={currentTool}
             //Pixel Editor Functions

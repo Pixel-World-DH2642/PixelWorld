@@ -1,5 +1,5 @@
 export async function fetchWeatherData(longitude, latitude) {
-  //console.log("weather fetch");
+  console.log("weather fetch");
   const smhiURL = `https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${longitude}/lat/${latitude}/data.json`;
   const response = await fetch(smhiURL);
   if (!response.ok)
@@ -14,21 +14,19 @@ export async function fetchWeatherData(longitude, latitude) {
   const meanPrecipitation =
     data.timeSeries[2].parameters[3].values[0]; /*kg/m2/h*/
 
-  /*
   console.log("weather code today is:", weatherCode);
   console.log("weatherTemperature today is:", weatherTemperature);
   console.log("wind Speed  today is:", windSpeed);
   console.log("air pressure today is:", airPressure);
   console.log("mean precipitation today is:", meanPrecipitation);
-  */
+  const parsedData = parseWeatherData(data);
   return {
-    //weatherData
+    parsedData,
     weatherCode,
     weatherTemperature,
     windSpeed,
     airPressure,
     meanPrecipitation,
-    worldWeather: parseWeatherData(data),
     timestamp: Date.now(),
   };
 }
@@ -37,12 +35,13 @@ function parseWeatherData(data) {
   //------------------------------Forecast------------------------------//
   const timeIndex = 2; //time in UTC check which one matches user
 
+  let windSpeed =
+    Math.min(data.timeSeries[timeIndex].parameters[14].values[0], 30) / 30; //(0-1)
+
   //Weather Symbols
   let rainAmt = 0; //(0-3)
   let snowAmt = 0; //(0-3)
   let cloudAmt = 0; //(0-6) where 5&6 overcast/ foggy
-  let windSpeed = 0;
-
   const weatherSymbols = data.timeSeries[timeIndex].parameters[18].values;
   weatherSymbols.forEach((symbol) => abstractWeatherSymbol(symbol));
 
@@ -123,6 +122,13 @@ function parseWeatherData(data) {
   let sunriseAmt = 0;
   let sunsetAmt = 0;
   //...
+
+  return {
+    rainAmt,
+    snowAmt,
+    cloudAmt,
+    windSpeed,
+  };
 }
 
 /*Weather Abstraction Layer
