@@ -29,6 +29,55 @@ When ready, users can visit the Museum to browse and appreciate paintings upload
 - [Vite](https://vite.dev/)
 - [David](https://gits-15.sys.kth.se/dsegal)'s micro game engine
 
+1. The persistence layer of the application state is located in the Firebase server, which is completely isolated from the views and state management and only interacted with through Redux actions. The application state is managed through Redux slices. 
+2. The container components act as presenters connecting the Redux state to the corresponding views.
+3. The views  are purely presentational components, rednerring the user interface. There is no direct state management or persistence in the viesws. Each view is responsible for one page.
+MuseumPage.jsx: Gallery display
+DetailPage.jsx: Single painting view
+WorldPage.jsx: Game canvas
+ProfilePage.jsx: User profile
+
+We have integrated p5.js as a third party user-visible component which is used for renderring the canvas on the world page. 
+
+We are using connect instead of custom hooks which further  improves the separation of concerns and makes the state management framework independent.
+
+### User experience
+Our target group consists of creative individuals—primarily younger users—who are familiar with digital aesthetics and enjoy engaging in short bursts of creative activity. We aim to offer an experience that is stimulating yet not overwhelming, providing just enough tools and structure to inspire creativity without creating pressure or complexity. Users are free to explore at their own pace: a painting can take three minutes or three hours, depending on how deeply they want to engage. The goal is to encourage creativity in a relaxed, low-stakes environment that fits easily into their daily routines. Additionally, we aim to foster social connection and a sense of accomplishment by showcasing users’ artwork in a community museum, where they can view, like, and comment on each other’s paintings.
+
+In the prototyping stage we had user testing with 3 participants using the prototype cretaed in Figma. 
+The key insights were the following:
+
+Based on those we implemented the following changes: 
+
+
+### Web APIs and persistence
+We are using the following external APIs:
+- Quote API: Provides daily inspiration through random quotes
+- Weather API: Fetches real-time weather data based on user's geolocation
+- Firebase Services: Handles data persistence and authentication
+
+All API calls are done through Redux thunks and error handling and loading states are managed uniformly. 
+
+The application state is persisted in Firebase using the following collections: 
+1. Paintings Collection:
+    - Stores user-created artwork
+    - Includes metadata (author, title, timestamp)
+    - Contains quote association and color matrix
+    - Tracks likes and comments
+
+2. Users Collection
+    - User profiles and preferences
+    - Authentication details
+    - Painting history and interactions
+    - Personal gallery information
+
+3. Likes Collection
+    - association between paintings and users using IDs
+    - each intearction os timestamped
+
+We are using Firebase for user authentication as well allowing sign-in and registration with email and password or with Google account.
+
+
 ### What we have done - 2025.04.14
 
 - Skeleton files and stubs created for the whole structure of the app including [redux toolkit](https://redux-toolkit.js.org/) slices, mapping from redux store to the view and the views
