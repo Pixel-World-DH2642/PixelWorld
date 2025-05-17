@@ -130,7 +130,10 @@ export function WorldPage({
       <NavBar enableBack={false} title="Pixel World" />
       <div className="flex flex-col items-center justify-center text-center gap-4 pb-8 pt-4">
         <div className="flex w-full items-stretch justify-between gap-4 h-auto">
-          <div className="border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0">
+          <div
+            id="viewport-container"
+            className="border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0"
+          >
             <ReactP5Wrapper
               sketch={sketch}
               weather={weather}
