@@ -1,7 +1,8 @@
-import { useSelector } from "react-redux";
-
-export function WeatherDashboard() {
-  const weather = useSelector((state) => state.weather);
+export function WeatherDashboard({ weather }) {
+  if (!weather) {
+    return <div>Loading weather data...</div>;
+  }
+  //const weather = useSelector((state) => state.weather);
 
   return (
     <div className="w-full max-w-md mx-auto font-pixel">
