@@ -1,4 +1,5 @@
 import { createMicroEngine } from "./microEngine";
+import { TOOL_MODE } from "../../app/slices/pixelEditorSlice";
 
 export function createActorList(p5, MicroEngine) {
   const mainScene = MicroEngine.CreateScene();
@@ -8,10 +9,11 @@ export function createActorList(p5, MicroEngine) {
     actor.addComponent(CanvasComponent, null);
 
     function CanvasComponent(settings, actor, pos) {
-      let pixelSize = 8;
+      let pixelSize = 12;
       let rows = Math.floor(size.x / pixelSize);
       let columns = Math.floor(size.y / pixelSize);
       let currentColor = { r: 0, g: 0, b: 0, a: 255 };
+      let currentTool = TOOL_MODE.PENCIL;
 
       const pixelArray = [];
 
@@ -31,18 +33,32 @@ export function createActorList(p5, MicroEngine) {
 
         const pixCoordX = Math.floor((mx - pos.x + size.x / 2) / pixelSize);
         const pixCoordY = Math.floor((my - pos.y + size.y / 2) / pixelSize);
-        pixelArray[pixCoordX][pixCoordY] = currentColor;
+        if (currentTool === TOOL_MODE.ERASER)
+          pixelArray[pixCoordX][pixCoordY] = { r: 0, g: 0, b: 0, a: 0 };
+        else pixelArray[pixCoordX][pixCoordY] = currentColor;
       }
 
+      //Make a pg so we only have to re-render when user paints
       function render() {
-        p5.stroke(0);
-        p5.strokeWeight(4);
-        p5.line(pos.x, pos.y - 95, pos.x + 70, pos.y + 100);
-        p5.line(pos.x, pos.y - 95, pos.x - 70, pos.y + 100);
+        p5.stroke(120, 100, 20);
+        p5.strokeWeight(8);
+        p5.line(
+          pos.x,
+          pos.y - size.y * 0.7,
+          pos.x + size.x * 0.5,
+          pos.y + size.y * 0.8,
+        );
+        p5.line(
+          pos.x,
+          pos.y - size.y * 0.7,
+          pos.x - size.x * 0.5,
+          pos.y + size.y * 0.8,
+        );
 
         p5.fill(222, 230, 200);
-        p5.stroke(0);
-        p5.strokeWeight(0);
+        //p5.stroke(0);
+        p5.strokeWeight(4);
+        p5.stroke(150, 120, 20);
         p5.rect(pos.x, pos.y, size.x, size.y);
         p5.noStroke();
 
@@ -72,6 +88,10 @@ export function createActorList(p5, MicroEngine) {
         processInput,
         setCurrentColor: function (color) {
           currentColor = color;
+        },
+        setCurrentTool: function (tool) {
+          currentTool = tool;
+          console.log(tool);
         },
       };
     }
@@ -179,110 +199,6 @@ export function createActorList(p5, MicroEngine) {
     return actor;
   }
 
-  function createGroundActor(testPlants) {
-    //Make sure vertex spacing gets passed through to the collider & renderer...
-    //Make it available
-
-    const hmap = MicroEngine.GenerateCurveData({
-      amplitude: 130,
-      baseHeight: p5.height - 20,
-      noiseIncrementStep: 0.1,
-      vertexIterations: 300,
-    });
-
-    function GroundRendererComponent(settings, actor, pos) {
-      const hmap = settings.hmap;
-      let groundCanvas = p5.createGraphics(p5.width, p5.height);
-
-      //PLANT BIZZ
-
-      //const plantRefs = [testPlant1, testPlant2, testPlant3];
-      const plants = [];
-
-      for (let i = 0; i < 100; i++) {
-        const xpos = p5.random(2000);
-        const ypos = actor
-          .findComponent("Collider")
-          .colliderGeometry.querryGroundHeight(xpos);
-        const plantIndex = Math.floor(p5.random(3));
-        plants.push({ xpos, ypos, plantIndex });
-      }
-
-      //RESTRICT PLAYER FROM MOVING TO EDGES
-
-      //ONLY RE-RENDER WHEN PLAYER MOVES
-      function drawCurve(heightMap, settings) {
-        const pg = settings?.pg || p5.instance;
-
-        //Params
-        let vertexSpacing = settings?.vertexSpacing || 20;
-
-        //Panning
-        let xOffset = MicroEngine.CameraPanning.x / vertexSpacing;
-        let indexOffset = -Math.floor(xOffset);
-        xOffset = (xOffset + indexOffset) * vertexSpacing;
-        let indexWidth = Math.floor(pg.width / vertexSpacing) + indexOffset + 2;
-
-        pg.beginShape();
-        pg.noStroke();
-
-        if (indexOffset > 4) {
-          pg.curveVertex(-80, pg.height + 100);
-          pg.curveVertex(-80, pg.height + 100);
-          pg.curveVertex(-50, heightMap[indexOffset - 2]);
-          pg.curveVertex(-50, heightMap[indexOffset - 1]);
-        }
-
-        for (let i = indexOffset; i < indexWidth; i++) {
-          pg.curveVertex(
-            (i - indexOffset) * vertexSpacing + xOffset,
-            heightMap[i],
-          );
-        }
-
-        pg.curveVertex(pg.width + 20, pg.height + 100);
-        pg.curveVertex(pg.width + 20, pg.height + 100);
-        pg.endShape();
-      }
-
-      return {
-        type: "GroundRenderer",
-
-        initialize: function () {},
-        update: function () {},
-
-        render: function () {
-          groundCanvas.clear();
-          groundCanvas.fill(40, 220, 39);
-          groundCanvas.push();
-          drawCurve(hmap, { pg: groundCanvas, vertexSpacing: 20 });
-          //drawGroundDetail(hmap, {pg: groundCanvas, vertexSpacing: 20 })
-          groundCanvas.pop();
-
-          p5.push();
-          p5.translate(-MicroEngine.CameraPanning.x, 0);
-          p5.image(groundCanvas, 0, 0);
-          p5.pop();
-
-          plants.forEach((plant) => {
-            p5.image(testPlants[plant.plantIndex], plant.xpos, plant.ypos - 12);
-          });
-        },
-      };
-    }
-
-    const colliderSettings = {
-      elasticity: 1,
-      geometrySettings: { vertexSpacing: 20, heightMap: hmap, smoothOn: true },
-    };
-
-    let actor = MicroEngine.Components.Actor(p5.createVector(0, 0));
-    actor.addComponent(MicroEngine.Components.GroundCollider, colliderSettings);
-    actor.addComponent(GroundRendererComponent, { hmap });
-    mainScene.addActor(actor);
-    return actor;
-  }
-
   ///%%%%%%%%%%%%%%%%%%%%%%%% WIP %%%%%%%%%%%%%%%%%%%%%%%%///
   function createGroundSliceActor(testPlants) {
     //Make sure vertex spacing gets passed through to the collider & renderer...
@@ -325,6 +241,7 @@ export function createActorList(p5, MicroEngine) {
           hmap.length * vertexSpacing,
           p5.height,
         );
+        groundCanvasFull.noSmooth();
         renderCurve(hmap, groundCanvasFull);
         const backgroundSlices = MicroEngine.Utils.SliceImage(
           groundCanvasFull,
@@ -352,7 +269,16 @@ export function createActorList(p5, MicroEngine) {
 
         //Render plants
         plants.forEach((plant) => {
-          pg.image(testPlants[plant.plantIndex], plant.xpos, plant.ypos - 12);
+          pg.push();
+          pg.translate(
+            plant.xpos,
+            plant.ypos -
+              testPlants[plant.plantIndex].height -
+              Math.random() * 12,
+          );
+          pg.scale(2, 2);
+          pg.image(testPlants[plant.plantIndex], 0, 0);
+          pg.pop();
         });
       }
 

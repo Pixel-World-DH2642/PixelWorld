@@ -34,9 +34,9 @@ export function sketch(p5) {
 
     skyLayerActor = ActorList.createSkyLayerActor();
     ActorList.createGroundSliceActor([testPlant1, testPlant2, testPlant3]);
-    easel = ActorList.createCanvasActor(p5.createVector(900, 150), {
-      x: 128,
-      y: 128,
+    easel = ActorList.createCanvasActor(p5.createVector(900, 220), {
+      x: 192,
+      y: 192,
     });
     mainCharacter = ActorList.createMainCharacterActor(
       mainCharSpriteSheet,
@@ -68,9 +68,9 @@ export function sketch(p5) {
     ActorList.setEnvironmentWeather(props.weather.parsedData, skyLayerActor);
 
     if (easel) {
-      easel
-        .findComponent("CanvasComponent")
-        .setCurrentColor(props.currentColor);
+      const canvasComponent = easel.findComponent("CanvasComponent");
+      canvasComponent.setCurrentColor(props.currentColor);
+      canvasComponent.setCurrentTool(props.currentTool);
     }
   };
 

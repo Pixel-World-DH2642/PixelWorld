@@ -1141,6 +1141,9 @@ export function WorldPage({
             sketch={sketch}
             weather={weather} //{{ cloudAmt: 5 }} /*{weather.parsedData}*/
             currentColor={currentColor}
+            currentTool={currentTool}
+            //Pixel Editor Functions
+            //...Add pixel array data & funcs...
           />
         </div>
         <div className="h-20 w-full border rounded">Play Instructions</div>
