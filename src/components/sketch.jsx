@@ -64,11 +64,8 @@ export function sketch(p5) {
   };
 
   p5.updateWithProps = (props) => {
-    //console.log(props.weatherData.parsedData);
-    ActorList.setEnvironmentWeather(
-      props.weatherData.parsedData,
-      skyLayerActor,
-    );
+    console.log("Parsed data: ", props.weather.parsedData);
+    ActorList.setEnvironmentWeather(props.weather.parsedData, skyLayerActor);
 
     if (easel) {
       easel

@@ -42,7 +42,6 @@ export function WorldPage({
 
   const navigate = useNavigate();
 
-  console.log(weather);
   function getNewQuote() {
     onGetQuote();
   }
@@ -1140,7 +1139,7 @@ export function WorldPage({
         <div className="border-4 rounded-xl overflow-auto">
           <ReactP5Wrapper
             sketch={sketch}
-            weatherData={weather} //{{ cloudAmt: 5 }} /*{weather.parsedData}*/
+            weather={weather} //{{ cloudAmt: 5 }} /*{weather.parsedData}*/
             currentColor={currentColor}
           />
         </div>
