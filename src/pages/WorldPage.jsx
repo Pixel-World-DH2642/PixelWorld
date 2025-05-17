@@ -92,7 +92,7 @@ export function WorldPage({
   // Debug panel for switching between states
   const PanelSwitcher = () => {
     return (
-      <div className="mb-8">
+      <div className="mb-4">
         <ButtonGroup variant="contained" aria-label="Panel switcher">
           <Button
             color={
@@ -1176,6 +1176,18 @@ export function WorldPage({
       </div>
       <div className="text-red-500">Debug UI for panel switching</div>
       <PanelSwitcher />
+      {/* Debug UI for navigate to museum */}
+      <div className="mb-4">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/museum")}
+        >
+          Go to Museum
+        </Button>
+      </div>
+
+      <div className="mb-4"></div>
 
       <SubmitModal
         quote={quote}
