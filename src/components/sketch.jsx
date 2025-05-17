@@ -27,7 +27,7 @@ export function sketch(p5) {
   };
 
   p5.setup = () => {
-    p5.createCanvas(800, 400);
+    p5.createCanvas(700, 400);
     p5.rectMode(p5.CENTER);
     p5.noSmooth();
     //p5.background(30, 40, 220);
@@ -44,27 +44,10 @@ export function sketch(p5) {
     );
 
     MicroEngine.LoadScene(ActorList.mainScene);
-
-    //move to an actor object
-    /*
-    skyCanvas = p5.createGraphics(p5.width, p5.height);
-    scribble = MicroEngine.CreateScribbleInstance(skyCanvas); //new Scribble(skyCanvas);
-
-    scribble.bowing = 5;
-    for (let i = 0; i < 8; i++) {
-      skyCanvas.strokeWeight(20 + p5.random(-7, 30));
-      skyCanvas.stroke(
-        30 + p5.random(-20, 20),
-        40 + p5.random(-10, 10),
-        220 + p5.random(-30, 10),
-      );
-      scribble.scribbleLine(0, i * 20, p5.width, i * 20);
-    }
-    */
   };
 
   p5.updateWithProps = (props) => {
-    console.log("Parsed data: ", props.weather.parsedData);
+    //console.log("Parsed data: ", props.weather.parsedData);
     ActorList.setEnvironmentWeather(props.weather.parsedData, skyLayerActor);
 
     if (easel) {
@@ -97,6 +80,11 @@ export function sketch(p5) {
     } else if (lastKeyPress == p5.RIGHT_ARROW) {
       mainCharacter.findComponent("Animation").setAnimationState("IdleRight");
     }
+  };
+
+  p5.windowResized = () => {
+    const parentElement = document.getElementById("viewport-container");
+    p5.resizeCanvas(Math.min(800, parentElement.clientWidth), 400);
   };
 
   p5.mousePressed = () => {

@@ -42,17 +42,34 @@ export function createActorList(p5, MicroEngine) {
       function render() {
         p5.stroke(120, 100, 20);
         p5.strokeWeight(8);
+
+        //Right Leg
         p5.line(
           pos.x,
           pos.y - size.y * 0.7,
           pos.x + size.x * 0.5,
           pos.y + size.y * 0.8,
         );
+        //Left Leg
         p5.line(
           pos.x,
           pos.y - size.y * 0.7,
           pos.x - size.x * 0.5,
           pos.y + size.y * 0.8,
+        );
+        //Top Bracket
+        p5.line(
+          pos.x - size.x * 0.2,
+          pos.y - size.y * 0.6,
+          pos.x + size.x * 0.2,
+          pos.y - size.y * 0.6,
+        );
+        //Bottom Bracket
+        p5.line(
+          pos.x - size.x * 0.6,
+          pos.y + size.y * 0.5,
+          pos.x + size.x * 0.6,
+          pos.y + size.y * 0.5,
         );
 
         p5.fill(222, 230, 200);

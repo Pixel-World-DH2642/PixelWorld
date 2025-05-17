@@ -5,6 +5,9 @@ import { getWeatherData } from "../app/slices/weatherSlice";
 import {
   uploadPainting,
   fetchAllPaintings,
+  updatePlayerPainting,
+  undoEdit,
+  getUndoStateHint,
 } from "../app/slices/paintingsSlice";
 import {
   setCurrentTool,
@@ -35,6 +38,8 @@ export const World = connect(
       currentColor: state.editor.currentColor,
       currentTool: state.editor.currentTool,
       selectedPaletteSlot: state.editor.selectedPaletteSlot,
+      //Painting Data
+      playerPainting: state.paintings.playerPainting,
     };
   },
   function mapDispatchToProps(dispatch) {
@@ -51,9 +56,12 @@ export const World = connect(
       onPaletteInitialize: (paletteData) =>
         dispatch(setColorPalette(paletteData)),
       onSlotSelected: (slot) => dispatch(setCurrentPaletteSlot(slot)),
-      //This should go into a different slice probably...
-      onImageUpdated: (pixelData) => dispatch(updatePixelArray(pixelData)),
-      onImageInitialized: (imageData) => dispatch(setPixelArray(imageData)),
+      //Painting Slice Functions
+      onPlayerPaintingUpdate: (painting) =>
+        dispatch(updatePlayerPainting(painting)),
+      onUndoEdit: () => dispatch(undoEdit()),
+      onRedoEdit: () => dispatch(redoEdit()),
+      onGetUndoStateHint: () => dispatch(getUndoStateHint()),
       onSubmitPainting: (painting) => {
         return dispatch(uploadPainting(painting)).then(() => {
           return dispatch(fetchAllPaintings());
