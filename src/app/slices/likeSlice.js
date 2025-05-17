@@ -32,7 +32,7 @@ export const toggleLike = createAsyncThunk(
       if (!snapshot.empty) {
         const likeDoc = snapshot.docs[0];
         await deleteDoc(doc(db, "likes", likeDoc.id));
-        return { liked: false, userId };
+        return { liked: false, userId, paintingId, countChange: -1 };
       }
 
       // Otherwise, add a new like
@@ -41,7 +41,7 @@ export const toggleLike = createAsyncThunk(
         userId,
         timestamp: serverTimestamp(),
       });
-      return { liked: true, userId };
+      return { liked: true, userId, paintingId, countChange: 1 };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }

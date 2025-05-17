@@ -3,6 +3,7 @@ import {
   selectPainting,
   fetchPaintingById,
   fetchAllPaintings,
+  updateLikesCount,
 } from "../slices/paintingsSlice";
 import { fetchUserLikes } from "../slices/likeSlice";
 
@@ -54,9 +55,9 @@ paintingListenerMiddleware.startListening({
 paintingListenerMiddleware.startListening({
   matcher: (action) => action.type === "likes/toggleLike/fulfilled",
   effect: async (action, listenerApi) => {
-    const { payload } = action;
-    console.log("Like status updated successfully:", payload);
-    await listenerApi.dispatch(fetchAllPaintings());
-    await listenerApi.dispatch(fetchUserLikes(payload.userId));
+    const { userId, paintingId, countChange } = action.payload;
+    // console.log("Like status updated successfully:", payload);
+    listenerApi.dispatch(updateLikesCount({ paintingId, countChange }));
+    await listenerApi.dispatch(fetchUserLikes(userId));
   },
 });

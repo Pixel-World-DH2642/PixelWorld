@@ -240,6 +240,13 @@ const paintingsSlice = createSlice({
       if (state.undoIndex >= 0) undoHint.canRedo = false;
       return undoHint;
     },
+    updateLikesCount: (state, action) => {
+      const { paintingId, countChange } = action.payload;
+      if (state.entities[paintingId]) {
+        state.entities[paintingId].likesCount =
+          (state.entities[paintingId].likesCount || 0) + countChange;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -344,5 +351,6 @@ export const {
   undoEdit,
   redoEdit,
   getUndoStateHint,
+  updateLikesCount,
 } = paintingsSlice.actions;
 export default paintingsSlice.reducer;
