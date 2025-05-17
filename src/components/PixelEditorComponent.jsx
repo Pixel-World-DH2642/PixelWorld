@@ -97,8 +97,18 @@ export function PixelEditorComponent({
     )
       return;
 
-    document.getElementById(palette[0].id).className = "palette_slot";
-    e.target.className = "selected_palette_cell";
+    // Reset previous selected slot if it exists
+    if (selectedPaletteSlot !== null) {
+      const previousSlot = document.getElementById(
+        palette[selectedPaletteSlot].id,
+      );
+      if (previousSlot) {
+        previousSlot.className = "aspect-square";
+      }
+    }
+
+    // Set new selected slot
+    e.target.className = "outline-2 aspect-square";
     onSlotSelected(parseInt(e.target.dataset.index));
     onColorSelect(hexToRgb(e.target.dataset.color));
   }
@@ -122,7 +132,7 @@ export function PixelEditorComponent({
   //Create palette slot elements
   const paletteSlots = palette.map((slot) => (
     <div
-      className="palette_cell"
+      className="aspect-square"
       key={slot.id}
       id={slot.id}
       data-color={slot.color}
@@ -132,44 +142,53 @@ export function PixelEditorComponent({
   ));
 
   return (
-    <div className="pixel_editor">
-      <div className="palette">
-        <div>Palette</div>
+    <div className="flex flex-col w-full h-full border rounded-xl shadow-md bg-gray-50 border-gray-500 p-4">
+      <div className="mb-2 sm:text-xl">Color Editor</div>
+      <div className="flex h-full items-center justify-between">
         <div
-          className="palette_grid_container"
+          className="inline-grid grid-cols-4 gap-1 h-full aspect-square cursor-pointer p-4 bg-gray-200 rounded-md"
           onClick={handlePaletteClickedACB}
         >
           {paletteSlots}
         </div>
-      </div>
-
-      <div className="toolbox">
-        <div className="toolbox_grid_container">
-          <div>
-            <input
-              type="color"
-              id="picker"
-              name="color"
-              value="#e62465"
-              onChange={handleColorChangeACB}
-            />
-          </div>
-          <div>Undo</div>
-          <div>Redo</div>
-          <div>Randomize</div>
-          <div>
-            Pencil
-            <div>
-              <img src="assets/pencil_icon_64x64.png" alt="pencil" />
+        <div className="rounded-md bg-gray-200 h-full p-2 flex-shrink w-16">
+          <div className="flex flex-col items-center justify-center gap-2 text-sm">
+            <div className="flex flex-col items-center justify-center">
+              <input
+                type="color"
+                id="picker"
+                name="color"
+                value={
+                  selectedPaletteSlot !== null
+                    ? colorPaletteArray[selectedPaletteSlot]
+                    : "#e62465"
+                }
+                className="cursor-pointer"
+                onChange={handleColorChangeACB}
+                disabled={selectedPaletteSlot === null}
+              />
+              <p>Color</p>
+            </div>
+            <div className="flex flex-col items-center justify-center">
+              <p>Random</p>
+            </div>
+            <div className="flex flex-col items-center justify-center">
+              <img
+                className="w-10"
+                src="assets/pencil_icon_64x64.png"
+                alt="pencil"
+              />
+              <p>Pencil</p>
+            </div>
+            <div className="flex flex-col items-center justify-center">
+              <img
+                className="w-10"
+                src="assets/eraser_icon_64x64.png"
+                alt="eraser"
+              />
+              <p>Eraser</p>
             </div>
           </div>
-          <div>
-            Eraser
-            <div>
-              <img src="assets/eraser_icon_64x64.png" alt="pencil" />
-            </div>
-          </div>
-          <div>Fill</div>
         </div>
       </div>
     </div>

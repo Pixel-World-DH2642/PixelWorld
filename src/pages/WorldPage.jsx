@@ -1,11 +1,14 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { sketch } from "../components/Sketch";
-import { Menu } from "../components/Menu";
 import { PixelEditorComponent } from "../components/PixelEditorComponent";
 import { WeatherDashboard } from "../components/weatherDashboard";
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
 import { SubmitModal } from "../components/SubmitModal";
+import { Link } from "react-router-dom";
+import { Button } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import { useNavigate } from "react-router-dom";
 
 export function WorldPage({
   quote,
@@ -36,6 +39,8 @@ export function WorldPage({
   //Image funcs later, make different slice...
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   console.log(weather);
   function getNewQuote() {
@@ -1075,51 +1080,103 @@ export function WorldPage({
     ],
   };
 
+  const NavigationPanel = () => {
+    return (
+      <div className="flex flex-col items-center justify-between bg-gray-50 border border-gray-500 rounded-xl p-6 w-full max-w-md mx-auto shadow-md font-pixel">
+        {user ? (
+          <Link
+            className="flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-300"
+            to="/profile"
+          >
+            <img
+              src={user.photoURL || "/assets/default_avatar.png"} // Provide a path to a default avatar
+              alt="Profile"
+              className="aspect-square w-1/3 sm:w-25 self-center bg-gray-300 rounded-full border border-black" // Added border and bg as fallback
+            />
+            <h1 className="text-xl sm:text-3xl font-bold">
+              {user.displayName || "Anonymous"}
+            </h1>
+          </Link>
+        ) : (
+          <div className="text-center">
+            No user found. TODO: Should direct to welcome page.
+          </div>
+        )}
+
+        {/* TODO: Add number of paintings done or number of likes got */}
+        <div className="flex items-center justify-around w-full gap-2">
+          <div>Paintings: 10</div>
+          <div>Likes: 20</div>
+        </div>
+
+        {/* TODO: Put the to museum into the viewport */}
+        <div className="flex items-center justify-between gap-2">
+          <Button
+            variant="contained"
+            onClick={() => {
+              navigate("/museum");
+            }}
+          >
+            Museum
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            endIcon={<SendIcon />}
+            onClick={() => setIsModalOpen(true)}
+          >
+            Submit Painting
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
-      <NavBar enableBack={false} />
-      <div className="flex flex-col items-center justify-center text-center">
-        <Menu />
-        <h1>World Page</h1>
+      <NavBar enableBack={false} title="Pixel World" showProfile={false} />
+      <div className="flex flex-col items-center justify-center text-center gap-4 pb-8 pt-4">
+        {/* <Menu /> */}
+        <div className="border-4 rounded-xl overflow-auto">
+          <ReactP5Wrapper
+            sketch={sketch}
+            weatherData={weather} //{{ cloudAmt: 5 }} /*{weather.parsedData}*/
+            currentColor={currentColor}
+          />
+        </div>
+        <div className="h-20 w-full border rounded">Play Instructions</div>
 
-        <ReactP5Wrapper
-          sketch={sketch}
-          weatherData={weather} //{{ cloudAmt: 5 }} /*{weather.parsedData}*/
-          currentColor={currentColor}
-        />
-      </div>
-      <div className="flex items-center justify-center">
-        <button
-          className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-          onClick={getNewQuote}
-        >
-          Get a new quote
-        </button>
-        <p>Quote of the day: {quote.content}</p>
+        {/* TODO: Responsive design, maybe use flex */}
+        <div className="grid grid-cols-3 w-full gap-4">
+          <WeatherDashboard />
+          <div className="w-full h-full">
+            <PixelEditorComponent
+              //Props
+              colorPaletteArray={colorPaletteArray}
+              currentColor={currentColor}
+              currentTool={currentTool}
+              selectedPaletteSlot={selectedPaletteSlot}
+              //Funcs
+              onToolSelect={onToolSelect}
+              onColorSelect={onColorSelect}
+              onPaletteUpdated={onPaletteUpdated}
+              onPaletteInitialize={onPaletteInitialize}
+              onSlotSelected={onSlotSelected}
+            />
+          </div>
+          <NavigationPanel />
+        </div>
+        <div className="text-red-600">
+          TODO: Move the quote into the viewport
+        </div>
+        <div className="flex items-center justify-center gap-2">
+          <Button variant="contained" onClick={getNewQuote}>
+            Get a new quote
+          </Button>
+          <p>Quote of the day: {quote.content}</p>
+        </div>
       </div>
 
-      <button
-        className="mt-4 px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 transition-colors"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Submit Painting
-      </button>
-      <div>
-        <PixelEditorComponent
-          //Props
-          colorPaletteArray={colorPaletteArray}
-          currentColor={currentColor}
-          currentTool={currentTool}
-          selectedPaletteSlot={selectedPaletteSlot}
-          //Funcs
-          onToolSelect={onToolSelect}
-          onColorSelect={onColorSelect}
-          onPaletteUpdated={onPaletteUpdated}
-          onPaletteInitialize={onPaletteInitialize}
-          onSlotSelected={onSlotSelected}
-        />
-        <WeatherDashboard />
-      </div>
       <SubmitModal
         quote={quote}
         painting={painting}

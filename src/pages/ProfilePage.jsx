@@ -62,7 +62,7 @@ export function ProfilePage({
   } else {
     return (
       <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] p-8">
-        <NavBar showProfile={false} />
+        <NavBar showProfile={false} title="Profile" />
 
         {authStatus === "loading" &&
           Suspense("loading", "Loading your profile...")}
@@ -126,7 +126,7 @@ export function ProfilePage({
               </div>
             </div>
             {/* Gallery */}
-            <h1 className="text-xl sm:text-3xl font-bold mb-2 w-full">
+            <h1 className="text-xl sm:text-2xl font-bold mb-2 w-full">
               Your paintings
             </h1>
             <div className="w-full border-b-2 border-black mb-8"></div>

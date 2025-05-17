@@ -207,7 +207,7 @@ export function MuseumPage({
 
   return (
     <div className="font-pixel max-h-[calc(100vh-4rem)] px-8 pt-8">
-      <NavBar backLocation="world" />
+      <NavBar backLocation="world" title="Museum" />
       {/* Add tab navigation */}
       <div className="flex space-x-4 mb-6 mt-4">
         <button
@@ -236,7 +236,6 @@ export function MuseumPage({
         {/* Show content based on active tab */}
         {activeTab === "museum" ? (
           <>
-            <h1 className="text-3xl font-bold mb-4">MUSEUM</h1>
             {/* Loading and error states */}
             {isLoading && Suspense("loading", "Loading paintings...")}
             {error && <p className="text-red-500">Error: {error}</p>}
@@ -245,7 +244,6 @@ export function MuseumPage({
           </>
         ) : (
           <>
-            <h1 className="text-3xl font-bold mb-6">HALL OF FAME</h1>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {topPaintings.map((painting, index) => (
                 <div key={painting.id} className="relative">

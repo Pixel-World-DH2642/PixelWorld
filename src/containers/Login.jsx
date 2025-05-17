@@ -18,7 +18,7 @@ export const Login = connect(
       onLoginWithGoogle: async (navigate) => {
         try {
           await dispatch(signInWithGoogle()).unwrap();
-          navigate("/");
+          navigate("/world");
         } catch (error) {
           console.error("Error during Google login:", error);
         }
@@ -26,7 +26,7 @@ export const Login = connect(
       onLogin: async (email, password, navigate) => {
         try {
           await dispatch(loginWithEmailPassword({ email, password })).unwrap();
-          navigate("/");
+          navigate("/world");
         } catch (error) {
           console.error("Error during login:", error);
         }
@@ -36,7 +36,7 @@ export const Login = connect(
           await dispatch(
             signUpWithEmailPassword({ email, password, name }),
           ).unwrap();
-          navigate("/");
+          navigate("/world");
         } catch (error) {
           console.error("Error during signup:", error);
         }
