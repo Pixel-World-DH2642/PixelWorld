@@ -174,6 +174,8 @@ const paintingsSlice = createSlice({
     error: null,
     selectedPaintingId: null,
     currentPainting: null,
+    playerPainting: null,
+    playerPaintingBuffer: [],
   }),
   reducers: {
     selectPainting: (state, action) => {
@@ -186,6 +188,12 @@ const paintingsSlice = createSlice({
     clearSelectedPainting: (state) => {
       state.selectedPaintingId = null;
       state.currentPainting = null;
+    },
+    updatePlayerPainting: (state, action) => {
+      state.playerPaintingBuffer.push(state.playerPainting);
+      if (state.playerPaintingBuffer.length > 30)
+        state.playerPaintingBuffer.splice(0, 1);
+      state.playerPainting = action.payload;
     },
   },
   extraReducers: (builder) => {
