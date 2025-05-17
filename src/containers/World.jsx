@@ -6,7 +6,6 @@ import {
   uploadPainting,
   fetchAllPaintings,
 } from "../app/slices/paintingsSlice";
-import { pixelEditorSlice } from "../app/slices/pixelEditorSlice";
 import {
   setCurrentTool,
   setCurrentColor,
@@ -16,6 +15,7 @@ import {
   updatePixelArray,
   setPixelArray,
 } from "../app/slices/pixelEditorSlice.js";
+import { setPanelState } from "../app/slices/worldSlice";
 
 export const World = connect(
   function mapStateToProps(state) {
@@ -27,6 +27,8 @@ export const World = connect(
         loading: state.paintings.loading,
         error: state.paintings.error,
       },
+      // Current panel state
+      currentPanelState: state.world.currentPanelState,
 
       //Pixel Editor Data
       colorPaletteArray: state.editor.colorPaletteArray,
@@ -39,6 +41,9 @@ export const World = connect(
     return {
       onGetQuote: () => dispatch(fetchDailyQuote()),
       onGetWeather: () => dispatch(getWeatherData()),
+      // Panel state change handler
+      onPanelStateChange: (state) => dispatch(setPanelState(state)),
+
       //Pixel Editor Slice Functions
       onToolSelect: (tool) => dispatch(setCurrentTool(tool)),
       onColorSelect: (color) => dispatch(setCurrentColor(color)),

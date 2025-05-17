@@ -4,7 +4,7 @@ export function WeatherDashboard() {
   const weather = useSelector((state) => state.weather);
 
   return (
-    <div className="bg-gray-50 border border-gray-500 rounded-xl p-6 w-full max-w-md mx-auto shadow-md font-pixel">
+    <div className="w-full max-w-md mx-auto font-pixel">
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
         🌦️ Weather Dashboard
       </h2>

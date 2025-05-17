@@ -12,6 +12,7 @@ import paintingsSlice from "./slices/paintingsSlice";
 import firebaseListenerMiddleware from "./middleware/firebaseListenerMiddleware";
 import { paintingListenerMiddleware } from "./middleware/paintingListenerMiddleware";
 import pixelEditorSlice from "./slices/pixelEditorSlice";
+import worldSlice from "./slices/worldSlice";
 
 const appSlice = createSlice({
   name: "app",
@@ -38,6 +39,7 @@ export default function configureReduxStore() {
       likes: likeSlice,
       paintings: paintingsSlice,
       editor: pixelEditorSlice,
+      world: worldSlice,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
