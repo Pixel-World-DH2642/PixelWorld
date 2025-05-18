@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { PaintingDisplay } from "../components/PaintingDisplay";
 import { Suspense } from "../components/Suspense";
@@ -12,6 +12,7 @@ const PaintingCard = ({
   currentUser,
   userLikedPaintings,
   likesLoading,
+  className = "",
 }) => {
   const handleLikeClick = (e) => {
     e.preventDefault();
@@ -24,7 +25,11 @@ const PaintingCard = ({
   return (
     <Link
       to="/details"
-      className="flex flex-col p-6 shadow-xl aspect-[2.1/3] cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-200 ease-in-out"
+      className={
+        `flex flex-col p-4 shadow-xl aspect-[2.1/3] cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-200 ease-in-out` +
+        " " +
+        className
+      }
       onClick={() => onSelect(painting.id)}
     >
       {/* Fixed height container for the image with aspect ratio preservation */}
@@ -91,8 +96,19 @@ export function MuseumPage({
 
   // tab state
   const [activeTab, setActiveTab] = useState("museum");
+
+  // Transition state
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [tabContent, setTabContent] = useState("museum"); // The currently visible content
+
+  // Loading transition state
+  const [contentOpacity, setContentOpacity] = useState(isLoading ? 0 : 1);
+
   // Responsive layout state
   const [layoutType, setLayoutType] = useState("desktop");
+
+  // Track previous loading state
+  const prevLoadingRef = useRef(isLoading);
 
   // Derived pagination state
   const isFirstPage = startIndex === 0;
@@ -123,6 +139,23 @@ export function MuseumPage({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    // If loading state has changed
+    if (prevLoadingRef.current !== isLoading) {
+      if (isLoading) {
+        console.log("Loading started");
+        setContentOpacity(0); // Fade out content
+      } else {
+        console.log("Loading finished");
+        // Transitioning from loading to content
+        setTimeout(() => {
+          setContentOpacity(1); // Fade in content
+        }, 50);
+      }
+      prevLoadingRef.current = isLoading;
+    }
+  }, [isLoading]);
+
   // Pagination handlers
   const handleNextClick = () => {
     if (!isLastPage) {
@@ -143,6 +176,24 @@ export function MuseumPage({
     } else {
       return paintings.slice(startIndex, startIndex + paintingsPerPage);
     }
+  };
+
+  const handleTabChange = (tab) => {
+    if (tab === activeTab) return;
+
+    setIsTransitioning(true);
+
+    // Change the active tab immediately (for the button highlight)
+    setActiveTab(tab);
+
+    // Wait for the fade-out animation, then change content
+    setTimeout(() => {
+      setTabContent(tab);
+      // Then start fade-in animation
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 50);
+    }, 300);
   };
 
   // Handle responsive layout rendering
@@ -178,6 +229,7 @@ export function MuseumPage({
                   currentUser={currentUser}
                   userLikedPaintings={userLikedPaintings}
                   likesLoading={likesLoading}
+                  className="border-2 rounded-xl border-gray-300"
                 />
               </div>
             ))}
@@ -219,6 +271,7 @@ export function MuseumPage({
                   currentUser={currentUser}
                   userLikedPaintings={userLikedPaintings}
                   likesLoading={likesLoading}
+                  className="border-2 rounded-xl border-gray-300"
                 />
               </div>
             ))}
@@ -234,58 +287,89 @@ export function MuseumPage({
       {/* Add tab navigation */}
       <div className="flex space-x-4 mb-6 mt-4">
         <button
-          className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
+          className={`px-4 py-2 rounded-lg font-bold cursor-pointer transition-colors duration-300 ${
             activeTab === "museum"
               ? "bg-yellow-400 text-black"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
-          onClick={() => setActiveTab("museum")}
+          onClick={() => handleTabChange("museum")}
         >
           MUSEUM
         </button>
         <button
-          className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
+          className={`px-4 py-2 rounded-lg font-bold cursor-pointer transition-colors duration-300 ${
             activeTab === "hall-of-fame"
               ? "bg-yellow-400 text-black"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
-          onClick={() => setActiveTab("hall-of-fame")}
+          onClick={() => handleTabChange("hall-of-fame")}
         >
           HALL OF FAME
         </button>
       </div>
 
       <div className="font-pixel w-full pb-8 lg:pb-12">
-        {/* Show content based on active tab */}
-        {activeTab === "museum" ? (
-          <>
-            {/* Loading and error states */}
-            {isLoading && Suspense("loading", "Loading paintings...")}
-            {error && <p className="text-red-500">Error: {error}</p>}
-            {/* Render paintings based on screen size */}
-            {!isLoading && !error && renderPaintings()}
-          </>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {topPaintings.map((painting, index) => (
-                <div key={painting.id} className="relative">
-                  <div className="absolute -top-4 -left-4 w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-black font-bold">
-                    #{index + 1}
+        {/* Loading state with transition */}
+        <div
+          className={`transition-opacity duration-300 ${isLoading ? "opacity-100" : "opacity-0"} ${isLoading ? "" : "hidden"}`}
+        >
+          {Suspense("loading", "Loading paintings...")}
+        </div>
+
+        {/* Main content with transitions */}
+        <div
+          className={`transition-opacity duration-300 ${isTransitioning || contentOpacity === 0 ? "opacity-0" : "opacity-100"} ${isLoading ? "hidden" : ""}`}
+        >
+          {error && <p className="text-red-500">Error: {error}</p>}
+          {!error && tabContent === "museum" ? (
+            // Museum content
+            renderPaintings()
+          ) : (
+            // Hall of Fame content
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {topPaintings.map((painting, index) => {
+                // Define badge and border colors based on rank
+                const badgeColor =
+                  index === 0
+                    ? "bg-yellow-400"
+                    : index === 1
+                      ? "bg-gray-300"
+                      : index === 2
+                        ? "bg-amber-600"
+                        : "bg-blue-300";
+
+                // Extract just the color name for the border
+                const borderColor =
+                  index === 0
+                    ? "border-yellow-400"
+                    : index === 1
+                      ? "border-gray-300"
+                      : index === 2
+                        ? "border-amber-600"
+                        : "border-blue-300";
+
+                return (
+                  <div key={painting.id} className="relative">
+                    <div
+                      className={`absolute -top-4 -left-4 w-12 h-12 rounded-full flex items-center justify-center text-black font-bold z-10 text-2xl ${badgeColor}`}
+                    >
+                      #{index + 1}
+                    </div>
+                    <PaintingCard
+                      painting={painting}
+                      onSelect={onSelectPainting}
+                      onToggleLike={onToggleLike}
+                      currentUser={currentUser}
+                      userLikedPaintings={userLikedPaintings}
+                      likesLoading={likesLoading}
+                      className={`border-4 rounded-xl ${borderColor} p-0`}
+                    />
                   </div>
-                  <PaintingCard
-                    painting={painting}
-                    onSelect={onSelectPainting}
-                    onToggleLike={onToggleLike}
-                    currentUser={currentUser}
-                    userLikedPaintings={userLikedPaintings}
-                    likesLoading={likesLoading}
-                  />
-                </div>
-              ))}
+                );
+              })}
             </div>
-          </>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

@@ -28,6 +28,7 @@ export function DetailPage({
 }) {
   const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
+  const [fadeIn, setFadeIn] = useState(false);
 
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
@@ -41,6 +42,18 @@ export function DetailPage({
     title: "",
     message: "",
   });
+
+  // Trigger fade-in effect when loading completes
+  useEffect(() => {
+    if (!isLoading && painting) {
+      // Short delay for better visual effect
+      setTimeout(() => {
+        setFadeIn(true);
+      }, 100);
+    } else {
+      setFadeIn(false);
+    }
+  }, [isLoading, painting]);
 
   if (!isLoading && !painting) {
     return <Navigate to="/museum" replace />;
@@ -176,7 +189,11 @@ export function DetailPage({
 
       {isLoading && Suspense("loading", "Loading painting details...")}
       {!isLoading && !error && (
-        <div className="flex flex-col md:flex-row gap-8 mt-4">
+        <div
+          className={`flex flex-col md:flex-row gap-8 mt-4 transition-opacity duration-500 ease-in-out ${
+            fadeIn ? "opacity-100" : "opacity-0"
+          }`}
+        >
           <div className="aspect-square w-full md:w-1/2 min-w-[250px] shrink-0 pb-8">
             <PaintingDisplay painting={painting} />
           </div>
@@ -243,7 +260,6 @@ export function DetailPage({
                   />
                 </button>
                 <span className="flex items-center text-0.5xl">
-                  {/* {likesLoading ? "..." : likesCount} */}
                   {likesCount}
                 </span>
               </div>
