@@ -128,9 +128,32 @@ export function WorldPage({
     }
   };
 
-  // Debug panel for switching between states
-  const PanelSwitcher = () => {
-    return (
+  return (
+    <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
+      <NavBar enableBack={false} title="Pixel World" />
+      <div className="flex flex-col items-center justify-center text-center gap-4 pb-8 pt-4">
+        <div className="flex w-full items-stretch justify-between gap-4 h-auto">
+          <div
+            id="viewport-container"
+            className="border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0"
+          >
+            <ReactP5Wrapper
+              sketch={sketch}
+              weather={weather}
+              currentColor={currentColor}
+              currentTool={currentTool}
+              onPlayerPaintingUpdate={onPlayerPaintingUpdate}
+              playerPainting={playerPainting}
+            />
+          </div>
+          <div className="border-4 rounded-xl flex-1 flex flex-shrink-0 flex-col w-264 items-center justify-center overflow-hidden">
+            {/* Dynamic panel content */}
+            {renderCurrentPanel()}
+          </div>
+        </div>
+      </div>
+      <div className="text-red-500">Debug UI for panel switching</div>
+      {/* // Debug panel for switching between states */}
       <div className="mb-4">
         <ButtonGroup variant="contained" aria-label="Panel switcher">
           <Button
@@ -159,35 +182,6 @@ export function WorldPage({
           </Button>
         </ButtonGroup>
       </div>
-    );
-  };
-
-  return (
-    <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
-      <NavBar enableBack={false} title="Pixel World" />
-      <div className="flex flex-col items-center justify-center text-center gap-4 pb-8 pt-4">
-        <div className="flex w-full items-stretch justify-between gap-4 h-auto">
-          <div
-            id="viewport-container"
-            className="border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0"
-          >
-            <ReactP5Wrapper
-              sketch={sketch}
-              weather={weather}
-              currentColor={currentColor}
-              currentTool={currentTool}
-              onPlayerPaintingUpdate={onPlayerPaintingUpdate}
-              playerPainting={playerPainting}
-            />
-          </div>
-          <div className="border-4 rounded-xl flex-1 flex flex-shrink-0 flex-col w-264 items-center justify-center overflow-hidden">
-            {/* Dynamic panel content */}
-            {renderCurrentPanel()}
-          </div>
-        </div>
-      </div>
-      <div className="text-red-500">Debug UI for panel switching</div>
-      <PanelSwitcher />
       {/* Debug UI for navigate to museum */}
       <div className="mb-4">
         <Button
@@ -198,9 +192,7 @@ export function WorldPage({
           Go to Museum
         </Button>
       </div>
-
       <div className="mb-4"></div>
-
       <SubmitModal
         painting={playerPainting}
         user={user}

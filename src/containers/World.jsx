@@ -79,8 +79,10 @@ export const World = connect(
       },
       onSlotSelected: (slot) => dispatch(setCurrentPaletteSlot(slot)),
       //Painting Slice Functions
-      onPlayerPaintingUpdate: (painting) =>
-        dispatch(updatePlayerPainting(painting)),
+      onPlayerPaintingUpdate: (painting) => {
+        // console.log("Dispatching updatePlayerPainting with:", painting);
+        dispatch(updatePlayerPainting(painting));
+      },
       onUndoEdit: () => dispatch(undoEdit()),
       onRedoEdit: () => dispatch(redoEdit()),
       onGetUndoStateHint: () => dispatch(getUndoStateHint()),

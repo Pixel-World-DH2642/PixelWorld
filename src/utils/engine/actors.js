@@ -46,7 +46,10 @@ export function createActorList(p, MicroEngine) {
         const pixCoordY = Math.floor((my - pos.y + size.y / 2) / pixelSize);
 
         // TODO: check if reading undefined otherwise the canvas freezes
+        if (pixCoordX < 0 || pixCoordX >= pixelArray.length) return;
+        if (pixCoordY < 0 || pixCoordY >= pixelArray[pixCoordX].length) return;
 
+        console.log("canvas actor", pixCoordX, pixCoordY);
         console.log(pixelArray);
 
         if (currentTool === TOOL_MODE.ERASER)

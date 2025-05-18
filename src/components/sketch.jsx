@@ -140,7 +140,8 @@ export function sketch(p5) {
 
   p5.mouseReleased = () => {
     //Future: use input system
-    // easel.findComponent("CanvasComponent").inputComplete();
+    console.log("mouse released");
+    easel.findComponent("CanvasComponent").inputComplete();
   };
 
   p5.keyPressed = () => {

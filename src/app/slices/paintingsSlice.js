@@ -136,10 +136,12 @@ export const fetchPlayerPainting = createAsyncThunk(
       const q = query(userPaintingRef, where("userId", "==", userId));
       const snapshot = await getDocs(q);
 
+      const jaggedNull = Array.from({ length: 16 }, () => Array(16).fill(null));
+
       if (snapshot.empty) {
         // No player painting found, return initial empty state
         return {
-          jagged: null,
+          jagged: jaggedNull,
           colorMatrix: null,
           savedQuote: null,
           title: null,
@@ -172,7 +174,7 @@ export const fetchPlayerPainting = createAsyncThunk(
 
       // Ensure all expected fields are present
       return {
-        jagged: paintingData.jagged || null,
+        jagged: paintingData.jagged || jaggedNull,
         colorMatrix: paintingData.colorMatrix || null,
         savedQuote: paintingData.savedQuote || null,
         title: paintingData.title || null,
