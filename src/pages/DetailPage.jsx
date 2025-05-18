@@ -311,7 +311,9 @@ export function DetailPage({
                       fullWidth
                       minRows={3}
                       variant="outlined"
-                      label="Comment"
+                      label={
+                        currentUser ? "Comment" : "Please login to comment"
+                      }
                     />
                     <Button
                       variant="outlined"

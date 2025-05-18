@@ -207,7 +207,7 @@ export function MuseumPage({
           <div className="mr-6 flex-shrink-0 self-center">
             <button
               onClick={handlePrevClick}
-              className={`${!isFirstPage ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
+              className={`${!isFirstPage ? "cursor-pointer hover:scale-110" : "opacity-40 cursor-not-allowed"} transition-transform duration-200`}
               disabled={isFirstPage}
             >
               <img
@@ -243,7 +243,7 @@ export function MuseumPage({
           <div className="ml-4 flex-shrink-0 self-center">
             <button
               onClick={handleNextClick}
-              className={`${!isLastPage ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
+              className={`${!isLastPage ? "cursor-pointer hover:scale-110" : "opacity-40 cursor-not-allowed"} transition-transform duration-200`}
               disabled={isLastPage}
             >
               <img
