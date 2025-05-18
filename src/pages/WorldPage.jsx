@@ -1,5 +1,5 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
-import { sketch } from "../components/Sketch";
+import { sketch } from "../components/sketch";
 import { PixelEditorComponent } from "../components/PixelEditorComponent";
 import { WeatherDashboard } from "../components/WeatherDashboard";
 import { useEffect, useState } from "react";
