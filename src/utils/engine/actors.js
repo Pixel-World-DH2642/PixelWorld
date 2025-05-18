@@ -44,6 +44,7 @@ export function createActorList(p, MicroEngine) {
         const pixCoordX = Math.floor((mx - pos.x + size.x / 2) / pixelSize);
         const pixCoordY = Math.floor((my - pos.y + size.y / 2) / pixelSize);
 
+        // TODO: check if reading undefined otherwise the canvas freezes
         console.log(pixelArray[pixCoordX][pixCoordY]);
         if (currentTool === TOOL_MODE.ERASER)
           pixelArray[pixCoordX][pixCoordY] = null;
@@ -56,7 +57,7 @@ export function createActorList(p, MicroEngine) {
 
       function inputComplete() {
         //React redux
-        onPlayerPaintingUpdate(pixelArray);
+        // onPlayerPaintingUpdate(pixelArray);
       }
 
       //!!!!!!!
