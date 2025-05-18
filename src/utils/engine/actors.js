@@ -7,6 +7,7 @@ export function createActorList(p, MicroEngine) {
   function createCanvasActor(pos, size) {
     const actor = MicroEngine.Components.Actor(pos);
     actor.addComponent(CanvasComponent, null);
+    console.log("canvas actor");
 
     function CanvasComponent(settings, actor, pos) {
       let pixelSize = 12;
@@ -45,7 +46,9 @@ export function createActorList(p, MicroEngine) {
         const pixCoordY = Math.floor((my - pos.y + size.y / 2) / pixelSize);
 
         // TODO: check if reading undefined otherwise the canvas freezes
-        console.log(pixelArray[pixCoordX][pixCoordY]);
+
+        console.log(pixelArray);
+
         if (currentTool === TOOL_MODE.ERASER)
           pixelArray[pixCoordX][pixCoordY] = null;
         else
@@ -57,7 +60,8 @@ export function createActorList(p, MicroEngine) {
 
       function inputComplete() {
         //React redux
-        // onPlayerPaintingUpdate(pixelArray);
+        if (!pixelArray) return;
+        onPlayerPaintingUpdate(pixelArray);
       }
 
       //!!!!!!!
