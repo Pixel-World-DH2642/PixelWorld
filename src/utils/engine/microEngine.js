@@ -43,9 +43,15 @@ export function createMicroEngine(p5) {
 
   function createScene() {
     const actors = [];
+    let isLoaded = false;
 
     function addActor(actor) {
+      if (isLoaded) actor.initialize();
       actors.push(actor);
+    }
+
+    function setLoadedFlag() {
+      isLoaded = true;
     }
 
     return {
@@ -54,6 +60,9 @@ export function createMicroEngine(p5) {
       },
       get addActor() {
         return addActor;
+      },
+      get setLoadedFlag() {
+        return setLoadedFlag;
       },
     };
   }
@@ -748,6 +757,7 @@ export function createMicroEngine(p5) {
     scene.actors.forEach((actor) => {
       actor.initialize();
     });
+    scene.setLoadedFlag();
     scenes.push(scene);
   }
 

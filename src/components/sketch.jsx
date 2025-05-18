@@ -2,11 +2,17 @@ import { createMicroEngine } from "../utils/engine/microEngine";
 import { createActorList } from "../utils/engine/actors";
 
 export function sketch(p5) {
+  //Globals
+  let sketchIsSetup = false;
+  let objectsInitializedWithProps = false;
+  let initialPropsBuffer = null;
+  let canvasGarbageCollector;
+
+  //Micro Engine Setup
   const MicroEngine = createMicroEngine(p5);
   const ActorList = createActorList(p5, MicroEngine);
-
   const mainScene = MicroEngine.CreateScene();
-  MicroEngine.LoadScene(mainScene);
+  //MicroEngine.LoadScene(mainScene);
 
   //############################--DEFINE ACTORS--############################//
   let mainCharacter, easel, skyCanvas, scribble;
@@ -18,6 +24,7 @@ export function sketch(p5) {
   let skyLayerActor;
   //############################-----------------############################//
 
+  //--------------------------------Helpers----------------------------------//
   function canvasCleaner() {
     let canvasCount = 2;
 
@@ -32,7 +39,31 @@ export function sketch(p5) {
     };
   }
 
-  let canvasGarbageCollector;
+  function initializeWithProps(propBuffer) {
+    skyLayerActor = ActorList.createSkyLayerActor();
+    ActorList.createGroundSliceActor([testPlant1, testPlant2, testPlant3]);
+
+    easel = ActorList.createCanvasActor(p5.createVector(900, 220), {
+      x: 192,
+      y: 192,
+    });
+    const canvasComponent = easel.findComponent("CanvasComponent");
+    canvasComponent.setOnPlayerPaintingUpdate(
+      propBuffer.onPlayerPaintingUpdate,
+    );
+    canvasComponent.setCurrentColor(propBuffer.currentColor);
+    canvasComponent.setCurrentTool(propBuffer.currentTool);
+    canvasComponent.setPaintingData(propBuffer.playerPainting);
+
+    mainCharacter = ActorList.createMainCharacterActor(
+      mainCharSpriteSheet,
+      mainCharSpriteData,
+    );
+
+    MicroEngine.LoadScene(ActorList.mainScene);
+    canvasGarbageCollector = canvasCleaner();
+    objectsInitializedWithProps = true;
+  }
 
   p5.preload = () => {
     testPlant1 = p5.loadImage("/assets/flower01.png");
@@ -43,31 +74,23 @@ export function sketch(p5) {
   };
 
   p5.setup = () => {
+    console.log("setup 1");
     p5.createCanvas(700, 400);
     p5.rectMode(p5.CENTER);
     p5.noSmooth();
     //p5.background(30, 40, 220);
 
-    skyLayerActor = ActorList.createSkyLayerActor();
-    ActorList.createGroundSliceActor([testPlant1, testPlant2, testPlant3]);
+    if (initialPropsBuffer) {
+      initializeWithProps(initialPropsBuffer);
+    }
 
-    mainCharacter = ActorList.createMainCharacterActor(
-      mainCharSpriteSheet,
-      mainCharSpriteData,
-    );
-
-    easel = ActorList.createCanvasActor(p5.createVector(900, 220), {
-      x: 192,
-      y: 192,
-    });
-
-    MicroEngine.LoadScene(ActorList.mainScene);
-
-    canvasGarbageCollector = canvasCleaner();
+    sketchIsSetup = true;
   };
 
   p5.updateWithProps = (props) => {
-    //console.log("Props: ", props);
+    console.log("updating props 1");
+    if (!sketchIsSetup) initialPropsBuffer = props;
+
     ActorList.setEnvironmentWeather(props.weather.parsedData, skyLayerActor);
 
     //I hate this, but it has to be like this for now...
@@ -75,11 +98,11 @@ export function sketch(p5) {
     const canvasComponent = easel.findComponent("CanvasComponent");
     canvasComponent.setCurrentColor(props.currentColor);
     canvasComponent.setCurrentTool(props.currentTool);
-    canvasComponent.setOnPlayerPaintingUpdate(props.onPlayerPaintingUpdate);
+
     canvasComponent.setPaintingData(props.playerPainting);
   };
 
-  //Super ugly please be time to make better
+  //Super ugly please be time to make better (Use the nice input system)
   let lastKeyPress;
 
   p5.draw = () => {
@@ -107,7 +130,7 @@ export function sketch(p5) {
       easel.findComponent("CanvasComponent").processInput();
     }
 
-    canvasGarbageCollector();
+    if (canvasGarbageCollector) canvasGarbageCollector();
   };
 
   p5.windowResized = () => {
@@ -117,7 +140,7 @@ export function sketch(p5) {
 
   p5.mouseReleased = () => {
     //Future: use input system
-    easel.findComponent("CanvasComponent").inputComplete();
+    // easel.findComponent("CanvasComponent").inputComplete();
   };
 
   p5.keyPressed = () => {
