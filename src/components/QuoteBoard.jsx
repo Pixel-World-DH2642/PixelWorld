@@ -14,8 +14,22 @@ export function QuoteBoard({
   return (
     <div className="flex flex-col h-full w-full items-center gap-4 p-4 bg-gray-300">
       <h1 className="sm:text-xl">Quote Board</h1>
-      {/* TODO: Add a placeholder loading item */}
-      {quote.content && (
+      {/* Replace TODO with actual placeholder */}
+      {!quote.content ? (
+        <>
+          <div className="flex flex-col items-start justify-center gap-2 rounded-md bg-gray-100 p-2">
+            <p className="text-sm sm:text-lg text-start italic text-gray-500">
+              Click "Get a new quote" to display an inspiring quote...
+            </p>
+          </div>
+          <div className="mb-4">
+            <label className="flex items-center cursor-pointer">
+              <input type="checkbox" className="mr-2 h-4 w-4" disabled={true} />
+              <span className="text-sm">Include quote with submission</span>
+            </label>
+          </div>
+        </>
+      ) : (
         <>
           <div className="flex flex-col items-start justify-center gap-2 rounded-md bg-gray-100 p-2">
             <p className="text-sm sm:text-lg text-start">{quote.content}</p>
