@@ -8,7 +8,17 @@ export function WelcomePage({ user, onLogout }) {
 
   return (
     <div className="font-pixel max-h-[80vh] overflow-y-auto flex flex-col px-9">
-      <div>{user ? <NavBar className="w-full p-8 px-6 pt-6 " /> : ""}</div>
+      <div>
+        {user ? (
+          <NavBar
+            enableBack={false}
+            title="Pixel World"
+            className="w-full p-8 px-6 pt-6 "
+          />
+        ) : (
+          ""
+        )}
+      </div>
       <div className="flex-grow flex flex-col justify-center items-center space-y-4">
         {user ? <h4></h4> : <h4>Welcome to</h4>}
         <h1 className="text-6xl">Pixel World</h1>
@@ -49,7 +59,7 @@ export function WelcomePage({ user, onLogout }) {
                 Krisztina Biro
               </h2>
               <div className="max-w-xl text-center">
-                <p className="text-sm text-gray-600 sm:text-lg">
+                <p className="text-sm text-gray-600">
                   Designer of the Museum Page and the look and feel of the app!
                 </p>
               </div>
@@ -78,7 +88,7 @@ export function WelcomePage({ user, onLogout }) {
                 Krisztina Biro
               </h2>
               <div className="max-w-xl text-center">
-                <p className="text-sm text-gray-600 sm:text-lg">
+                <p className="text-sm text-gray-600">
                   Designer of the Museum Page and the look and feel of the app!
                 </p>
               </div>
