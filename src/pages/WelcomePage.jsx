@@ -6,7 +6,32 @@ import { ScrollFade } from "../components/ScrollFade";
 
 export function WelcomePage({ user, onLogout }) {
   const navigate = useNavigate();
+  const [showLoader, setShowLoader] = useState(() => {
+    return sessionStorage.getItem("hasShownLoader") !== "true";
+  });
 
+  useEffect(() => {
+    if (showLoader) {
+      const timer = setTimeout(() => {
+        setShowLoader(false);
+        sessionStorage.setItem("hasShownLoader", "true");
+      }, 8700);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showLoader]);
+
+  if (showLoader) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
+        <img
+          src="/assets/pixelWorld-intro-gif.gif"
+          alt="Loading..."
+          className="w-100 h-100"
+        />
+      </div>
+    );
+  }
   return (
     <div className="font-pixel max-h-[80vh] overflow-y-auto flex flex-col px-9 pt-3">
       <div>
