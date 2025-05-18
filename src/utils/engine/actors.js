@@ -44,9 +44,14 @@ export function createActorList(p, MicroEngine) {
         const pixCoordX = Math.floor((mx - pos.x + size.x / 2) / pixelSize);
         const pixCoordY = Math.floor((my - pos.y + size.y / 2) / pixelSize);
 
+        console.log(pixelArray[pixCoordX][pixCoordY]);
         if (currentTool === TOOL_MODE.ERASER)
           pixelArray[pixCoordX][pixCoordY] = null;
-        else pixelArray[pixCoordX][pixCoordY] = currentColor;
+        else
+          pixelArray[pixCoordX][pixCoordY] = {
+            rgba: { ...currentColor.rgba },
+            hex: currentColor.hex,
+          };
       }
 
       function inputComplete() {

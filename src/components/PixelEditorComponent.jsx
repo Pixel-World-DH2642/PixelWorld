@@ -21,17 +21,12 @@ export function PixelEditorComponent({
   //Tools
   //-Clear Drawing
   //-Fill
-  //-Randomize
-  //-Undo
-  //-Redo
   //-Mini View
 
-  //Persist palette?
-
   //ToDo
-  //-playerPainting -> in the painting slice
-  //-painting data through model not sketch
-  //-optomize painting render
+  //Set initial color for color picker, model, and in the sketch
+
+  //-optimize painting render
   //-Quote in world
   //-Get quote in world
   //-world overlay instructions
@@ -44,6 +39,7 @@ export function PixelEditorComponent({
   //Quote bot, access, write out quote one character at a time
 
   //Bugs
+  //-Tripple clicking a pixel grid throws read only error...
   //-No data to canvasActor from model until pixel editor update
   //-sky re-render problem
   //-color picker change
