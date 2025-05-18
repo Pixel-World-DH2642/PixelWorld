@@ -57,6 +57,7 @@ export const World = connect(
       onPaletteUpdated: (slotData) => dispatch(updateColorPalette(slotData)),
       onPaletteInitialize: (paletteData) => {
         dispatch(setColorPalette(paletteData));
+        dispatch(setCurrentPaletteSlot(0));
         dispatch(
           setCurrentColor({
             rgba: hexToRgb(paletteData[0]),
