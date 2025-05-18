@@ -5,6 +5,7 @@ import {
   fetchAllPaintings,
   updateLikesCount,
 } from "../slices/paintingsSlice";
+import { setQuoteSaved } from "../slices/quoteSlice";
 
 export const paintingListenerMiddleware = createListenerMiddleware();
 
@@ -65,6 +66,7 @@ paintingListenerMiddleware.startListening({
   },
 });
 
+// Middleware to listen for changes in the playerPainting object and save it to Firestore
 paintingListenerMiddleware.startListening({
   predicate: (action, currentState, previousState) => {
     // Get references to the playerPainting objects
@@ -87,6 +89,10 @@ paintingListenerMiddleware.startListening({
 
     console.log("playerPainting changed:", playerPainting);
     console.log("Action that caused the change:", action);
+
+    if (action.type === "paintings/fetchPlayerPainting/fulfilled") {
+      return;
+    }
 
     try {
       if (!userId) {
@@ -140,6 +146,43 @@ paintingListenerMiddleware.startListening({
       );
     } catch (error) {
       console.error("Error saving player painting:", error);
+    }
+  },
+});
+
+paintingListenerMiddleware.startListening({
+  matcher: (action) =>
+    action.type === "paintings/fetchPlayerPainting/fulfilled",
+  effect: async (action, listenerApi) => {
+    if (
+      listenerApi.getState().paintings.playerPainting.savedQuote ===
+      listenerApi.getState().quote.currentQuote
+    ) {
+      console.log("Saved quote matches current quote, updating state");
+      listenerApi.dispatch(setQuoteSaved(true));
+    }
+  },
+});
+
+paintingListenerMiddleware.startListening({
+  matcher: (action) => action.type === "quote/checkUserQuoteData/fulfilled",
+  effect: async (action, listenerApi) => {
+    console.log(
+      "User quote data checked, current quote:",
+      listenerApi.getState().quote.currentQuote,
+    );
+    console.log(
+      "Player painting saved quote:",
+      listenerApi.getState().paintings.playerPainting.savedQuote,
+    );
+    if (
+      listenerApi.getState().paintings.playerPainting.savedQuote.content ===
+        listenerApi.getState().quote.currentQuote.content &&
+      listenerApi.getState().paintings.playerPainting.savedQuote.author ===
+        listenerApi.getState().quote.currentQuote.author
+    ) {
+      console.log("Saved quote matches current quote, updating state");
+      listenerApi.dispatch(setQuoteSaved(true));
     }
   },
 });

@@ -47,18 +47,34 @@ export function createActorList(p, MicroEngine) {
 
         // TODO: check if reading undefined otherwise the canvas freezes
         if (pixCoordX < 0 || pixCoordX >= pixelArray.length) return;
-        if (pixCoordY < 0 || pixCoordY >= pixelArray[pixCoordX].length) return;
+        if (
+          pixCoordY < 0 ||
+          !pixelArray[pixCoordX] ||
+          pixCoordY >= pixelArray[pixCoordX].length
+        )
+          return;
 
         console.log("canvas actor", pixCoordX, pixCoordY);
-        console.log(pixelArray);
+        // console.log(pixelArray); // Logging large/frozen arrays can sometimes be problematic
 
-        if (currentTool === TOOL_MODE.ERASER)
-          pixelArray[pixCoordX][pixCoordY] = null;
-        else
-          pixelArray[pixCoordX][pixCoordY] = {
-            rgba: { ...currentColor.rgba },
-            hex: currentColor.hex,
-          };
+        // Immutable update of the pixelArray
+        const newPixelArray = pixelArray.map((row, rowIndex) => {
+          if (rowIndex === pixCoordX) {
+            // This is the row we want to modify. Create a shallow copy of it.
+            const newRow = [...row];
+            if (currentTool === TOOL_MODE.ERASER) {
+              newRow[pixCoordY] = null;
+            } else {
+              newRow[pixCoordY] = {
+                rgba: { ...currentColor.rgba },
+                hex: currentColor.hex,
+              };
+            }
+            return newRow; // Return the modified copy
+          }
+          return row; // For all other rows, return the original row (reference)
+        });
+        pixelArray = newPixelArray; // Update the component's state reference
       }
 
       function inputComplete() {

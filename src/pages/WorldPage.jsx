@@ -2,7 +2,7 @@ import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { sketch } from "../components/sketch";
 import { PixelEditorComponent } from "../components/PixelEditorComponent";
 import { WeatherDashboard } from "../components/WeatherDashboard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { NavBar } from "../components/NavBar";
 import { SubmitModal } from "../components/SubmitModal";
 import { Button, ButtonGroup } from "@mui/material";
@@ -10,12 +10,16 @@ import SendIcon from "@mui/icons-material/Send";
 import { useNavigate } from "react-router-dom";
 import { QuoteBoard } from "../components/QuoteBoard";
 import { PANEL_STATES } from "../app/slices/worldSlice";
+import { Suspense } from "../components/Suspense";
 
 export function WorldPage({
+  loading,
+  error,
   quote,
   quotesRemaining,
   quoteStatus,
   quoteError,
+  includeQuote,
   selectedColor,
   painting,
   weather,
@@ -53,6 +57,8 @@ export function WorldPage({
   playerPainting,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [contentOpacity, setContentOpacity] = useState(loading ? 0 : 1);
+  const prevLoadingRef = useRef(loading);
 
   const navigate = useNavigate();
 
@@ -76,6 +82,24 @@ export function WorldPage({
       onCheckQuoteData(user.uid);
     }
   }, [user, onCheckQuoteData]);
+
+  // Handle loading state transitions
+  useEffect(() => {
+    // If loading state has changed
+    if (prevLoadingRef.current !== loading) {
+      if (loading) {
+        console.log("Loading started");
+        setContentOpacity(0); // Fade out content
+      } else {
+        console.log("Loading finished");
+        // Transitioning from loading to content
+        setTimeout(() => {
+          setContentOpacity(1); // Fade in content
+        }, 50);
+      }
+      prevLoadingRef.current = loading;
+    }
+  }, [loading]);
 
   // Renders the appropriate panel based on current state
   const renderCurrentPanel = () => {
@@ -119,7 +143,7 @@ export function WorldPage({
             quotesRemaining={quotesRemaining}
             quoteStatus={quoteStatus}
             quoteError={quoteError}
-            includeQuote={playerPainting.savedQuote === quote} // Default value, or use state if you implement this
+            includeQuote={includeQuote} // Default value, or use state if you implement this
             onSaveQuoteToPainting={onSaveQuoteToPainting}
           />
         );
@@ -131,68 +155,87 @@ export function WorldPage({
   return (
     <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
       <NavBar enableBack={false} title="Pixel World" />
-      <div className="flex flex-col items-center justify-center text-center gap-4 pb-8 pt-4">
-        <div className="flex w-full items-stretch justify-between gap-4 h-auto">
-          <div
-            id="viewport-container"
-            className="border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0"
-          >
-            <ReactP5Wrapper
-              sketch={sketch}
-              weather={weather}
-              currentColor={currentColor}
-              currentTool={currentTool}
-              onPlayerPaintingUpdate={onPlayerPaintingUpdate}
-              playerPainting={playerPainting}
-            />
-          </div>
-          <div className="border-4 rounded-xl flex-1 flex flex-shrink-0 flex-col w-264 items-center justify-center overflow-hidden">
-            {/* Dynamic panel content */}
-            {renderCurrentPanel()}
+
+      {/* Loading state with transition */}
+      <div
+        className={`transition-opacity duration-300 ${loading ? "opacity-100" : "opacity-0"} ${loading ? "" : "hidden"} flex justify-center items-center h-[50vh]`}
+      >
+        {Suspense("loading", "Loading pixel world...")}
+      </div>
+
+      {/* Main content with transitions */}
+      <div
+        className={`transition-opacity duration-300 ${contentOpacity === 0 ? "opacity-0" : "opacity-100"} ${loading ? "hidden" : ""}`}
+      >
+        <div className="flex flex-col items-center justify-center text-center gap-4 pb-8 pt-4">
+          <div className="flex w-full items-stretch justify-between gap-4 h-auto">
+            <div
+              id="viewport-container"
+              className="border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0"
+            >
+              <ReactP5Wrapper
+                sketch={sketch}
+                weather={weather}
+                currentColor={currentColor}
+                currentTool={currentTool}
+                onPlayerPaintingUpdate={onPlayerPaintingUpdate}
+                playerPainting={playerPainting}
+              />
+            </div>
+            <div className="border-4 rounded-xl flex-1 flex flex-shrink-0 flex-col w-264 items-center justify-center overflow-hidden">
+              {/* Dynamic panel content */}
+              {renderCurrentPanel()}
+            </div>
           </div>
         </div>
-      </div>
-      <div className="text-red-500">Debug UI for panel switching</div>
-      {/* // Debug panel for switching between states */}
-      <div className="mb-4">
-        <ButtonGroup variant="contained" aria-label="Panel switcher">
+
+        <div className="text-red-500">Debug UI for panel switching</div>
+        {/* Debug panel for switching between states */}
+        <div className="mb-4">
+          <ButtonGroup variant="contained" aria-label="Panel switcher">
+            <Button
+              color={
+                currentPanelState === PANEL_STATES.WEATHER
+                  ? "primary"
+                  : "inherit"
+              }
+              onClick={() => onPanelStateChange(PANEL_STATES.WEATHER)}
+            >
+              Weather
+            </Button>
+            <Button
+              color={
+                currentPanelState === PANEL_STATES.EDITOR
+                  ? "primary"
+                  : "inherit"
+              }
+              onClick={() => onPanelStateChange(PANEL_STATES.EDITOR)}
+            >
+              Editor
+            </Button>
+            <Button
+              color={
+                currentPanelState === PANEL_STATES.QUOTE ? "primary" : "inherit"
+              }
+              onClick={() => onPanelStateChange(PANEL_STATES.QUOTE)}
+            >
+              Quote
+            </Button>
+          </ButtonGroup>
+        </div>
+        {/* Debug UI for navigate to museum */}
+        <div className="mb-4">
           <Button
-            color={
-              currentPanelState === PANEL_STATES.WEATHER ? "primary" : "inherit"
-            }
-            onClick={() => onPanelStateChange(PANEL_STATES.WEATHER)}
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/museum")}
           >
-            Weather
+            Go to Museum
           </Button>
-          <Button
-            color={
-              currentPanelState === PANEL_STATES.EDITOR ? "primary" : "inherit"
-            }
-            onClick={() => onPanelStateChange(PANEL_STATES.EDITOR)}
-          >
-            Editor
-          </Button>
-          <Button
-            color={
-              currentPanelState === PANEL_STATES.QUOTE ? "primary" : "inherit"
-            }
-            onClick={() => onPanelStateChange(PANEL_STATES.QUOTE)}
-          >
-            Quote
-          </Button>
-        </ButtonGroup>
+        </div>
+        <div className="mb-4"></div>
       </div>
-      {/* Debug UI for navigate to museum */}
-      <div className="mb-4">
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => navigate("/museum")}
-        >
-          Go to Museum
-        </Button>
-      </div>
-      <div className="mb-4"></div>
+
       <SubmitModal
         painting={playerPainting}
         user={user}

@@ -1,6 +1,10 @@
 import { connect } from "react-redux";
 import { WorldPage } from "../pages/WorldPage";
-import { fetchDailyQuote, checkUserQuoteData } from "../app/slices/quoteSlice";
+import {
+  fetchDailyQuote,
+  checkUserQuoteData,
+  setQuoteSaved,
+} from "../app/slices/quoteSlice";
 import { getWeatherData } from "../app/slices/weatherSlice";
 import {
   uploadPainting,
@@ -26,6 +30,9 @@ import { hexToRgb } from "../utils/color.js";
 export const World = connect(
   function mapStateToProps(state) {
     return {
+      loading: state.paintings.loading,
+      error: state.paintings.error,
+
       user: state.auth.user,
       weather: state.weather,
       paintingSubmission: {
@@ -48,6 +55,7 @@ export const World = connect(
       quotesRemaining: state.quote.quotesRemaining,
       quoteStatus: state.quote.status,
       quoteError: state.quote.error,
+      includeQuote: state.quote.isQuoteSaved,
     };
   },
   function mapDispatchToProps(dispatch) {
@@ -57,6 +65,7 @@ export const World = connect(
       onCheckQuoteData: (userId) => dispatch(checkUserQuoteData(userId)),
       onSaveQuoteToPainting: (isChecked, quote) => {
         dispatch(saveQuoteToPlayerPainting({ isChecked, quote }));
+        dispatch(setQuoteSaved(isChecked));
       },
 
       onGetWeather: () => dispatch(getWeatherData()),

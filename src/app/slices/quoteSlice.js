@@ -30,6 +30,7 @@ const initialState = {
   error: null,
   quotesRemaining: DAILY_QUOTE_LIMIT,
   lastFetchTimestamp: null,
+  isQuoteSaved: false,
 };
 
 // Thunk to fetch user's quote data from Firebase
@@ -126,7 +127,11 @@ export const fetchDailyQuote = createAsyncThunk(
 const quoteSlice = createSlice({
   name: "quote",
   initialState,
-  reducers: {},
+  reducers: {
+    setQuoteSaved: (state, action) => {
+      state.isQuoteSaved = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Check user quote data cases
@@ -164,5 +169,7 @@ const quoteSlice = createSlice({
       });
   },
 });
+
+export const { setQuoteSaved } = quoteSlice.actions;
 
 export default quoteSlice.reducer;

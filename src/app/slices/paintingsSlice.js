@@ -15,6 +15,7 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { hexToRgb } from "../../utils/color";
 
 // Entity adapter for normalized state management
 const paintingsAdapter = createEntityAdapter();
@@ -151,24 +152,83 @@ export const fetchPlayerPainting = createAsyncThunk(
 
       // Get the first painting (assuming one user has only one player painting)
       const paintingData = normalizeFirestoreData(snapshot.docs[0].data());
-
       // Convert colorMatrix string back to object/array if needed
-      if (
-        paintingData.colorMatrix &&
-        typeof paintingData.colorMatrix === "string"
-      ) {
+      if (paintingData.colorMatrix) {
+        console.log("ColorMatrix:", paintingData.colorMatrix);
         try {
-          paintingData.colorMatrix = JSON.parse(paintingData.colorMatrix);
-          // also conver the colormatrix to jagged which is a 2d array
+          // Handle colorMatrix parsing more robustly
+          if (typeof paintingData.colorMatrix === "string") {
+            // Check if it's already an array (from normalizeFirestoreData function)
+            if (Array.isArray(paintingData.colorMatrix)) {
+              // Already parsed, do nothing
+            } else {
+              // Clean up the input string
+              let colorMatrixString = paintingData.colorMatrix;
+
+              // If it looks like a comma-separated list but not properly formatted
+              if (
+                colorMatrixString.includes(",") &&
+                !colorMatrixString.startsWith("[")
+              ) {
+                // Try to convert to a proper array by splitting on commas
+                const colorArray = colorMatrixString.split(",").map((item) => {
+                  const trimmed = item.trim();
+                  return trimmed === ""
+                    ? null
+                    : trimmed.startsWith("#")
+                      ? trimmed
+                      : null;
+                });
+                paintingData.colorMatrix = colorArray;
+              } else {
+                // Try regular JSON parse with error handling
+                try {
+                  paintingData.colorMatrix = JSON.parse(colorMatrixString);
+                } catch (parseError) {
+                  console.error(
+                    "JSON parse failed, falling back to array conversion:",
+                    parseError,
+                  );
+                  // If JSON parse fails, try to extract values with regex
+                  const hexColors =
+                    colorMatrixString.match(/#[0-9a-fA-F]{6}/g) || [];
+                  const nullCount = 256 - hexColors.length; // Assume 16x16 grid
+                  // Create array with nulls and insert hex values
+                  paintingData.colorMatrix = Array(nullCount).fill(null);
+                  hexColors.forEach((color, i) => {
+                    paintingData.colorMatrix.splice(i, 0, color);
+                  });
+                }
+              }
+            }
+          }
+
+          // Convert the colormatrix to jagged which is a 2d array
           paintingData.jagged = [];
+          // jagged = [{rgba:{r:0,g:0,b:0,a:255},hex:"#00000000"}]
           for (let i = 0; i < 16; i++) {
-            paintingData.jagged.push(
-              paintingData.colorMatrix.slice(i * 16, i * 16 + 16),
-            );
+            paintingData.jagged[i] = [];
+
+            for (let j = 0; j < 16; j++) {
+              const color = paintingData.colorMatrix[i * 16 + j];
+              if (color) {
+                paintingData.jagged[i][j] = {
+                  rgba: hexToRgb(color),
+                  hex: color,
+                };
+              } else {
+                paintingData.jagged[i][j] = null;
+              }
+            }
           }
         } catch (e) {
-          console.error("Failed to parse colorMatrix string:", e);
-          paintingData.colorMatrix = null;
+          console.error("Failed to process colorMatrix:", e);
+          // Create empty jagged array as fallback
+          const jaggedNull = Array.from({ length: 16 }, () =>
+            Array(16).fill(null),
+          );
+          paintingData.jagged = jaggedNull;
+          paintingData.colorMatrix = Array(256).fill(null);
         }
       }
 
@@ -279,7 +339,13 @@ const paintingsSlice = createSlice({
       state.undoBuffer.push(state.playerPainting);
       if (state.undoBuffer.length > 30) state.undoBuffer.splice(0, 1);
       state.playerPainting.jagged = action.payload;
-      state.playerPainting.flat = action.payload.flat();
+      // Convert jagged to colorMatrix
+      state.playerPainting.colorMatrix = action.payload.flat();
+      // and only take the hex
+      // console.log("Updating player painting:", state.playerPainting);
+      state.playerPainting.colorMatrix = state.playerPainting.colorMatrix.map(
+        (color) => color?.hex || null,
+      );
     },
     undoEdit: (state) => {
       state.undoIndex--;
