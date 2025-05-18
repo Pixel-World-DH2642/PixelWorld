@@ -39,10 +39,26 @@ export function WelcomePage({ user, onLogout }) {
               <>
                 Welcome back,{" "}
                 <span className="font-bold">{user.displayName}</span>
+                <div className="mt-4  flex justify-center">
+                  <Link
+                    to="/world"
+                    className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+                  >
+                    Go to the World
+                  </Link>
+                </div>
               </>
             ) : (
               <>
                 Welcome back <span className="font-bold">{user.email}</span>
+                <div className="mt-4  flex justify-center">
+                  <Link
+                    to="/world"
+                    className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+                  >
+                    Go to the World
+                  </Link>
+                </div>
               </>
             )
           ) : (
@@ -57,6 +73,15 @@ export function WelcomePage({ user, onLogout }) {
           )}
         </h1>
         <ScrollFade>
+          <div>get inspired by the world in the game</div>
+        </ScrollFade>
+        <ScrollFade>
+          <div>pain pixelated picture</div>
+        </ScrollFade>
+        <ScrollFade>
+          <div>publish it in a museum</div>
+        </ScrollFade>
+        <ScrollFade>
           <div className="">
             <h1 className="pb-3">Meet the Team</h1>
             <div className="flex pb-5">
@@ -68,12 +93,10 @@ export function WelcomePage({ user, onLogout }) {
                 <h2 className="text-lg sm:text-xl font-semibold">
                   Krisztina Biro
                 </h2>
-                <div className="max-w-xl text-center">
-                  <p className="text-sm text-gray-600">
-                    Designer of the Museum Page and the look and feel of the
-                    app!
-                  </p>
-                </div>
+                <p className="text-sm text-gray-600">
+                  Creator of the painting details page, the look and feel and
+                  the welcome page!
+                </p>
               </div>
             </div>
             <div className="flex pb-5">
@@ -100,7 +123,7 @@ export function WelcomePage({ user, onLogout }) {
                 <h2 className="text-lg sm:text-xl font-semibold">
                   David Segal
                 </h2>
-                <div className="max-w-xl text-center">
+                <div className="max-w-xl">
                   <p className="text-sm text-gray-600">
                     Designer of the Museum Page and the look and feel of the
                     app!
