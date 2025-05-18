@@ -19,8 +19,6 @@ export function SubmitModal({
   useEffect(() => {
     setError(null);
     setIsSuccess(false);
-    setTitle(painting?.title || "");
-    setNotes("");
     setIncludeQuote(true);
   }, [isOpen, painting]);
   if (!isOpen) return null;
@@ -84,6 +82,11 @@ export function SubmitModal({
       await onSubmitPainting(submissionData);
       if (!paintingSubmission.error) {
         setIsSuccess(true);
+        // reset the form fields
+        setTitle("");
+        setNotes("");
+        setIncludeQuote(true);
+
         setTimeout(() => {
           onClose();
         }, 1500);
