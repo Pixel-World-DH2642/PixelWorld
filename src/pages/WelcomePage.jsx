@@ -15,7 +15,7 @@ export function WelcomePage({ user, onLogout }) {
       const timer = setTimeout(() => {
         setShowLoader(false);
         sessionStorage.setItem("hasShownLoader", "true");
-      }, 8700);
+      }, 5900);
 
       return () => clearTimeout(timer);
     }
@@ -211,7 +211,7 @@ export function WelcomePage({ user, onLogout }) {
                   Lambo Zhuang
                 </h2>
                 <p className="text-sm text-gray-600">
-                  esponsible for the code structure, back-end and dynamic
+                  Responsible for the code structure, back-end and dynamic
                   interactions.
                 </p>
               </div>
