@@ -1,6 +1,7 @@
 import "../styles/global.css";
 import { TOOL_MODE } from "../app/slices/pixelEditorSlice";
 import { useState, useEffect } from "react";
+import { randomColor, hexToRgb } from "../utils/color";
 
 export function PixelEditorComponent({
   //State Properties
@@ -56,14 +57,6 @@ export function PixelEditorComponent({
   // Initialize palette effect
   useEffect(() => {
     initializePalette();
-    // If palette exists and no slot is currently selected, select the first slot
-    if (colorPaletteArray.length > 0 && selectedPaletteSlot === null) {
-      onSlotSelected(0);
-      onColorSelect({
-        rgba: hexToRgb(colorPaletteArray[0]),
-        hex: colorPaletteArray[0],
-      });
-    }
   }, [colorPaletteArray]);
 
   // Update picker color when selected slot changes
@@ -76,36 +69,9 @@ export function PixelEditorComponent({
     }
   }, [selectedPaletteSlot, colorPaletteArray]);
 
-  //Helpers
-  function randomColor() {
-    return (
-      "#" +
-      Math.floor(Math.random() * 16777215)
-        .toString(16)
-        .padStart(6, "0")
-    );
-  }
-
-  //Hex to rgb algorithm borrowed from: https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-  function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-      ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16),
-          a: 255,
-        }
-      : null;
-  }
-
   function initializePalette() {
     if (colorPaletteArray.length === 0) {
       onPaletteInitialize(randomizePalette());
-      onColorSelect({
-        rgba: hexToRgb(colorPaletteArray[0]),
-        hex: colorPaletteArray[0],
-      });
     } else {
       const newPalette = [];
       for (let i = 0; i < numPaletteSlots; i++) {
@@ -130,26 +96,15 @@ export function PixelEditorComponent({
 
   //Callbacks: Hook into PixelEditor container
   function handlePaletteClickedACB(e) {
-    if (
-      !e.target.dataset.color ||
-      e.target.dataset.index === selectedPaletteSlot
-    )
-      return;
+    if (!e.target.dataset.color) return;
 
-    // Reset previous selected slot if it exists
-    if (selectedPaletteSlot !== null) {
-      const previousSlot = document.getElementById(
-        palette[selectedPaletteSlot].id,
-      );
-      if (previousSlot) {
-        previousSlot.className = "aspect-square";
-      }
-    }
+    const clickedSlotIndex = parseInt(e.target.dataset.index);
+    if (clickedSlotIndex === selectedPaletteSlot) return;
 
-    // Set new selected slot
-    e.target.className = "outline-2 aspect-square";
-    onSlotSelected(parseInt(e.target.dataset.index));
+    // Update the selected slot in state
+    onSlotSelected(clickedSlotIndex);
 
+    // Update color based on the selected slot
     const newColor = e.target.dataset.color;
     setPickerColor(newColor);
     onColorSelect({
@@ -194,7 +149,7 @@ export function PixelEditorComponent({
   //Create palette slot elements
   const paletteSlots = palette.map((slot) => (
     <div
-      className="aspect-square"
+      className={`aspect-square ${selectedPaletteSlot === slot.index ? "outline-2 outline outline-black" : ""}`}
       key={slot.id}
       id={slot.id}
       data-color={slot.color}

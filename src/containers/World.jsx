@@ -20,6 +20,7 @@ import {
   setPixelArray,
 } from "../app/slices/pixelEditorSlice.js";
 import { setPanelState } from "../app/slices/worldSlice";
+import { hexToRgb } from "../utils/color.js";
 
 export const World = connect(
   function mapStateToProps(state) {
@@ -54,8 +55,15 @@ export const World = connect(
       onToolSelect: (tool) => dispatch(setCurrentTool(tool)),
       onColorSelect: (color) => dispatch(setCurrentColor(color)),
       onPaletteUpdated: (slotData) => dispatch(updateColorPalette(slotData)),
-      onPaletteInitialize: (paletteData) =>
-        dispatch(setColorPalette(paletteData)),
+      onPaletteInitialize: (paletteData) => {
+        dispatch(setColorPalette(paletteData));
+        dispatch(
+          setCurrentColor({
+            rgba: hexToRgb(paletteData[0]),
+            hex: paletteData[0],
+          }),
+        );
+      },
       onSlotSelected: (slot) => dispatch(setCurrentPaletteSlot(slot)),
       //Painting Slice Functions
       onPlayerPaintingUpdate: (painting) =>

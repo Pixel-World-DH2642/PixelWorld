@@ -14,7 +14,7 @@ export function createActorList(p, MicroEngine) {
       let columns = Math.floor(size.y / pixelSize);
 
       let currentColor = {
-        rgba: { r: 0, g: 0, b: 0, a: 255 },
+        rgba: { r: 0, g: 0, b: 0, a: 0 },
         hex: "#00000000",
       };
 
