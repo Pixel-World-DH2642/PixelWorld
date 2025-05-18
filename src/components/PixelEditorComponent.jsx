@@ -56,6 +56,14 @@ export function PixelEditorComponent({
   // Initialize palette effect
   useEffect(() => {
     initializePalette();
+    // If palette exists and no slot is currently selected, select the first slot
+    if (colorPaletteArray.length > 0 && selectedPaletteSlot === null) {
+      onSlotSelected(0);
+      onColorSelect({
+        rgba: hexToRgb(colorPaletteArray[0]),
+        hex: colorPaletteArray[0],
+      });
+    }
   }, [colorPaletteArray]);
 
   // Update picker color when selected slot changes
@@ -195,17 +203,31 @@ export function PixelEditorComponent({
     ></div>
   ));
 
+  const ToolSlot = ({ name, src, alt, onClick, isSelected }) => {
+    return (
+      <div
+        className={`flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md ${
+          isSelected ? "bg-blue-200 border-blue-500" : "hover:bg-gray-200 "
+        } active:bg-blue-300`}
+        onClick={onClick}
+      >
+        <img className="w-8" src={src} alt={alt} />
+        <p className={isSelected ? "font-bold" : ""}>{name}</p>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col w-full h-full bg-gray-300 p-2 gap-2">
       <div className="sm:text-xl">Pixel Editor</div>
-      <div className="flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-2 h-50">
         <div
-          className="inline-grid grid-cols-4 gap-1 w-50 aspect-square cursor-pointer p-4 bg-gray-100 rounded-md"
+          className="inline-grid grid-cols-4 gap-1 h-full aspect-square cursor-pointer p-4 bg-gray-100 rounded-md"
           onClick={handlePaletteClickedACB}
         >
           {paletteSlots}
         </div>
-        <div className="grid grid-cols-2 gap-1 text-sm rounded-md bg-gray-100 p-2 h-50">
+        <div className="grid grid-cols-2 gap-1 text-sm rounded-md bg-gray-100 p-2 h-50 overflow-hidden">
           <div className="flex flex-col items-center justify-center">
             <input
               type="color"
@@ -218,51 +240,39 @@ export function PixelEditorComponent({
             />
             <p>Color</p>
           </div>
-          <div className="flex flex-col items-center justify-center">
-            <img
-              className="w-10"
-              src="assets/random_icon_64x64.png"
-              alt="randomize palette"
-              onClick={handleRandomizeClicked}
-            />
-            <p>Random</p>
-          </div>
-          <div className="flex flex-col items-center justify-center">
-            <img
-              className="w-10"
-              src="assets/pencil_icon_64x64.png"
-              alt="pencil"
-              onClick={handlePencilSelected}
-            />
-            <p>Pencil</p>
-          </div>
-          <div className="flex flex-col items-center justify-center">
-            <img
-              className="w-10"
-              src="assets/eraser_icon_64x64_new.png"
-              alt="eraser"
-              onClick={handleEraserSelected}
-            />
-            <p>Eraser</p>
-          </div>
-          <div className="flex flex-col items-center justify-center">
-            <img
-              className="w-10"
-              src="assets/undo_icon_64x64.png"
-              alt="undo"
-              onClick={handleUndoEdit}
-            />
-            <p>Undo</p>
-          </div>
-          <div className="flex flex-col items-center justify-center">
-            <img
-              className="w-10"
-              src="assets/redo_icon_64x64.png"
-              alt="redo"
-              onClick={handleRedoEdit}
-            />
-            <p>Redo</p>
-          </div>
+
+          <ToolSlot
+            name="Random"
+            src="assets/random_icon_64x64.png"
+            alt="randomize palette"
+            onClick={handleRandomizeClicked}
+          />
+          <ToolSlot
+            name="Pencil"
+            src="assets/pencil_icon_64x64.png"
+            alt="pencil"
+            onClick={handlePencilSelected}
+            isSelected={currentTool === TOOL_MODE.PENCIL}
+          />
+          <ToolSlot
+            name="Eraser"
+            src="assets/eraser_icon_64x64_new.png"
+            alt="eraser"
+            onClick={handleEraserSelected}
+            isSelected={currentTool === TOOL_MODE.ERASER}
+          />
+          <ToolSlot
+            name="Undo"
+            src="assets/undo_icon_64x64.png"
+            alt="undo"
+            onClick={handleUndoEdit}
+          />
+          <ToolSlot
+            name="Redo"
+            src="assets/redo_icon_64x64.png"
+            alt="redo"
+            onClick={handleRedoEdit}
+          />
         </div>
       </div>
     </div>
