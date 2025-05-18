@@ -73,14 +73,60 @@ export function WelcomePage({ user, onLogout }) {
           )}
         </h1>
         <ScrollFade>
-          <div>get inspired by the world in the game</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4 pb-10">
+            {/* Card 1 */}
+            <div className="flex flex-col items-center pb-4">
+              <img
+                src="/assets/worldViewscreen.png"
+                alt="Pixel World View"
+                className="h-48 w-auto shadow"
+              />
+              <div className="mt-2 w-full max-w-[12rem] text-center">
+                <h2 className="text-md sm:text-lg font-semibold mb-1">
+                  Get inspired by the Pixel World!
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Real-time weather and quotes to fuel your creations.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 2 */}
+            <div className="flex flex-col items-center pb-4">
+              <img
+                src="/assets/examplePainting.png"
+                alt="Pixel Painting"
+                className="h-48 w-auto shadow"
+              />
+              <div className="mt-2 w-full max-w-[12rem] text-center">
+                <h2 className="text-md sm:text-lg font-semibold mb-1">
+                  Grab the paint brush!
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Master the art of pixels and make it yours.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 3 */}
+            <div className="flex flex-col items-center pb-4">
+              <img
+                src="/assets/exampleQuote.png"
+                alt="Inspirational Quote"
+                className="h-48 w-auto shadow"
+              />
+              <div className="mt-2 w-full max-w-[12rem] text-center">
+                <h2 className="text-md sm:text-lg font-semibold mb-1">
+                  Having a creative block?
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Spark your imagination with an inspirational quote.
+                </p>
+              </div>
+            </div>
+          </div>
         </ScrollFade>
-        <ScrollFade>
-          <div>pain pixelated picture</div>
-        </ScrollFade>
-        <ScrollFade>
-          <div>publish it in a museum</div>
-        </ScrollFade>
+
         <ScrollFade>
           <div className="">
             <h1 className="pb-3">Meet the Team</h1>
@@ -94,8 +140,8 @@ export function WelcomePage({ user, onLogout }) {
                   Krisztina Biro
                 </h2>
                 <p className="text-sm text-gray-600">
-                  Creator of the painting details page, the look and feel and
-                  the welcome page!
+                  Creator of the museum page, the hall of fame and the look and
+                  feel of the app.
                 </p>
               </div>
             </div>
@@ -109,14 +155,14 @@ export function WelcomePage({ user, onLogout }) {
                   Gabi Kiryluk
                 </h2>
                 <p className="text-sm text-gray-600">
-                  Creator of the painting details page, the look and feel and
-                  the welcome page!
+                  Creator of the painting details page, welcome page and look
+                  and feel of the app.
                 </p>
               </div>
             </div>
             <div className="flex pb-5">
               <img
-                src="\assets\Krisztina portfolio.jpeg.jpg"
+                src="\assets\David.png"
                 className=" flex w-13 h-13 sm:w-16 sm:h-16 aspect-square bg-gray-400 rounded-full border border-black "
               ></img>
               <div className="ml-4">
@@ -125,15 +171,14 @@ export function WelcomePage({ user, onLogout }) {
                 </h2>
                 <div className="max-w-xl">
                   <p className="text-sm text-gray-600">
-                    Designer of the Museum Page and the look and feel of the
-                    app!
+                    Creator of pixelated world and all the magic in it!
                   </p>
                 </div>
               </div>
             </div>
-            <div className="flex pb-5">
+            <div className="flex pb-10">
               <img
-                src="\assets\GABA.jpg"
+                src="\assets\Lambo.jpg"
                 className=" flex w-13 h-13 sm:w-16 sm:h-16 aspect-square bg-gray-400 rounded-full border border-black "
               ></img>
               <div className="ml-4">
@@ -141,8 +186,8 @@ export function WelcomePage({ user, onLogout }) {
                   Lambo Zhuang
                 </h2>
                 <p className="text-sm text-gray-600">
-                  Creator of the painting details page, the look and feel and
-                  the welcome page!
+                  esponsible for the code structure, back-end and dynamic
+                  interactions.
                 </p>
               </div>
             </div>
