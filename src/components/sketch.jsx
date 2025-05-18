@@ -50,14 +50,16 @@ export function sketch(p5) {
 
     skyLayerActor = ActorList.createSkyLayerActor();
     ActorList.createGroundSliceActor([testPlant1, testPlant2, testPlant3]);
-    easel = ActorList.createCanvasActor(p5.createVector(900, 220), {
-      x: 192,
-      y: 192,
-    });
+
     mainCharacter = ActorList.createMainCharacterActor(
       mainCharSpriteSheet,
       mainCharSpriteData,
     );
+
+    easel = ActorList.createCanvasActor(p5.createVector(900, 220), {
+      x: 192,
+      y: 192,
+    });
 
     MicroEngine.LoadScene(ActorList.mainScene);
 
@@ -65,16 +67,16 @@ export function sketch(p5) {
   };
 
   p5.updateWithProps = (props) => {
-    //console.log("Parsed data: ", props.weather.parsedData);
+    //console.log("Props: ", props);
     ActorList.setEnvironmentWeather(props.weather.parsedData, skyLayerActor);
 
-    if (easel) {
-      const canvasComponent = easel.findComponent("CanvasComponent");
-      canvasComponent.setCurrentColor(props.currentColor);
-      canvasComponent.setCurrentTool(props.currentTool);
-      canvasComponent.setOnPlayerPaintingUpdate(props.onPlayerPaintingUpdate);
-      canvasComponent.setPaintingData(props.playerPainting);
-    }
+    //I hate this, but it has to be like this for now...
+    if (!easel) return;
+    const canvasComponent = easel.findComponent("CanvasComponent");
+    canvasComponent.setCurrentColor(props.currentColor);
+    canvasComponent.setCurrentTool(props.currentTool);
+    canvasComponent.setOnPlayerPaintingUpdate(props.onPlayerPaintingUpdate);
+    canvasComponent.setPaintingData(props.playerPainting);
   };
 
   //Super ugly please be time to make better
@@ -100,6 +102,11 @@ export function sketch(p5) {
       mainCharacter.findComponent("Animation").setAnimationState("IdleRight");
     }
 
+    if (p5.mouseIsPressed) {
+      //Future: use input system
+      easel.findComponent("CanvasComponent").processInput();
+    }
+
     canvasGarbageCollector();
   };
 
@@ -108,8 +115,9 @@ export function sketch(p5) {
     p5.resizeCanvas(Math.min(800, parentElement.clientWidth), 400);
   };
 
-  p5.mousePressed = () => {
-    easel.findComponent("CanvasComponent").processInput();
+  p5.mouseReleased = () => {
+    //Future: use input system
+    easel.findComponent("CanvasComponent").inputComplete();
   };
 
   p5.keyPressed = () => {

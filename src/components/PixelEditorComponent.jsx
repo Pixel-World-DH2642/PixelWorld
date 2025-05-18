@@ -36,14 +36,10 @@ export function PixelEditorComponent({
   //-Get quote in world
   //-world overlay instructions
 
-  //pixel editor not color editor
   //Panel state: quote, weather, pixel > world slice for dynamic context sensitive panel
   //
 
-  //-Weather
-  //-Drag to draw
-  //-eraser, pencil in sketch
-  //-store drawing in model
+  //-Weather (implement more & better)
 
   //Quote bot, access, write out quote one character at a time
 
@@ -86,6 +82,10 @@ export function PixelEditorComponent({
   function initializePalette() {
     if (colorPaletteArray.length === 0) {
       onPaletteInitialize(randomizePalette());
+      onColorSelect({
+        rgba: hexToRgb(colorPaletteArray[0]),
+        hex: colorPaletteArray[0],
+      });
     } else {
       for (let i = 0; i < numPaletteSlots; i++) {
         palette[i] = {
@@ -154,12 +154,10 @@ export function PixelEditorComponent({
   }
 
   function handleUndoEdit() {
-    console.log("p undo");
     onUndoEdit();
   }
 
   function handleRedoEdit() {
-    console.log("p redo");
     onRedoEdit();
   }
 
@@ -230,15 +228,21 @@ export function PixelEditorComponent({
           <p>Eraser</p>
         </div>
         <div className="flex flex-col items-center justify-center">
-          <button className="w-10" onClick={handleUndoEdit}>
-            Undo
-          </button>
+          <img
+            className="w-10"
+            src="assets/undo_icon_64x64.png"
+            alt="undo"
+            onClick={handleUndoEdit}
+          />
           <p>Undo</p>
         </div>
         <div className="flex flex-col items-center justify-center">
-          <button className="w-10" onClick={handleRedoEdit}>
-            Redo
-          </button>
+          <img
+            className="w-10"
+            src="assets/redo_icon_64x64.png"
+            alt="redo"
+            onClick={handleRedoEdit}
+          />
           <p>Redo</p>
         </div>
       </div>

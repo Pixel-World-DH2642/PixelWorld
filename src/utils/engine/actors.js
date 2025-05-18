@@ -12,6 +12,7 @@ export function createActorList(p, MicroEngine) {
       let pixelSize = 12;
       let rows = Math.floor(size.x / pixelSize);
       let columns = Math.floor(size.y / pixelSize);
+
       let currentColor = {
         rgba: { r: 0, g: 0, b: 0, a: 255 },
         hex: "#00000000",
@@ -24,26 +25,16 @@ export function createActorList(p, MicroEngine) {
       for (let x = 0; x < rows; x++) {
         pixelArray[x] = [];
         for (let y = 0; y < columns; y++) {
-          pixelArray[x][y] = { r: 0, g: 0, b: 0, a: 0 };
+          pixelArray[x][y] = null;
         }
       }
 
       //React redux
       let onPlayerPaintingUpdate = null;
-      let modelPaintingData = [];
-
-      //Unflatten
-      /*
-      function mapPaintingData(paintingData) {
-        for (let x = 0; x < rows; x++) {
-          for (let y = 0; y < columns; y++) {
-            pixelArray[x][y] = paintingData[x + y];
-          }
-        }
-      }
-      */
 
       function processInput(/*draw info*/) {
+        //if (!onPlayerPaintingUpdate) return;
+
         const mx = p.mouseX - MicroEngine.CameraPanning.x;
         const my = p.mouseY - MicroEngine.CameraPanning.y;
 
@@ -56,7 +47,10 @@ export function createActorList(p, MicroEngine) {
         if (currentTool === TOOL_MODE.ERASER)
           pixelArray[pixCoordX][pixCoordY] = null;
         else pixelArray[pixCoordX][pixCoordY] = currentColor;
+      }
 
+      function inputComplete() {
+        //React redux
         onPlayerPaintingUpdate(pixelArray);
       }
 
@@ -123,6 +117,7 @@ export function createActorList(p, MicroEngine) {
         type: "CanvasComponent",
         render,
         processInput,
+        inputComplete,
         setCurrentColor: function (color) {
           currentColor = color;
         },
