@@ -40,7 +40,13 @@ export function WorldPage({
   onPaletteUpdated,
   onPaletteInitialize,
   onSlotSelected,
-  //Image funcs later, make different slice...
+  //Painting Funcs
+  onPlayerPaintingUpdate,
+  onUndoEdit,
+  onRedoEdit,
+  onGetUndoStateHint,
+  //Painting Props
+  playerPainting,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -71,6 +77,10 @@ export function WorldPage({
             onPaletteUpdated={onPaletteUpdated}
             onPaletteInitialize={onPaletteInitialize}
             onSlotSelected={onSlotSelected}
+            //Painting Slice
+            onUndoEdit={onUndoEdit}
+            onRedoEdit={onRedoEdit}
+            onGetUndoStateHint={onGetUndoStateHint}
           />
         );
       case PANEL_STATES.QUOTE:
@@ -139,6 +149,8 @@ export function WorldPage({
               weather={weather}
               currentColor={currentColor}
               currentTool={currentTool}
+              onPlayerPaintingUpdate={onPlayerPaintingUpdate}
+              playerPainting={playerPainting}
             />
           </div>
           <div className="border-4 rounded-xl flex-1 flex flex-shrink-0 flex-col w-264 items-center justify-center overflow-hidden">

@@ -1,7 +1,7 @@
 import { createMicroEngine } from "./microEngine";
 import { TOOL_MODE } from "../../app/slices/pixelEditorSlice";
 
-export function createActorList(p5, MicroEngine) {
+export function createActorList(p, MicroEngine) {
   const mainScene = MicroEngine.CreateScene();
 
   function createCanvasActor(pos, size) {
@@ -12,10 +12,14 @@ export function createActorList(p5, MicroEngine) {
       let pixelSize = 12;
       let rows = Math.floor(size.x / pixelSize);
       let columns = Math.floor(size.y / pixelSize);
-      let currentColor = { r: 0, g: 0, b: 0, a: 255 };
+      let currentColor = {
+        rgba: { r: 0, g: 0, b: 0, a: 255 },
+        hex: "#00000000",
+      };
+
       let currentTool = TOOL_MODE.PENCIL;
 
-      const pixelArray = [];
+      let pixelArray = [];
 
       for (let x = 0; x < rows; x++) {
         pixelArray[x] = [];
@@ -24,71 +28,87 @@ export function createActorList(p5, MicroEngine) {
         }
       }
 
+      //React redux
+      let onPlayerPaintingUpdate = null;
+      let modelPaintingData = [];
+
+      //Unflatten
+      /*
+      function mapPaintingData(paintingData) {
+        for (let x = 0; x < rows; x++) {
+          for (let y = 0; y < columns; y++) {
+            pixelArray[x][y] = paintingData[x + y];
+          }
+        }
+      }
+      */
+
       function processInput(/*draw info*/) {
-        const mx = p5.mouseX - MicroEngine.CameraPanning.x;
-        const my = p5.mouseY - MicroEngine.CameraPanning.y;
+        const mx = p.mouseX - MicroEngine.CameraPanning.x;
+        const my = p.mouseY - MicroEngine.CameraPanning.y;
 
         if (mx < pos.x - size.x / 2 || mx > pos.x + size.x / 2) return;
         if (my < pos.y - size.y / 2 || my > pos.y + size.y / 2) return;
 
         const pixCoordX = Math.floor((mx - pos.x + size.x / 2) / pixelSize);
         const pixCoordY = Math.floor((my - pos.y + size.y / 2) / pixelSize);
+
         if (currentTool === TOOL_MODE.ERASER)
-          pixelArray[pixCoordX][pixCoordY] = { r: 0, g: 0, b: 0, a: 0 };
+          pixelArray[pixCoordX][pixCoordY] = null;
         else pixelArray[pixCoordX][pixCoordY] = currentColor;
+
+        onPlayerPaintingUpdate(pixelArray);
       }
 
+      //!!!!!!!
       //Make a pg so we only have to re-render when user paints
       function render() {
-        p5.stroke(120, 100, 20);
-        p5.strokeWeight(8);
+        p.stroke(120, 100, 20);
+        p.strokeWeight(8);
 
         //Right Leg
-        p5.line(
+        p.line(
           pos.x,
           pos.y - size.y * 0.7,
           pos.x + size.x * 0.5,
           pos.y + size.y * 0.8,
         );
         //Left Leg
-        p5.line(
+        p.line(
           pos.x,
           pos.y - size.y * 0.7,
           pos.x - size.x * 0.5,
           pos.y + size.y * 0.8,
         );
         //Top Bracket
-        p5.line(
+        p.line(
           pos.x - size.x * 0.2,
           pos.y - size.y * 0.6,
           pos.x + size.x * 0.2,
           pos.y - size.y * 0.6,
         );
         //Bottom Bracket
-        p5.line(
+        p.line(
           pos.x - size.x * 0.6,
           pos.y + size.y * 0.5,
           pos.x + size.x * 0.6,
           pos.y + size.y * 0.5,
         );
 
-        p5.fill(222, 230, 200);
+        p.fill(222, 230, 200);
         //p5.stroke(0);
-        p5.strokeWeight(4);
-        p5.stroke(150, 120, 20);
-        p5.rect(pos.x, pos.y, size.x, size.y);
-        p5.noStroke();
+        p.strokeWeight(4);
+        p.stroke(150, 120, 20);
+        p.rect(pos.x, pos.y, size.x, size.y);
+        p.noStroke();
 
         for (let x = 0; x < pixelArray.length; x++) {
           for (let y = 0; y < pixelArray[x].length; y++) {
             if (pixelArray[x][y]) {
-              p5.fill(
-                pixelArray[x][y].r,
-                pixelArray[x][y].g,
-                pixelArray[x][y].b,
-                pixelArray[x][y].a,
-              );
-              p5.rect(
+              const col = pixelArray[x][y].rgba;
+              if (!col) continue;
+              p.fill(col.r, col.g, col.b, col.a);
+              p.rect(
                 x * pixelSize + pixelSize / 2 + pos.x - size.x / 2,
                 y * pixelSize + pixelSize / 2 + pos.y - size.y / 2,
                 pixelSize,
@@ -108,7 +128,15 @@ export function createActorList(p5, MicroEngine) {
         },
         setCurrentTool: function (tool) {
           currentTool = tool;
-          console.log(tool);
+        },
+        setOnPlayerPaintingUpdate: function (callback) {
+          if (onPlayerPaintingUpdate) return;
+          onPlayerPaintingUpdate = callback;
+          onPlayerPaintingUpdate(pixelArray);
+        },
+        setPaintingData: function (data) {
+          if (!data) return;
+          pixelArray = JSON.parse(JSON.stringify(data.jagged));
         },
       };
     }
@@ -118,7 +146,7 @@ export function createActorList(p5, MicroEngine) {
   }
 
   function createMainCharacterActor(spriteSheet, spriteData) {
-    const actor = MicroEngine.Components.Actor(p5.createVector(450, 50));
+    const actor = MicroEngine.Components.Actor(p.createVector(450, 50));
     actor.addComponent(MicroEngine.Components.RectCollider, {
       geometrySettings: { size: { x: 20, y: 50 } },
     });
@@ -223,7 +251,7 @@ export function createActorList(p5, MicroEngine) {
 
     const hmap = MicroEngine.Utils.GenerateCurveData({
       amplitude: 130,
-      baseHeight: p5.height,
+      baseHeight: p.height,
       noiseIncrementStep: 0.1,
       vertexIterations: 300,
     });
@@ -240,11 +268,11 @@ export function createActorList(p5, MicroEngine) {
         let plantArr = [];
 
         for (let i = 0; i < 500; i++) {
-          const xpos = p5.random(10000);
+          const xpos = p.random(10000);
           const ypos = actor
             .findComponent("Collider")
             .colliderGeometry.querryGroundHeight(xpos);
-          const plantIndex = Math.floor(p5.random(3));
+          const plantIndex = Math.floor(p.random(3));
           plantArr.push({ xpos, ypos, plantIndex });
         }
 
@@ -254,16 +282,16 @@ export function createActorList(p5, MicroEngine) {
       function generateSlices() {
         //Generate background, chop into slices, garbage collect big image
         //Temp canvas
-        let groundCanvasFull = p5.createGraphics(
+        let groundCanvasFull = p.createGraphics(
           hmap.length * vertexSpacing,
-          p5.height,
+          p.height,
         );
         groundCanvasFull.noSmooth();
         renderCurve(hmap, groundCanvasFull);
         const backgroundSlices = MicroEngine.Utils.SliceImage(
           groundCanvasFull,
           300,
-          p5.height,
+          p.height,
         );
         groundCanvasFull.remove();
         groundCanvasFull = undefined;
@@ -312,9 +340,9 @@ export function createActorList(p5, MicroEngine) {
               -slice.imgSlice.width
             )
               return;
-            if (MicroEngine.CameraPanning.x + slice.coords.x > p5.width) return;
+            if (MicroEngine.CameraPanning.x + slice.coords.x > p.width) return;
 
-            p5.image(slice.imgSlice, slice.coords.x, slice.coords.y);
+            p.image(slice.imgSlice, slice.coords.x, slice.coords.y);
           });
         },
       };
@@ -329,7 +357,7 @@ export function createActorList(p5, MicroEngine) {
       },
     };
 
-    let actor = MicroEngine.Components.Actor(p5.createVector(0, 0));
+    let actor = MicroEngine.Components.Actor(p.createVector(0, 0));
     actor.addComponent(MicroEngine.Components.GroundCollider, colliderSettings);
     actor.addComponent(GroundRendererComponent, {});
     mainScene.addActor(actor);
@@ -384,7 +412,7 @@ export function createActorList(p5, MicroEngine) {
     //---------------------------------------------Object vars
     const hmap = MicroEngine.GenerateCurveData({
       amplitude: 130,
-      baseHeight: p5.height - 20,
+      baseHeight: p.height - 20,
       noiseIncrementStep: 0.1,
       vertexIterations: 160,
     });
@@ -419,8 +447,8 @@ export function createActorList(p5, MicroEngine) {
         MicroEngine.CameraPanning = { x: 0, y: 0 };
         //console.log(MicroEngine.CameraPanning);
         for (let i = 0; i < hmap.length; i += vertexSpacing) {
-          p5.stroke(0);
-          p5.strokeWeight(1);
+          p.stroke(0);
+          p.strokeWeight(1);
           /*
           p5.rect(
             (i - indexOffset) * vertexSpacing + xOffset,
@@ -430,7 +458,7 @@ export function createActorList(p5, MicroEngine) {
           );
           */
 
-          p5.rect(i * vertexSpacing, hmap[i], tileSize, tileSize);
+          p.rect(i * vertexSpacing, hmap[i], tileSize, tileSize);
         }
       }
 
@@ -442,7 +470,7 @@ export function createActorList(p5, MicroEngine) {
       };
     }
 
-    let actor = MicroEngine.Components.Actor(p5.createVector(0, 0));
+    let actor = MicroEngine.Components.Actor(p.createVector(0, 0));
     //actor.addComponent(MicroEngine.Components.GroundCollider, colliderSettings);
     actor.addComponent(TileGroundRendererComponent, {});
 
@@ -470,11 +498,11 @@ export function createActorList(p5, MicroEngine) {
    */
 
   function createSkyLayerActor() {
-    const actor = MicroEngine.Components.Actor(p5.createVector());
+    const actor = MicroEngine.Components.Actor(p.createVector());
     actor.addComponent(SkyRendererComponent);
 
     function SkyRendererComponent(settings, actor, pos) {
-      const skyCanvas = p5.createGraphics(p5.width, p5.height);
+      const skyCanvas = p.createGraphics(p.width, p.height);
       const scribble = MicroEngine.CreateScribbleInstance(skyCanvas); //new Scribble(skyCanvas);
       scribble.bowing = 5;
       let baseColor = { r: 30, g: 40, b: 220 };
@@ -489,21 +517,21 @@ export function createActorList(p5, MicroEngine) {
       function generateSky() {
         skyCanvas.background(baseColor.r, baseColor.g, baseColor.b);
         for (let i = 0; i < 8; i++) {
-          skyCanvas.strokeWeight(20 + p5.random(-7, 30));
+          skyCanvas.strokeWeight(20 + p.random(-7, 30));
           skyCanvas.stroke(
             baseColor.r +
-              p5.random(colorRandomization.r.min, colorRandomization.r.max),
+              p.random(colorRandomization.r.min, colorRandomization.r.max),
             baseColor.g +
-              p5.random(colorRandomization.g.min, colorRandomization.g.max),
+              p.random(colorRandomization.g.min, colorRandomization.g.max),
             baseColor.b +
-              p5.random(colorRandomization.b.min, colorRandomization.b.max),
+              p.random(colorRandomization.b.min, colorRandomization.b.max),
           );
-          scribble.scribbleLine(0, i * 20, p5.width, i * 20);
+          scribble.scribbleLine(0, i * 20, p.width, i * 20);
         }
       }
 
       function displaySky() {
-        p5.image(
+        p.image(
           skyCanvas,
           -MicroEngine.CameraPanning.x,
           MicroEngine.CameraPanning.y,

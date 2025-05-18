@@ -1,8 +1,3 @@
-import {
-  setColorPalette,
-  setCurrentPaletteSlot,
-  setCurrentTool,
-} from "../app/slices/pixelEditorSlice";
 import "../styles/global.css";
 import { TOOL_MODE } from "../app/slices/pixelEditorSlice";
 
@@ -18,6 +13,10 @@ export function PixelEditorComponent({
   onPaletteUpdated,
   onPaletteInitialize,
   onSlotSelected,
+  //Painting Functions
+  onUndoEdit,
+  onRedoEdit,
+  onGetUndoStateHint,
 }) {
   //Tools
   //-Clear Drawing
@@ -49,9 +48,10 @@ export function PixelEditorComponent({
   //Quote bot, access, write out quote one character at a time
 
   //Bugs
+  //-No data to canvasActor from model until pixel editor update
   //-sky re-render problem
   //-color picker change
-  //
+  //-Player jitter > add grounded state & turn off gravity
 
   //Setup
   const numPaletteSlots = 16;
@@ -128,14 +128,17 @@ export function PixelEditorComponent({
     // Set new selected slot
     e.target.className = "outline-2 aspect-square";
     onSlotSelected(parseInt(e.target.dataset.index));
-    onColorSelect(hexToRgb(e.target.dataset.color));
+    onColorSelect({
+      rgba: hexToRgb(e.target.dataset.color),
+      hex: e.target.dataset.color,
+    });
   }
 
   function handleColorChangeACB(e) {
     const slot = document.getElementById(palette[selectedPaletteSlot].id);
     slot.dataset.color = e.target.value;
     slot.style.backgroundColor = e.target.value;
-    onColorSelect(hexToRgb(e.target.value));
+    onColorSelect({ rgba: hexToRgb(e.target.value), hex: e.target.value });
   }
 
   function handleEraserSelected() {
@@ -148,6 +151,16 @@ export function PixelEditorComponent({
 
   function handleRandomizeClicked() {
     onPaletteInitialize(randomizePalette());
+  }
+
+  function handleUndoEdit() {
+    console.log("p undo");
+    onUndoEdit();
+  }
+
+  function handleRedoEdit() {
+    console.log("p redo");
+    onRedoEdit();
   }
 
   //Layout
@@ -215,6 +228,18 @@ export function PixelEditorComponent({
             onClick={handleEraserSelected}
           />
           <p>Eraser</p>
+        </div>
+        <div className="flex flex-col items-center justify-center">
+          <button className="w-10" onClick={handleUndoEdit}>
+            Undo
+          </button>
+          <p>Undo</p>
+        </div>
+        <div className="flex flex-col items-center justify-center">
+          <button className="w-10" onClick={handleRedoEdit}>
+            Redo
+          </button>
+          <p>Redo</p>
         </div>
       </div>
     </div>

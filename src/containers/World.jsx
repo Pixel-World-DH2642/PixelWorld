@@ -7,6 +7,7 @@ import {
   fetchAllPaintings,
   updatePlayerPainting,
   undoEdit,
+  redoEdit,
   getUndoStateHint,
 } from "../app/slices/paintingsSlice";
 import {

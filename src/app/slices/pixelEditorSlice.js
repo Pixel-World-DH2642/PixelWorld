@@ -10,7 +10,7 @@ export const TOOL_MODE = {
 const initialState = {
   pixelArray: [],
   colorPaletteArray: [],
-  currentColor: { r: 0, g: 0, b: 0, a: 255 },
+  currentColor: { rgba: { r: 0, g: 0, b: 0, a: 255 }, hex: "#00000000" },
   currentTool: TOOL_MODE.PENCIL,
   selectedPaletteSlot: 0,
 };

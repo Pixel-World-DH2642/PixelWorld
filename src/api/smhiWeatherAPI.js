@@ -1,5 +1,5 @@
 export async function fetchWeatherData(longitude, latitude) {
-  console.log("weather fetch");
+  //console.log("weather fetch");
   const smhiURL = `https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${longitude}/lat/${latitude}/data.json`;
   const response = await fetch(smhiURL);
   if (!response.ok)
@@ -14,11 +14,14 @@ export async function fetchWeatherData(longitude, latitude) {
   const meanPrecipitation =
     data.timeSeries[2].parameters[3].values[0]; /*kg/m2/h*/
 
+  /*
   console.log("weather code today is:", weatherCode);
   console.log("weatherTemperature today is:", weatherTemperature);
   console.log("wind Speed  today is:", windSpeed);
   console.log("air pressure today is:", airPressure);
   console.log("mean precipitation today is:", meanPrecipitation);
+  */
+
   const parsedData = parseWeatherData(data);
   return {
     parsedData,
