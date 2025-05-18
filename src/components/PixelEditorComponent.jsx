@@ -1,5 +1,6 @@
 import "../styles/global.css";
 import { TOOL_MODE } from "../app/slices/pixelEditorSlice";
+import { useState, useEffect } from "react";
 
 export function PixelEditorComponent({
   //State Properties
@@ -47,10 +48,25 @@ export function PixelEditorComponent({
 
   //Setup
   const numPaletteSlots = 16;
-  const palette = [];
-  initializePalette(); // TODO: fix: remove this and put it into the redux
+  // Convert palette to a state variable
+  const [palette, setPalette] = useState([]);
+  // Default color to ensure picker is always controlled
+  const [pickerColor, setPickerColor] = useState("#e62465");
 
-  //let selectedPaletteSlot = null;
+  // Initialize palette effect
+  useEffect(() => {
+    initializePalette();
+  }, [colorPaletteArray]);
+
+  // Update picker color when selected slot changes
+  useEffect(() => {
+    if (
+      selectedPaletteSlot !== null &&
+      colorPaletteArray[selectedPaletteSlot]
+    ) {
+      setPickerColor(colorPaletteArray[selectedPaletteSlot]);
+    }
+  }, [selectedPaletteSlot, colorPaletteArray]);
 
   //Helpers
   function randomColor() {
@@ -83,13 +99,15 @@ export function PixelEditorComponent({
         hex: colorPaletteArray[0],
       });
     } else {
+      const newPalette = [];
       for (let i = 0; i < numPaletteSlots; i++) {
-        palette[i] = {
+        newPalette[i] = {
           id: `paletteSlot${i}`,
           index: i,
           color: colorPaletteArray[i],
         };
       }
+      setPalette(newPalette);
     }
   }
 
@@ -97,7 +115,6 @@ export function PixelEditorComponent({
     const colorBuffer = [];
     for (let i = 0; i < numPaletteSlots; i++) {
       const color = randomColor();
-      //palette[i] = { id: `paletteSlot${i}`, color };
       colorBuffer.push(color);
     }
     return colorBuffer;
@@ -124,17 +141,25 @@ export function PixelEditorComponent({
     // Set new selected slot
     e.target.className = "outline-2 aspect-square";
     onSlotSelected(parseInt(e.target.dataset.index));
+
+    const newColor = e.target.dataset.color;
+    setPickerColor(newColor);
     onColorSelect({
-      rgba: hexToRgb(e.target.dataset.color),
-      hex: e.target.dataset.color,
+      rgba: hexToRgb(newColor),
+      hex: newColor,
     });
   }
 
   function handleColorChangeACB(e) {
-    const slot = document.getElementById(palette[selectedPaletteSlot].id);
-    slot.dataset.color = e.target.value;
-    slot.style.backgroundColor = e.target.value;
-    onColorSelect({ rgba: hexToRgb(e.target.value), hex: e.target.value });
+    const newColor = e.target.value;
+    setPickerColor(newColor);
+
+    if (selectedPaletteSlot !== null) {
+      const slot = document.getElementById(palette[selectedPaletteSlot].id);
+      slot.dataset.color = newColor;
+      slot.style.backgroundColor = newColor;
+      onColorSelect({ rgba: hexToRgb(newColor), hex: newColor });
+    }
   }
 
   function handleEraserSelected() {
@@ -175,22 +200,18 @@ export function PixelEditorComponent({
       <div className="sm:text-xl">Pixel Editor</div>
       <div className="flex items-center justify-center gap-2">
         <div
-          className="inline-grid grid-cols-4 gap-1 h-full aspect-square cursor-pointer p-4 bg-gray-100 rounded-md"
+          className="inline-grid grid-cols-4 gap-1 w-50 aspect-square cursor-pointer p-4 bg-gray-100 rounded-md"
           onClick={handlePaletteClickedACB}
         >
           {paletteSlots}
         </div>
-        <div className="flex flex-col items-center justify-center gap-2 text-sm rounded-md bg-gray-100 p-2 h-full">
+        <div className="grid grid-cols-2 gap-1 text-sm rounded-md bg-gray-100 p-2 h-50">
           <div className="flex flex-col items-center justify-center">
             <input
               type="color"
               id="picker"
               name="color"
-              value={
-                selectedPaletteSlot !== null
-                  ? colorPaletteArray[selectedPaletteSlot]
-                  : "#e62465"
-              }
+              value={pickerColor}
               className="cursor-pointer"
               onChange={handleColorChangeACB}
               disabled={selectedPaletteSlot === null}
@@ -224,24 +245,24 @@ export function PixelEditorComponent({
             />
             <p>Eraser</p>
           </div>
-        </div>
-        <div className="flex flex-col items-center justify-center">
-          <img
-            className="w-10"
-            src="assets/undo_icon_64x64.png"
-            alt="undo"
-            onClick={handleUndoEdit}
-          />
-          <p>Undo</p>
-        </div>
-        <div className="flex flex-col items-center justify-center">
-          <img
-            className="w-10"
-            src="assets/redo_icon_64x64.png"
-            alt="redo"
-            onClick={handleRedoEdit}
-          />
-          <p>Redo</p>
+          <div className="flex flex-col items-center justify-center">
+            <img
+              className="w-10"
+              src="assets/undo_icon_64x64.png"
+              alt="undo"
+              onClick={handleUndoEdit}
+            />
+            <p>Undo</p>
+          </div>
+          <div className="flex flex-col items-center justify-center">
+            <img
+              className="w-10"
+              src="assets/redo_icon_64x64.png"
+              alt="redo"
+              onClick={handleRedoEdit}
+            />
+            <p>Redo</p>
+          </div>
         </div>
       </div>
     </div>
