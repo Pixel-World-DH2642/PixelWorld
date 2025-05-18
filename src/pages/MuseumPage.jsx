@@ -13,10 +13,6 @@ const PaintingCard = ({
   userLikedPaintings,
   likesLoading,
 }) => {
-  console.log("PaintingCard", painting);
-  console.log("PaintingCard userLikedPaintings", userLikedPaintings);
-  const userLiked = userLikedPaintings?.includes(painting.id);
-
   const handleLikeClick = (e) => {
     e.preventDefault();
     e.stopPropagation(); // Prevent the click from bubbling up to the Link

@@ -12,17 +12,21 @@ import { selectSelectedPainting } from "../app/slices/paintingsSlice";
 
 export const Detail = connect(
   function mapStateToProps(state) {
+    const currentPainting = selectSelectedPainting(state);
+    const paintingId = currentPainting?.id;
+
     return {
-      painting:
-        state.paintings.currentPainting || selectSelectedPainting(state),
+      painting: currentPainting,
       isLoading: state.paintings.loading,
       error: state.paintings.error,
       comments: getSortedComments(state),
       commentsLoading: state.comments.status === "loading",
       commentsError: state.comments.error,
       currentUser: state.auth?.user,
-      likesCount: state.likes.count,
-      userLiked: state.likes.userLiked,
+      likesCount: currentPainting?.likesCount || 0,
+      userLiked: paintingId
+        ? state.likes.userLikedPaintings.includes(paintingId)
+        : false,
       likesLoading: state.likes.loading,
     };
   },

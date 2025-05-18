@@ -53,11 +53,15 @@ paintingListenerMiddleware.startListening({
 });
 
 paintingListenerMiddleware.startListening({
-  matcher: (action) => action.type === "likes/toggleLike/fulfilled",
+  matcher: (action) => action.type === "likes/fetchLikesCount/fulfilled",
   effect: async (action, listenerApi) => {
-    const { userId, paintingId, countChange } = action.payload;
-    // console.log("Like status updated successfully:", payload);
-    listenerApi.dispatch(updateLikesCount({ paintingId, countChange }));
-    await listenerApi.dispatch(fetchUserLikes(userId));
+    const { paintingId, count } = action.payload;
+    console.log(
+      "Likes count updated for painting:",
+      paintingId,
+      "Count:",
+      count,
+    );
+    listenerApi.dispatch(updateLikesCount({ paintingId, count }));
   },
 });

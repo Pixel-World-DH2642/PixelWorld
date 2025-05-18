@@ -150,7 +150,6 @@ export function DetailPage({
       <NavBar
         beforeNavigate={() => {
           onClearComments();
-          onClearLikes();
         }}
       />
 

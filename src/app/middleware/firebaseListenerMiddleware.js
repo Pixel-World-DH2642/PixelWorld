@@ -12,11 +12,7 @@ import {
   removeLiveComment,
   clearComments,
 } from "../slices/commentsSlice";
-import {
-  updateLikesCount,
-  updateUserLikeStatus,
-  resetLikes,
-} from "../slices/likeSlice";
+import { resetLikes, fetchLikesCount } from "../slices/likeSlice";
 
 // Keep track of active listeners
 let activeListeners = {};
@@ -36,30 +32,25 @@ export const stopCommentsListener = (paintingId) => ({
   payload: { type: "comments", id: paintingId },
 });
 
-// New action creators for likes
-export const startLikesListener = (paintingId) => ({
+// Modified action creators for likes
+export const startLikesCountListener = (paintingId) => ({
   type: FIREBASE_LISTENER_START,
-  payload: { type: "likes", id: paintingId },
+  payload: { type: "likesCount", id: paintingId, paintingId },
 });
 
-export const startUserLikeListener = (paintingId, userId) => ({
+export const startUserLikesListener = (userId) => ({
   type: FIREBASE_LISTENER_START,
-  payload: {
-    type: "userLike",
-    id: `${paintingId}:${userId}`,
-    paintingId,
-    userId,
-  },
+  payload: { type: "userLikes", id: userId, userId },
 });
 
-export const stopLikesListener = (paintingId) => ({
+export const stopLikesCountListener = (paintingId) => ({
   type: FIREBASE_LISTENER_STOP,
-  payload: { type: "likes", id: paintingId },
+  payload: { type: "likesCount", id: paintingId },
 });
 
-export const stopUserLikeListener = (paintingId, userId) => ({
+export const stopUserLikesListener = (userId) => ({
   type: FIREBASE_LISTENER_STOP,
-  payload: { type: "userLike", id: `${paintingId}:${userId}` },
+  payload: { type: "userLikes", id: userId },
 });
 
 // The middleware
@@ -109,42 +100,50 @@ const firebaseListenerMiddleware = (store) => (next) => (action) => {
       // Save the unsubscribe function
       activeListeners[`${type}:${id}`] = unsubscribe;
     }
-    // For likes count listener
-    else if (type === "likes" && id) {
+    // For real-time likes count monitoring
+    else if (type === "likesCount" && paintingId) {
       const likesRef = collection(db, "likes");
-      const q = query(likesRef, where("paintingId", "==", id));
+      console.log(
+        "Listening for likes count changes for painting:",
+        paintingId,
+      );
+      const q = query(likesRef, where("paintingId", "==", paintingId));
 
       const unsubscribe = onSnapshot(
         q,
         (snapshot) => {
-          // Update total count in real-time
-          store.dispatch(updateLikesCount(snapshot.size));
+          store.dispatch(fetchLikesCount(paintingId));
         },
         (error) => {
-          console.error("Error in likes listener:", error);
+          console.error("Error in likes count listener:", error);
         },
       );
 
       // Save the unsubscribe function
       activeListeners[`${type}:${id}`] = unsubscribe;
     }
-    // For user's like status listener
-    else if (type === "userLike" && paintingId && userId) {
+    // For user's liked paintings
+    else if (type === "userLikes" && userId) {
       const likesRef = collection(db, "likes");
-      const q = query(
-        likesRef,
-        where("paintingId", "==", paintingId),
-        where("userId", "==", userId),
-      );
+      const q = query(likesRef, where("userId", "==", userId));
 
       const unsubscribe = onSnapshot(
         q,
         (snapshot) => {
-          // Update whether the current user has liked this painting
-          store.dispatch(updateUserLikeStatus(!snapshot.empty));
+          // Convert snapshot to array of painting IDs the user has liked
+          const likedPaintingIds = snapshot.docs.map(
+            (doc) => doc.data().paintingId,
+          );
+
+          // Update redux store with the list of paintings this user has liked
+          // This could be handled in the likeSlice with a new action
+          store.dispatch({
+            type: "likes/setUserLikedPaintings",
+            payload: likedPaintingIds,
+          });
         },
         (error) => {
-          console.error("Error in user like listener:", error);
+          console.error("Error in user likes listener:", error);
         },
       );
 
@@ -162,7 +161,7 @@ const firebaseListenerMiddleware = (store) => (next) => (action) => {
       // Clear relevant state when stopping listeners
       if (type === "comments") {
         store.dispatch(clearComments());
-      } else if (type === "likes" || type === "userLike") {
+      } else if (type === "userLikes") {
         store.dispatch(resetLikes());
       }
     }
@@ -175,11 +174,7 @@ const firebaseListenerMiddleware = (store) => (next) => (action) => {
 
     // Stop any existing comments and likes listeners
     Object.keys(activeListeners).forEach((key) => {
-      if (
-        key.startsWith("comments:") ||
-        key.startsWith("likes:") ||
-        key.startsWith("userLike:")
-      ) {
+      if (key.startsWith("comments:") || key.startsWith("likesCount:")) {
         activeListeners[key]();
         delete activeListeners[key];
       }
@@ -187,40 +182,33 @@ const firebaseListenerMiddleware = (store) => (next) => (action) => {
 
     // Clear current data
     store.dispatch(clearComments());
-    store.dispatch(resetLikes());
 
     // Start new listeners for this painting
     if (paintingId) {
       store.dispatch(startCommentsListener(paintingId));
-      store.dispatch(startLikesListener(paintingId));
-
-      // Start user like listener if user is logged in
-      if (userId) {
-        store.dispatch(startUserLikeListener(paintingId, userId));
-      }
+      store.dispatch(startLikesCountListener(paintingId));
     }
   }
-  // Handle user login/logout to update user like status
-  else if (
-    action.type === "auth/loginSuccess" ||
-    action.type === "auth/logoutSuccess"
-  ) {
+  // Handle user login/logout to update user likes status
+  else if (action.type === "auth/loginSuccess") {
     const state = store.getState();
-    const paintingId = state.detail.currentPaintingId;
     const userId = state.auth?.user?.uid;
 
-    // Stop any existing user like listeners
+    // Start user likes listener when user logs in
+    if (userId) {
+      store.dispatch(startUserLikesListener(userId));
+    }
+  } else if (action.type === "auth/logoutSuccess") {
+    // Clear user's liked paintings when logging out
+    store.dispatch(resetLikes());
+
+    // Stop any user likes listeners
     Object.keys(activeListeners).forEach((key) => {
-      if (key.startsWith("userLike:")) {
+      if (key.startsWith("userLikes:")) {
         activeListeners[key]();
         delete activeListeners[key];
       }
     });
-
-    // Start new user like listener if user is logged in and viewing a painting
-    if (userId && paintingId) {
-      store.dispatch(startUserLikeListener(paintingId, userId));
-    }
   }
 
   return result;

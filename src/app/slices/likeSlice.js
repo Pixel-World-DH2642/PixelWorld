@@ -32,7 +32,8 @@ export const toggleLike = createAsyncThunk(
       if (!snapshot.empty) {
         const likeDoc = snapshot.docs[0];
         await deleteDoc(doc(db, "likes", likeDoc.id));
-        return { liked: false, userId, paintingId, countChange: -1 };
+        await thunkAPI.dispatch(fetchLikesCount(paintingId)); // Update likes count
+        return { liked: false, userId, paintingId };
       }
 
       // Otherwise, add a new like
@@ -41,7 +42,8 @@ export const toggleLike = createAsyncThunk(
         userId,
         timestamp: serverTimestamp(),
       });
-      return { liked: true, userId, paintingId, countChange: 1 };
+      await thunkAPI.dispatch(fetchLikesCount(paintingId)); // Update likes count
+      return { liked: true, userId, paintingId };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -76,10 +78,32 @@ export const fetchUserLikes = createAsyncThunk(
   },
 );
 
+export const fetchLikesCount = createAsyncThunk(
+  "likes/fetchLikesCount",
+  async (paintingId, thunkAPI) => {
+    try {
+      if (!paintingId) {
+        return thunkAPI.rejectWithValue("No painting ID provided");
+      }
+
+      // Query Firebase for likes with this paintingId
+      const likesRef = collection(db, "likes");
+      const q = query(likesRef, where("paintingId", "==", paintingId));
+      const snapshot = await getDocs(q);
+
+      // Return the count and paintingId
+      return {
+        paintingId,
+        count: snapshot.size,
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  },
+);
+
 const initialState = {
-  count: 0,
-  userLiked: false,
-  userLikedPaintings: [],
+  userLikedPaintings: [], // Store only the IDs of paintings the user has liked
   loading: false,
   error: null,
 };
@@ -89,12 +113,8 @@ const likeSlice = createSlice({
   initialState,
   reducers: {
     resetLikes: () => initialState,
-    // Add actions for real-time updates
-    updateLikesCount: (state, action) => {
-      state.count = action.payload;
-    },
-    updateUserLikeStatus: (state, action) => {
-      state.userLiked = action.payload;
+    setUserLikedPaintings: (state, action) => {
+      state.userLikedPaintings = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -104,9 +124,18 @@ const likeSlice = createSlice({
         state.loading = true;
       })
       .addCase(toggleLike.fulfilled, (state, action) => {
-        state.userLiked = action.payload.liked;
         state.loading = false;
-        // Note: We don't update count here because the listener will handle it
+        // Update the user's liked paintings list
+        const { liked, paintingId } = action.payload;
+        if (liked) {
+          if (!state.userLikedPaintings.includes(paintingId)) {
+            state.userLikedPaintings.push(paintingId);
+          }
+        } else {
+          state.userLikedPaintings = state.userLikedPaintings.filter(
+            (id) => id !== paintingId,
+          );
+        }
       })
       .addCase(toggleLike.rejected, (state, action) => {
         state.error = action.payload;
@@ -124,10 +153,18 @@ const likeSlice = createSlice({
       .addCase(fetchUserLikes.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
+      })
+
+      // Fetch likes count
+      .addCase(fetchLikesCount.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(fetchLikesCount.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
       });
   },
 });
 
-export const { resetLikes, updateLikesCount, updateUserLikeStatus } =
-  likeSlice.actions;
+export const { resetLikes, setUserLikedPaintings } = likeSlice.actions;
 export default likeSlice.reducer;
