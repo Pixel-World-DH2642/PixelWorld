@@ -487,6 +487,17 @@ export const selectUserPaintings = (state, userId) => {
   );
 };
 
+export const selectSortedByDatePaintings = (state) => {
+  return selectAllPaintings(state)
+    .slice()
+    .sort((a, b) => {
+      // Sort by createdAt descending (newest first)
+      const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+      const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+      return dateB - dateA;
+    });
+};
+
 export const selectTopPaintings = (state, count = 3) => {
   return selectAllPaintings(state)
     .slice()

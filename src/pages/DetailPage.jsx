@@ -241,11 +241,11 @@ export function DetailPage({
                       </p>
                     </div>
                   )}
-                  {painting.authorNotes && (
+                  {painting.notes && (
                     <div className="mb-4">
                       <p className="mb-2 font-semibold">Author notes:</p>
-                      <p className="mb-2 italic bg-gray-100 p-2 rounded">
-                        {painting.authorNotes}
+                      <p className="mb-2 bg-gray-300 p-2 rounded">
+                        {painting.notes}
                       </p>
                     </div>
                   )}

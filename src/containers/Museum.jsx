@@ -5,6 +5,7 @@ import {
   selectAllPaintings,
   selectTopPaintings,
   fetchAllPaintings,
+  selectSortedByDatePaintings,
 } from "../app/slices/paintingsSlice.js";
 import { fetchUserLikes } from "../app/slices/likeSlice.js";
 import { toggleLike } from "../app/slices/likeSlice.js";
@@ -12,7 +13,7 @@ import { toggleLike } from "../app/slices/likeSlice.js";
 export const Museum = connect(
   function mapStateToProps(state) {
     return {
-      paintings: selectAllPaintings(state),
+      paintings: selectSortedByDatePaintings(state),
       isLoading: state.paintings.loading,
       error: state.paintings.error,
       topPaintings: selectTopPaintings(state),

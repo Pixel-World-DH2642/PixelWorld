@@ -22,6 +22,12 @@ const PaintingCard = ({
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
+
   return (
     <Link
       to="/details"
@@ -43,6 +49,11 @@ const PaintingCard = ({
             <p className="mt-1 text-sm text-right font-bold">
               - {painting.authorName}
             </p>
+            {painting.createdAt && (
+              <p className="text-xs text-gray-500 text-right">
+                {formatDate(painting.createdAt)}
+              </p>
+            )}
             <p className="text-sm italic line-clamp-2 mb-auto">
               "{painting.savedQuote.content}"
             </p>
