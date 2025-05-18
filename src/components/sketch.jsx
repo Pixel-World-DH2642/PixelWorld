@@ -74,19 +74,22 @@ export function sketch(p5) {
   };
 
   p5.setup = () => {
-    console.log("setup");
+    console.log("setup 1");
     p5.createCanvas(700, 400);
     p5.rectMode(p5.CENTER);
     p5.noSmooth();
     //p5.background(30, 40, 220);
 
+    if (initialPropsBuffer) {
+      initializeWithProps(initialPropsBuffer);
+    }
+
     sketchIsSetup = true;
   };
 
   p5.updateWithProps = (props) => {
+    console.log("updating props 1");
     if (!sketchIsSetup) initialPropsBuffer = props;
-    else if (!objectsInitializedWithProps)
-      initializeWithProps(initialPropsBuffer);
 
     ActorList.setEnvironmentWeather(props.weather.parsedData, skyLayerActor);
 
@@ -137,7 +140,7 @@ export function sketch(p5) {
 
   p5.mouseReleased = () => {
     //Future: use input system
-    easel.findComponent("CanvasComponent").inputComplete();
+    // easel.findComponent("CanvasComponent").inputComplete();
   };
 
   p5.keyPressed = () => {
