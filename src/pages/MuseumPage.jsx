@@ -62,7 +62,8 @@ const PaintingCard = ({
               />
             </button>
             <span className="flex items-center text-0.5xl">
-              {likesLoading ? "..." : painting.likesCount}
+              {/* {likesLoading ? "..." : painting.likesCount} */}
+              {painting.likesCount}
             </span>
           </div>
         </div>

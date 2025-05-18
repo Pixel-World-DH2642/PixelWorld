@@ -243,7 +243,8 @@ export function DetailPage({
                   />
                 </button>
                 <span className="flex items-center text-0.5xl">
-                  {likesLoading ? "..." : likesCount}
+                  {/* {likesLoading ? "..." : likesCount} */}
+                  {likesCount}
                 </span>
               </div>
 
