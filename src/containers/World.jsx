@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import { WorldPage } from "../pages/WorldPage";
-import { fetchDailyQuote } from "../app/slices/quoteSlice";
+import { fetchDailyQuote, checkUserQuoteData } from "../app/slices/quoteSlice";
 import { getWeatherData } from "../app/slices/weatherSlice";
 import {
   uploadPainting,
@@ -26,7 +26,6 @@ export const World = connect(
   function mapStateToProps(state) {
     return {
       user: state.auth.user,
-      quote: state.quote.currentQuote,
       weather: state.weather,
       paintingSubmission: {
         loading: state.paintings.loading,
@@ -42,11 +41,20 @@ export const World = connect(
       selectedPaletteSlot: state.editor.selectedPaletteSlot,
       //Painting Data
       playerPainting: state.paintings.playerPainting,
+
+      //Quote data
+      quote: state.quote.currentQuote,
+      quotesRemaining: state.quote.quotesRemaining,
+      quoteStatus: state.quote.status,
+      quoteError: state.quote.error,
     };
   },
   function mapDispatchToProps(dispatch) {
     return {
-      onGetQuote: () => dispatch(fetchDailyQuote()),
+      // Quote
+      onGetQuote: (userId) => dispatch(fetchDailyQuote(userId)),
+      onCheckQuoteData: (userId) => dispatch(checkUserQuoteData(userId)),
+
       onGetWeather: () => dispatch(getWeatherData()),
       // Panel state change handler
       onPanelStateChange: (state) => dispatch(setPanelState(state)),

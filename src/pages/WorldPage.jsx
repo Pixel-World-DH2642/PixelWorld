@@ -13,6 +13,9 @@ import { PANEL_STATES } from "../app/slices/worldSlice";
 
 export function WorldPage({
   quote,
+  quotesRemaining,
+  quoteStatus,
+  quoteError,
   selectedColor,
   painting,
   weather,
@@ -21,6 +24,8 @@ export function WorldPage({
   onPanelStateChange,
   onGetWeather,
   onGetQuote,
+  onCheckQuoteData,
+  onSaveQuote,
   onSelectQuote,
   onDeleteQuote,
   onDrawPixel,
@@ -52,12 +57,25 @@ export function WorldPage({
   const navigate = useNavigate();
 
   function getNewQuote() {
-    onGetQuote();
+    if (user && user.uid) {
+      onGetQuote(user.uid);
+    } else {
+      // Handle case where user is not logged in
+      console.error("User must be logged in to get quotes");
+      // Maybe show a login prompt
+    }
   }
 
   useEffect(() => {
     onGetWeather();
   }, []);
+
+  useEffect(() => {
+    // Check the user's quote data when component mounts
+    if (user && user.uid) {
+      onCheckQuoteData(user.uid);
+    }
+  }, [user, onCheckQuoteData]);
 
   // Renders the appropriate panel based on current state
   const renderCurrentPanel = () => {
@@ -93,7 +111,18 @@ export function WorldPage({
           </div>
         );
       case PANEL_STATES.QUOTE:
-        return <QuoteBoard quote={quote} onGetNewQuote={getNewQuote} />;
+        return (
+          <QuoteBoard
+            user={user}
+            quote={quote}
+            onGetNewQuote={getNewQuote}
+            quotesRemaining={quotesRemaining}
+            quoteStatus={quoteStatus}
+            quoteError={quoteError}
+            includeQuote={false} // Default value, or use state if you implement this
+            onSaveQuote={onSaveQuote}
+          />
+        );
       default:
         return <div>Invalid panel state</div>;
     }
