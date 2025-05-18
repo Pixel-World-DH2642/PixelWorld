@@ -194,7 +194,6 @@ const paintingsSlice = createSlice({
     loading: false,
     error: null,
     selectedPaintingId: null,
-    currentPainting: null,
     playerPainting: { jagged: null, flat: null },
     undoBuffer: [],
     undoIndex: 0,
@@ -202,14 +201,9 @@ const paintingsSlice = createSlice({
   reducers: {
     selectPainting: (state, action) => {
       state.selectedPaintingId = action.payload;
-      const found = state.entities[action.payload];
-      if (found) {
-        state.currentPainting = found;
-      }
     },
     clearSelectedPainting: (state) => {
       state.selectedPaintingId = null;
-      state.currentPainting = null;
     },
     updatePlayerPainting: (state, action) => {
       state.undoBuffer = state.undoBuffer.slice();
@@ -276,7 +270,6 @@ const paintingsSlice = createSlice({
         state.loading = false;
         paintingsAdapter.upsertOne(state, action.payload);
         state.selectedPaintingId = action.payload.id;
-        state.currentPainting = action.payload;
       })
       .addCase(fetchPaintingById.rejected, (state, action) => {
         state.loading = false;
@@ -316,7 +309,6 @@ const paintingsSlice = createSlice({
         paintingsAdapter.removeOne(state, action.payload);
         if (state.selectedPaintingId === action.payload) {
           state.selectedPaintingId = null;
-          state.currentPainting = null;
         }
       });
   },
