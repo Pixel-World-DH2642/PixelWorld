@@ -195,7 +195,7 @@ const paintingsSlice = createSlice({
     error: null,
     selectedPaintingId: null,
     currentPainting: null,
-    playerPainting: null,
+    playerPainting: { jagged: null, flat: null },
     undoBuffer: [],
     undoIndex: 0,
   }),
@@ -212,26 +212,30 @@ const paintingsSlice = createSlice({
       state.currentPainting = null;
     },
     updatePlayerPainting: (state, action) => {
-      console.log("update painting slice");
+      state.undoBuffer = state.undoBuffer.slice();
       state.undoBuffer.push(state.playerPainting);
       if (state.undoBuffer.length > 30) state.undoBuffer.splice(0, 1);
-      state.playerPainting = action.payload;
+      state.playerPainting.jagged = action.payload;
+      state.playerPainting.flat = action.payload.flat();
     },
     undoEdit: (state) => {
       state.undoIndex--;
       if (state.undoIndex + state.undoBuffer.length < 0) {
         state.undoIndex++;
-        return null;
+        return;
       }
-      return state.undoBuffer[state.undoIndex];
+
+      state.playerPainting =
+        state.undoBuffer[state.undoBuffer.length - 1 + state.undoIndex];
     },
     redoEdit: (state) => {
       state.undoIndex++;
       if (state.undoIndex > 0) {
         state.undoIndex = 0;
-        return null;
+        return;
       }
-      return state.undoBuffer[state.undoIndex];
+      state.playerPainting =
+        state.undoBuffer[state.undoBuffer.length - 1 + state.undoIndex];
     },
     getUndoStateHint: (state, action) => {
       const undoHint = { canUndo: true, canRedo: true };

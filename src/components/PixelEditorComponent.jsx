@@ -1,8 +1,3 @@
-import {
-  setColorPalette,
-  setCurrentPaletteSlot,
-  setCurrentTool,
-} from "../app/slices/pixelEditorSlice";
 import "../styles/global.css";
 import { TOOL_MODE } from "../app/slices/pixelEditorSlice";
 
@@ -18,40 +13,37 @@ export function PixelEditorComponent({
   onPaletteUpdated,
   onPaletteInitialize,
   onSlotSelected,
+  //Painting Functions
+  onUndoEdit,
+  onRedoEdit,
+  onGetUndoStateHint,
 }) {
   //Tools
   //-Clear Drawing
   //-Fill
-  //-Randomize
-  //-Undo
-  //-Redo
   //-Mini View
 
-  //Persist palette?
-
   //ToDo
-  //-playerPainting -> in the painting slice
-  //-painting data through model not sketch
-  //-optomize painting render
+  //Set initial color for color picker, model, and in the sketch
+
+  //-optimize painting render
   //-Quote in world
   //-Get quote in world
   //-world overlay instructions
 
-  //pixel editor not color editor
   //Panel state: quote, weather, pixel > world slice for dynamic context sensitive panel
   //
 
-  //-Weather
-  //-Drag to draw
-  //-eraser, pencil in sketch
-  //-store drawing in model
+  //-Weather (implement more & better)
 
   //Quote bot, access, write out quote one character at a time
 
   //Bugs
+  //-Tripple clicking a pixel grid throws read only error...
+  //-No data to canvasActor from model until pixel editor update
   //-sky re-render problem
   //-color picker change
-  //
+  //-Player jitter > add grounded state & turn off gravity
 
   //Setup
   const numPaletteSlots = 16;
@@ -86,6 +78,10 @@ export function PixelEditorComponent({
   function initializePalette() {
     if (colorPaletteArray.length === 0) {
       onPaletteInitialize(randomizePalette());
+      onColorSelect({
+        rgba: hexToRgb(colorPaletteArray[0]),
+        hex: colorPaletteArray[0],
+      });
     } else {
       for (let i = 0; i < numPaletteSlots; i++) {
         palette[i] = {
@@ -128,14 +124,17 @@ export function PixelEditorComponent({
     // Set new selected slot
     e.target.className = "outline-2 aspect-square";
     onSlotSelected(parseInt(e.target.dataset.index));
-    onColorSelect(hexToRgb(e.target.dataset.color));
+    onColorSelect({
+      rgba: hexToRgb(e.target.dataset.color),
+      hex: e.target.dataset.color,
+    });
   }
 
   function handleColorChangeACB(e) {
     const slot = document.getElementById(palette[selectedPaletteSlot].id);
     slot.dataset.color = e.target.value;
     slot.style.backgroundColor = e.target.value;
-    onColorSelect(hexToRgb(e.target.value));
+    onColorSelect({ rgba: hexToRgb(e.target.value), hex: e.target.value });
   }
 
   function handleEraserSelected() {
@@ -148,6 +147,14 @@ export function PixelEditorComponent({
 
   function handleRandomizeClicked() {
     onPaletteInitialize(randomizePalette());
+  }
+
+  function handleUndoEdit() {
+    onUndoEdit();
+  }
+
+  function handleRedoEdit() {
+    onRedoEdit();
   }
 
   //Layout
@@ -217,6 +224,24 @@ export function PixelEditorComponent({
             />
             <p>Eraser</p>
           </div>
+        </div>
+        <div className="flex flex-col items-center justify-center">
+          <img
+            className="w-10"
+            src="assets/undo_icon_64x64.png"
+            alt="undo"
+            onClick={handleUndoEdit}
+          />
+          <p>Undo</p>
+        </div>
+        <div className="flex flex-col items-center justify-center">
+          <img
+            className="w-10"
+            src="assets/redo_icon_64x64.png"
+            alt="redo"
+            onClick={handleRedoEdit}
+          />
+          <p>Redo</p>
         </div>
       </div>
     </div>

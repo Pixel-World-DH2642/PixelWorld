@@ -18,6 +18,22 @@ export function sketch(p5) {
   let skyLayerActor;
   //############################-----------------############################//
 
+  function canvasCleaner() {
+    let canvasCount = 2;
+
+    return function () {
+      if (canvasCount < 2) return;
+      console.log("clearing canvases");
+      let badCanvases = document.getElementsByTagName("canvas");
+      for (let i = 1; i < badCanvases.length; i++) {
+        badCanvases[i].remove();
+      }
+      canvasCount = badCanvases.length;
+    };
+  }
+
+  let canvasGarbageCollector;
+
   p5.preload = () => {
     testPlant1 = p5.loadImage("/assets/flower01.png");
     testPlant2 = p5.loadImage("/assets/grass01.png");
@@ -34,27 +50,33 @@ export function sketch(p5) {
 
     skyLayerActor = ActorList.createSkyLayerActor();
     ActorList.createGroundSliceActor([testPlant1, testPlant2, testPlant3]);
-    easel = ActorList.createCanvasActor(p5.createVector(900, 220), {
-      x: 192,
-      y: 192,
-    });
+
     mainCharacter = ActorList.createMainCharacterActor(
       mainCharSpriteSheet,
       mainCharSpriteData,
     );
 
+    easel = ActorList.createCanvasActor(p5.createVector(900, 220), {
+      x: 192,
+      y: 192,
+    });
+
     MicroEngine.LoadScene(ActorList.mainScene);
+
+    canvasGarbageCollector = canvasCleaner();
   };
 
   p5.updateWithProps = (props) => {
-    //console.log("Parsed data: ", props.weather.parsedData);
+    //console.log("Props: ", props);
     ActorList.setEnvironmentWeather(props.weather.parsedData, skyLayerActor);
 
-    if (easel) {
-      const canvasComponent = easel.findComponent("CanvasComponent");
-      canvasComponent.setCurrentColor(props.currentColor);
-      canvasComponent.setCurrentTool(props.currentTool);
-    }
+    //I hate this, but it has to be like this for now...
+    if (!easel) return;
+    const canvasComponent = easel.findComponent("CanvasComponent");
+    canvasComponent.setCurrentColor(props.currentColor);
+    canvasComponent.setCurrentTool(props.currentTool);
+    canvasComponent.setOnPlayerPaintingUpdate(props.onPlayerPaintingUpdate);
+    canvasComponent.setPaintingData(props.playerPainting);
   };
 
   //Super ugly please be time to make better
@@ -64,7 +86,6 @@ export function sketch(p5) {
     p5.background(30, 40, 220);
     //p5.translate(-p5.width / 2, -p5.height / 2);
 
-    //p5.image(skyCanvas, 0, 0);
     MicroEngine.EngineLoop();
 
     if (p5.keyIsDown(p5.LEFT_ARROW)) {
@@ -80,6 +101,13 @@ export function sketch(p5) {
     } else if (lastKeyPress == p5.RIGHT_ARROW) {
       mainCharacter.findComponent("Animation").setAnimationState("IdleRight");
     }
+
+    if (p5.mouseIsPressed) {
+      //Future: use input system
+      easel.findComponent("CanvasComponent").processInput();
+    }
+
+    canvasGarbageCollector();
   };
 
   p5.windowResized = () => {
@@ -87,8 +115,9 @@ export function sketch(p5) {
     p5.resizeCanvas(Math.min(800, parentElement.clientWidth), 400);
   };
 
-  p5.mousePressed = () => {
-    easel.findComponent("CanvasComponent").processInput();
+  p5.mouseReleased = () => {
+    //Future: use input system
+    easel.findComponent("CanvasComponent").inputComplete();
   };
 
   p5.keyPressed = () => {
