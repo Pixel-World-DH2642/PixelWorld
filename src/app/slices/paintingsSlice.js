@@ -123,6 +123,67 @@ export const fetchUserPaintings = createAsyncThunk(
   },
 );
 
+export const fetchPlayerPainting = createAsyncThunk(
+  "paintings/fetchPlayerPainting",
+  async (userId, thunkAPI) => {
+    try {
+      if (!userId) {
+        return thunkAPI.rejectWithValue("No user ID provided");
+      }
+
+      // Fetch the player's painting from userPaintings collection
+      const userPaintingRef = collection(db, "userPaintings");
+      const q = query(userPaintingRef, where("userId", "==", userId));
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        // No player painting found, return initial empty state
+        return {
+          jagged: null,
+          colorMatrix: null,
+          savedQuote: null,
+          title: null,
+          notes: null,
+        };
+      }
+
+      // Get the first painting (assuming one user has only one player painting)
+      const paintingData = normalizeFirestoreData(snapshot.docs[0].data());
+
+      // Convert colorMatrix string back to object/array if needed
+      if (
+        paintingData.colorMatrix &&
+        typeof paintingData.colorMatrix === "string"
+      ) {
+        try {
+          paintingData.colorMatrix = JSON.parse(paintingData.colorMatrix);
+          // also conver the colormatrix to jagged which is a 2d array
+          paintingData.jagged = [];
+          for (let i = 0; i < 16; i++) {
+            paintingData.jagged.push(
+              paintingData.colorMatrix.slice(i * 16, i * 16 + 16),
+            );
+          }
+        } catch (e) {
+          console.error("Failed to parse colorMatrix string:", e);
+          paintingData.colorMatrix = null;
+        }
+      }
+
+      // Ensure all expected fields are present
+      return {
+        jagged: paintingData.jagged || null,
+        colorMatrix: paintingData.colorMatrix || null,
+        savedQuote: paintingData.savedQuote || null,
+        title: paintingData.title || null,
+        notes: paintingData.notes || null,
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  },
+);
+
 export const uploadPainting = createAsyncThunk(
   "paintings/upload",
   async (paintingData, thunkAPI) => {
@@ -194,7 +255,13 @@ const paintingsSlice = createSlice({
     loading: false,
     error: null,
     selectedPaintingId: null,
-    playerPainting: { jagged: null, flat: null },
+    playerPainting: {
+      jagged: null, // used for editing
+      colorMatrix: null, // this is what we gonna save
+      savedQuote: null,
+      title: null,
+      notes: null,
+    },
     undoBuffer: [],
     undoIndex: 0,
   }),
@@ -244,6 +311,16 @@ const paintingsSlice = createSlice({
         state.entities[paintingId].likesCount = count;
       }
     },
+    saveQuoteToPlayerPainting: (state, action) => {
+      const { isChecked, quote } = action.payload;
+      console.log("isChecked:", isChecked);
+      console.log("Saving quote to player painting:", quote);
+      if (isChecked) {
+        state.playerPainting.savedQuote = quote;
+      } else {
+        state.playerPainting.savedQuote = null;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -286,6 +363,20 @@ const paintingsSlice = createSlice({
         paintingsAdapter.upsertMany(state, action.payload);
       })
       .addCase(fetchUserPaintings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Handle fetchPlayerPainting
+      .addCase(fetchPlayerPainting.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPlayerPainting.fulfilled, (state, action) => {
+        state.loading = false;
+        state.playerPainting = action.payload;
+      })
+      .addCase(fetchPlayerPainting.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -348,5 +439,6 @@ export const {
   getUndoStateHint,
   updateLikesCountByOne,
   updateLikesCount,
+  saveQuoteToPlayerPainting,
 } = paintingsSlice.actions;
 export default paintingsSlice.reducer;

@@ -9,6 +9,7 @@ import {
   undoEdit,
   redoEdit,
   getUndoStateHint,
+  saveQuoteToPlayerPainting,
 } from "../app/slices/paintingsSlice";
 import {
   setCurrentTool,
@@ -54,6 +55,9 @@ export const World = connect(
       // Quote
       onGetQuote: (userId) => dispatch(fetchDailyQuote(userId)),
       onCheckQuoteData: (userId) => dispatch(checkUserQuoteData(userId)),
+      onSaveQuoteToPainting: (isChecked, quote) => {
+        dispatch(saveQuoteToPlayerPainting({ isChecked, quote }));
+      },
 
       onGetWeather: () => dispatch(getWeatherData()),
       // Panel state change handler
@@ -81,9 +85,7 @@ export const World = connect(
       onRedoEdit: () => dispatch(redoEdit()),
       onGetUndoStateHint: () => dispatch(getUndoStateHint()),
       onSubmitPainting: (painting) => {
-        return dispatch(uploadPainting(painting)).then(() => {
-          return dispatch(fetchAllPaintings());
-        });
+        dispatch(uploadPainting(painting));
       },
     };
   },

@@ -1,8 +1,8 @@
 import React from "react";
 
 export function PaintingDisplay({ painting }) {
-  const EXPECTED_GRID_SIZE = 32; // Changed from 8 to 32
-  const TOTAL_CELLS = EXPECTED_GRID_SIZE * EXPECTED_GRID_SIZE; // 1024
+  const EXPECTED_GRID_SIZE = 16;
+  const TOTAL_CELLS = EXPECTED_GRID_SIZE * EXPECTED_GRID_SIZE;
   const FILL_COLOR = "#000000"; // Changed from light gray to black
 
   if (!painting || !painting.colorMatrix) {
@@ -13,7 +13,6 @@ export function PaintingDisplay({ painting }) {
     );
   }
 
-  // Handle flat array of colors (expected to be 32x32=1024 colors)
   if (
     Array.isArray(painting.colorMatrix) &&
     !Array.isArray(painting.colorMatrix[0])

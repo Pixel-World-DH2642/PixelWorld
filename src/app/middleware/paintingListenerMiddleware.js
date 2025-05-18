@@ -5,7 +5,6 @@ import {
   fetchAllPaintings,
   updateLikesCount,
 } from "../slices/paintingsSlice";
-import { fetchUserLikes } from "../slices/likeSlice";
 
 export const paintingListenerMiddleware = createListenerMiddleware();
 
@@ -63,5 +62,14 @@ paintingListenerMiddleware.startListening({
       count,
     );
     listenerApi.dispatch(updateLikesCount({ paintingId, count }));
+  },
+});
+
+paintingListenerMiddleware.startListening({
+  matcher: (action) => action.type === "paintings/updatePlayerPainting",
+  effect: async (action, listenerApi) => {
+    const { payload } = action;
+    console.log("Player painting updated:", payload);
+    // TODO: save the player painting to the per user persistent store
   },
 });

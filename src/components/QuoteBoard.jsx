@@ -6,7 +6,7 @@ export function QuoteBoard({
   quote,
   includeQuote,
   onGetNewQuote,
-  onSaveQuote,
+  onSaveQuoteToPainting,
   quotesRemaining,
   quoteStatus,
   quoteError,
@@ -22,7 +22,7 @@ export function QuoteBoard({
 
   const handleSaveQuote = (event) => {
     const isChecked = event.target.checked;
-    onSaveQuote(isChecked);
+    onSaveQuoteToPainting(isChecked, quote);
   };
 
   const handleGetNewQuote = () => {

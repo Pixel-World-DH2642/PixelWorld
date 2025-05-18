@@ -2,7 +2,10 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore"; // Added
 import { setUser, authLoaded } from "./slices/authSlice";
-import { fetchAllPaintings } from "./slices/paintingsSlice";
+import {
+  fetchAllPaintings,
+  fetchPlayerPainting,
+} from "./slices/paintingsSlice";
 import { fetchUserLikes } from "./slices/likeSlice";
 
 const firebaseConfig = {
@@ -30,6 +33,7 @@ export function connectToPersistance(store) {
       const { uid, displayName, email, photoURL } = user;
       store.dispatch(setUser({ uid, displayName, email, photoURL }));
       store.dispatch(fetchUserLikes(uid));
+      store.dispatch(fetchPlayerPainting(uid));
     } else {
       // User is signed out
       store.dispatch(setUser(null));

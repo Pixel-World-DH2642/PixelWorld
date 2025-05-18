@@ -4,7 +4,6 @@ import { PaintingDisplay } from "./PaintingDisplay";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 export function SubmitModal({
-  quote,
   painting,
   user,
   onSubmitPainting,
@@ -43,10 +42,9 @@ export function SubmitModal({
         return;
       }
 
-      // Check if matrix is the correct size (32x32 = 1024 elements)
-      if (painting.colorMatrix.length !== 1024) {
+      if (painting.colorMatrix.length !== 16 * 16) {
         setError(
-          `Invalid color matrix: expected 1024 elements, got ${painting.colorMatrix.length}`,
+          `Invalid color matrix: expected 256 elements, got ${painting.colorMatrix.length}`,
         );
         return;
       }
@@ -78,8 +76,8 @@ export function SubmitModal({
       };
 
       // Add quote if included
-      if (includeQuote && quote && quote) {
-        submissionData.savedQuote = quote;
+      if (includeQuote && painting.savedQuote && painting.savedQuote) {
+        submissionData.savedQuote = painting.savedQuote;
       }
 
       // Submit the painting if validation passes
@@ -151,11 +149,11 @@ export function SubmitModal({
           />
         </div>
 
-        {quote.content && (
+        {painting.savedQuote?.content && (
           <div className="mb-4">
             <p className="mb-2 font-semibold">Inspired by quote:</p>
             <p className="mb-2 italic bg-gray-100 p-2 rounded">
-              {quote.content}
+              {painting.savedQuote.content}
             </p>
             <label className="flex items-center cursor-pointer">
               <input
