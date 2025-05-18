@@ -162,6 +162,7 @@ const quoteSlice = createSlice({
         state.lastFetchTimestamp = Date.now(); // Use local time for display purposes
         state.quotesRemaining -= 1;
         state.error = null;
+        state.isQuoteSaved = false; // Reset saved state after fetching a new quote
       })
       .addCase(fetchDailyQuote.rejected, (state, action) => {
         state.status = "failed";

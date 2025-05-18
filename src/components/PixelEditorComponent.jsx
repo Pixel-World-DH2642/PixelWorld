@@ -158,20 +158,6 @@ export function PixelEditorComponent({
     ></div>
   ));
 
-  const ToolSlot = ({ name, src, alt, onClick, isSelected }) => {
-    return (
-      <div
-        className={`flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md ${
-          isSelected ? "bg-blue-200 border-blue-500" : "hover:bg-gray-200 "
-        } active:bg-blue-300`}
-        onClick={onClick}
-      >
-        <img className="w-8" src={src} alt={alt} />
-        <p className={isSelected ? "font-bold" : ""}>{name}</p>
-      </div>
-    );
-  };
-
   return (
     <div className="flex flex-col w-full h-full bg-gray-300 p-2 gap-2">
       <div className="sm:text-xl">Pixel Editor</div>
@@ -195,39 +181,65 @@ export function PixelEditorComponent({
             />
             <p>Color</p>
           </div>
-
-          <ToolSlot
-            name="Random"
-            src="assets/random_icon_64x64.png"
-            alt="randomize palette"
+          <div
+            className={`flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md hover:bg-gray-200 active:bg-blue-300`}
             onClick={handleRandomizeClicked}
-          />
-          <ToolSlot
-            name="Pencil"
-            src="assets/pencil_icon_64x64.png"
-            alt="pencil"
+          >
+            <img
+              className="w-8"
+              src="assets/random_icon_64x64.png"
+              alt="randomize palette"
+            />
+            <p>Random</p>
+          </div>
+          <div
+            className={`flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md ${
+              currentTool === TOOL_MODE.PENCIL
+                ? "bg-blue-200 border-blue-500"
+                : "hover:bg-gray-200"
+            } active:bg-blue-300`}
             onClick={handlePencilSelected}
-            isSelected={currentTool === TOOL_MODE.PENCIL}
-          />
-          <ToolSlot
-            name="Eraser"
-            src="assets/eraser_icon_64x64_new.png"
-            alt="eraser"
+          >
+            <img
+              className="w-8"
+              src="assets/pencil_icon_64x64.png"
+              alt="pencil"
+            />
+            <p className={currentTool === TOOL_MODE.PENCIL ? "font-bold" : ""}>
+              Pencil
+            </p>
+          </div>
+          <div
+            className={`flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md ${
+              currentTool === TOOL_MODE.ERASER
+                ? "bg-blue-200 border-blue-500"
+                : "hover:bg-gray-200"
+            } active:bg-blue-300`}
             onClick={handleEraserSelected}
-            isSelected={currentTool === TOOL_MODE.ERASER}
-          />
-          <ToolSlot
-            name="Undo"
-            src="assets/undo_icon_64x64.png"
-            alt="undo"
+          >
+            <img
+              className="w-8"
+              src="assets/eraser_icon_64x64_new.png"
+              alt="eraser"
+            />
+            <p className={currentTool === TOOL_MODE.ERASER ? "font-bold" : ""}>
+              Eraser
+            </p>
+          </div>
+          <div
+            className={`flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md hover:bg-gray-200 active:bg-blue-300`}
             onClick={handleUndoEdit}
-          />
-          <ToolSlot
-            name="Redo"
-            src="assets/redo_icon_64x64.png"
-            alt="redo"
+          >
+            <img className="w-8" src="assets/undo_icon_64x64.png" alt="undo" />
+            <p>Undo</p>
+          </div>
+          <div
+            className={`flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md hover:bg-gray-200 active:bg-blue-300`}
             onClick={handleRedoEdit}
-          />
+          >
+            <img className="w-8" src="assets/redo_icon_64x64.png" alt="redo" />
+            <p>Redo</p>
+          </div>
         </div>
       </div>
     </div>

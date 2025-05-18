@@ -32,7 +32,7 @@ const PaintingCard = ({
     <Link
       to="/details"
       className={
-        `flex flex-col p-4 shadow-xl aspect-[2.1/3] cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-200 ease-in-out` +
+        `flex flex-col p-4 shadow-xl aspect-[2/3] cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-200 ease-in-out` +
         " " +
         className
       }

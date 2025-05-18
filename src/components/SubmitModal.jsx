@@ -155,9 +155,13 @@ export function SubmitModal({
         {painting.savedQuote?.content && (
           <div className="mb-4">
             <p className="mb-2 font-semibold">Inspired by quote:</p>
-            <p className="mb-2 italic bg-gray-100 p-2 rounded">
-              {painting.savedQuote.content}
-            </p>
+            <div className="mb-2 italic bg-gray-100 p-2 rounded">
+              <p className="mb-2">{painting.savedQuote.content}</p>
+              <p className="text-xs sm:text-sm italic text-end self-end">
+                - {painting.savedQuote.author || "Unknown"}
+              </p>
+            </div>
+
             <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"

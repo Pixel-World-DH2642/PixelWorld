@@ -238,6 +238,9 @@ export function DetailPage({
                       <p className="mb-2 font-semibold">Inspired by quote:</p>
                       <p className="mb-2 italic bg-gray-300 p-2 rounded">
                         {painting.savedQuote.content}
+                        <p className="text-xs sm:text-sm italic text-end self-end">
+                          - {painting.savedQuote.author || "Unknown"}
+                        </p>
                       </p>
                     </div>
                   )}
