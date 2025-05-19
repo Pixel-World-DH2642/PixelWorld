@@ -54,9 +54,11 @@ const PaintingCard = ({
                 {formatDate(painting.createdAt)}
               </p>
             )}
-            <p className="text-sm italic line-clamp-2 mb-auto">
-              "{painting.savedQuote.content}"
-            </p>
+            {painting.savedQuote && (
+              <p className="text-sm italic line-clamp-2 mb-auto">
+                "{painting.savedQuote?.content}"
+              </p>
+            )}
           </div>
           {/* Like button */}
           <div className="flex items-center self-end">
