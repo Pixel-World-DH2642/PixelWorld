@@ -1,5 +1,7 @@
 # Pixel World
 
+Firebase deployment link: [Pixel World](https://pixelworld-45efc.web.app/)
+
 ## Description
 
 PixelWorld is a web application that encourages creativity and sharing through pixel art. Users explore a 2D world where they receive a “quote of the day” as inspiration for a 16x16 pixel painting. If they like the quote, they can attach it to their artwork (only one quote per painting). Users can also refresh the quote to find new inspiration. The environment’s weather is determined by the user’s actual geolocation, adding a dynamic touch to the experience.
@@ -199,6 +201,13 @@ We created a tiny component based game engine called MicroEngine that helps comp
 ## User experience
 
 Our target group consists of creative individuals—primarily younger users—who are familiar with digital aesthetics and enjoy engaging in short bursts of creative activity. We aim to offer an experience that is stimulating yet not overwhelming, providing just enough tools and structure to inspire creativity without creating pressure or complexity. Users are free to explore at their own pace: a painting can take three minutes or three hours, depending on how deeply they want to engage. The goal is to encourage creativity in a relaxed, low-stakes environment that fits easily into their daily routines. Additionally, we aim to foster social connection and a sense of accomplishment by showcasing users’ artwork in a community museum, where they can view, like, and comment on each other’s paintings.
+
+## The team
+
+- David Segal
+- [Lambo (Jingwen Zhuang)](https://lambozhuang.me/)
+- Krisztina Biro
+- Gabi Kiryluk
 
 ## File structure
 
