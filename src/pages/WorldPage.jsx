@@ -271,7 +271,7 @@ export function WorldPage({
 
           {/* <div className="text-red-500">Debug UI for panel switching</div> */}
           {/* Navigation controls container */}
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-8">
             {/* Panel switching buttons */}
             <div className="flex gap-4">
               <Button
