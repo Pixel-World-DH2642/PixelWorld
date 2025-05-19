@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import "../styles/global.css";
 import { NavBar } from "../components/NavBar";
 import { ScrollFade } from "../components/ScrollFade";
+import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
+import ColorLensIcon from "@mui/icons-material/ColorLens";
+import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
+import WbSunnyIcon from "@mui/icons-material/WbSunny";
+import MuseumIcon from "@mui/icons-material/Museum";
 
 export function WelcomePage({ user, onLogout }) {
   const navigate = useNavigate();
@@ -32,130 +37,133 @@ export function WelcomePage({ user, onLogout }) {
       </div>
     );
   }
+
+  const FancyButton = ({ children, onClick }) => {
+    return (
+      <button
+        onClick={onClick}
+        className="my-2 text-4xl py-2 font-semibold hover:bg-gray-100 transition duration-300 ease-in-out text-gray-800 flex items-center gap-4 relative group cursor-pointer"
+      >
+        {children}
+        <span className="absolute bottom-0 left-0 w-0 h-1 bg-gray-800 group-hover:w-full transition-all duration-300 ease-in-out"></span>
+      </button>
+    );
+  };
+
+  const FeatureCard = ({ icon, title, description }) => {
+    return (
+      <div className="flex flex-col items-center pb-4">
+        <div className="flex items-center justify-center w-20 h-20 bg-gray-200 rounded-full shadow">
+          {icon}
+        </div>
+        <div className="mt-2 w-full text-center">
+          <h2 className="text-lg sm:text-xl font-semibold mb-1">{title}</h2>
+          <p className="text-gray-600">{description}</p>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="font-pixel max-h-[80vh] overflow-y-auto flex flex-col px-9 pt-3">
+    <div className="font-pixel max-h-[calc(100vh-4rem)] overflow-y-auto flex flex-col p-4 sm:p-8">
       <div>
-        {user ? (
-          <NavBar
-            enableBack={false}
-            title="Pixel World"
-            className="w-full p-8 px-6 pt-10 "
-          />
-        ) : (
-          ""
-        )}
+        <NavBar
+          enableBack={false}
+          title="Pixel World"
+          className="w-full p-8 px-6 pt-10 "
+        />
       </div>
       <ScrollFade></ScrollFade>
-      <div className="flex-grow flex flex-col justify-center items-center space-y-4 pt-20">
-        {user ? <h4></h4> : <h4>Welcome to</h4>}
+      <div className="flex-grow flex flex-col justify-center items-start space-y-4 pt-24">
         <h1 className="text-6xl justify-center items-center ">Pixel World</h1>
         <ScrollFade>
-          <div className="max-w-xl text-center">
-            <h3 className="px-10 text-sm sm:text-lg">
-              Become a pixel artist! Pixel World allows you to paint pixelated
-              images to later display them in a digital gallery. Accompanied by
-              real-time weather and inspirational quotes.
-            </h3>
-          </div>
-        </ScrollFade>
-        <h1 className="pb-10">
-          {user ? (
-            user.displayName ? (
+          <h3 className="text-lg text-start w-2/3 pb-12">
+            Become a pixel artist! Pixel World allows you to paint pixelated
+            images to later display them in a digital gallery. Accompanied by
+            real-time weather and inspirational quotes.
+          </h3>
+
+          <div className="pb-10">
+            {user ? (
               <>
-                Welcome back,{" "}
-                <span className="font-bold">{user.displayName}</span>
-                <div className="mt-4  flex justify-center">
-                  <Link
-                    to="/world"
-                    className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-                  >
-                    Go to the World
-                  </Link>
-                </div>
+                {user.displayName ? (
+                  <div className="text-xl">
+                    Welcome back,{" "}
+                    <span className="font-bold">{user.displayName}</span>
+                  </div>
+                ) : (
+                  <>
+                    Welcome back <span className="font-bold">{user.email}</span>
+                  </>
+                )}
+                <FancyButton
+                  onClick={() => {
+                    navigate("/world");
+                  }}
+                >
+                  <p className="text-start">Enter the Pixel World</p>
+                  <img src="/assets/forward_arrow.png" className="h-8"></img>
+                </FancyButton>
               </>
             ) : (
-              <>
-                Welcome back <span className="font-bold">{user.email}</span>
-                <div className="mt-4  flex justify-center">
-                  <Link
-                    to="/world"
-                    className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-                  >
-                    Go to the World
-                  </Link>
-                </div>
-              </>
-            )
-          ) : (
-            <div className="flex items-center">
-              <Link
-                className="m-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-                to="/login"
+              <FancyButton
+                onClick={() => {
+                  navigate("/login");
+                }}
               >
-                Login/ Sign up
-              </Link>
-            </div>
-          )}
-        </h1>
-        <ScrollFade>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4 pb-10">
+                Sign In
+                <img src="/assets/forward_arrow.png" className="h-8"></img>
+              </FancyButton>
+            )}
+            <FancyButton
+              onClick={() => {
+                navigate("/museum");
+              }}
+            >
+              Museum
+              <img src="/assets/forward_arrow.png" className="h-8"></img>
+            </FancyButton>
+          </div>
+        </ScrollFade>
+        <ScrollFade className="pt-5 w-full">
+          <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pb-10 gap-8">
             {/* Card 1 */}
-            <div className="flex flex-col items-center pb-4">
-              <img
-                src="/assets/worldViewscreen.png"
-                alt="Pixel World View"
-                className="h-48 w-auto shadow"
-              />
-              <div className="mt-2 w-full max-w-[12rem] text-center">
-                <h2 className="text-md sm:text-lg font-semibold mb-1">
-                  Get inspired by the Pixel World!
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Real-time weather and quotes to fuel your creations.
-                </p>
-              </div>
-            </div>
-
+            <FeatureCard
+              icon={<SportsEsportsIcon fontSize="large" />}
+              title="Get inspired by the Pixel World!"
+              description="Explore the pixelated world and let your creativity flow."
+            />
             {/* Card 2 */}
-            <div className="flex flex-col items-center pb-4">
-              <img
-                src="/assets/examplePainting.png"
-                alt="Pixel Painting"
-                className="h-48 w-auto shadow"
-              />
-              <div className="mt-2 w-full max-w-[12rem] text-center">
-                <h2 className="text-md sm:text-lg font-semibold mb-1">
-                  Grab the paint brush!
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Master the art of pixels and make it yours.
-                </p>
-              </div>
-            </div>
-
+            <FeatureCard
+              icon={<ColorLensIcon fontSize="large" />}
+              title="Grab the paint brush!"
+              description="Master the art of pixels and make it yours."
+            />
             {/* Card 3 */}
-            <div className="flex flex-col items-center pb-4">
-              <img
-                src="/assets/exampleQuote.png"
-                alt="Inspirational Quote"
-                className="h-48 w-auto shadow"
-              />
-              <div className="mt-2 w-full max-w-[12rem] text-center">
-                <h2 className="text-md sm:text-lg font-semibold mb-1">
-                  Having a creative block?
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Spark your imagination with an inspirational quote.
-                </p>
-              </div>
-            </div>
+            <FeatureCard
+              icon={<FormatQuoteIcon fontSize="large" />}
+              title="Having a creative block?"
+              description="Spark your imagination with an inspirational quote."
+            />
+            {/* Card 4 */}
+            <FeatureCard
+              icon={<WbSunnyIcon fontSize="large" />}
+              title="Real-time weather"
+              description="Stay updated with the current weather in the pixelated world."
+            />
+            {/* Card 5 */}
+            <FeatureCard
+              icon={<MuseumIcon fontSize="large" />}
+              title="Museum"
+              description="Explore the digital gallery of pixelated art craeted by other players. You can submit your own art to the museum as well!"
+            />
           </div>
         </ScrollFade>
 
         <ScrollFade>
           <div className="">
-            <h1 className="pb-3">Meet the Team</h1>
-            <div className="flex pb-5">
+            <h1 className="pb-4 text-lg">Meet the Team</h1>
+            <div className="flex pb-4">
               <img
                 src="\assets\Krisztina portfolio.jpeg.jpg"
                 className=" flex w-13 h-13 sm:w-16 sm:h-16 aspect-square bg-gray-400 rounded-full border border-black "
@@ -170,7 +178,7 @@ export function WelcomePage({ user, onLogout }) {
                 </p>
               </div>
             </div>
-            <div className="flex pb-5">
+            <div className="flex pb-4">
               <img
                 src="\assets\GABA.jpg"
                 className=" flex w-13 h-13 sm:w-16 sm:h-16 aspect-square bg-gray-400 rounded-full border border-black "
@@ -185,7 +193,7 @@ export function WelcomePage({ user, onLogout }) {
                 </p>
               </div>
             </div>
-            <div className="flex pb-5">
+            <div className="flex pb-4">
               <img
                 src="\assets\David.png"
                 className=" flex w-13 h-13 sm:w-16 sm:h-16 aspect-square bg-gray-400 rounded-full border border-black "
@@ -201,18 +209,17 @@ export function WelcomePage({ user, onLogout }) {
                 </div>
               </div>
             </div>
-            <div className="flex pb-10">
+            <div className="flex pb-4">
               <img
                 src="\assets\Lambo.jpg"
                 className=" flex w-13 h-13 sm:w-16 sm:h-16 aspect-square bg-gray-400 rounded-full border border-black "
               ></img>
               <div className="ml-4">
                 <h2 className="text-lg sm:text-xl font-semibold">
-                  Lambo Zhuang
+                  Lambo (Jingwen Zhuang)
                 </h2>
                 <p className="text-sm text-gray-600">
-                  Responsible for the code structure, back-end and dynamic
-                  interactions.
+                  Project architect, redux and tailwind wizard
                 </p>
               </div>
             </div>
