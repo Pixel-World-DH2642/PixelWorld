@@ -13,7 +13,6 @@ import { useNavigate, Navigate } from "react-router-dom";
 import { QuoteBoard } from "../components/QuoteBoard";
 import { PANEL_STATES } from "../app/slices/worldSlice";
 import { Suspense } from "../components/Suspense";
-import { InstructionsCharacter } from "../components/InstructionsCharacter";
 
 export function WorldPage({
   loading,
