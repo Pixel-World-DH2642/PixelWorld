@@ -53,6 +53,7 @@ export function WorldPage({
   onUndoEdit,
   onRedoEdit,
   onGetUndoStateHint,
+  onClearPlayerPainting,
   //Painting Props
   playerPainting,
 }) {
@@ -138,6 +139,7 @@ export function WorldPage({
                 onUndoEdit={onUndoEdit}
                 onRedoEdit={onRedoEdit}
                 onGetUndoStateHint={onGetUndoStateHint}
+                onClearPlayerPainting={onClearPlayerPainting}
               />
             </div>
             <div className="flex flex-col h-[132px] items-center justify-between w-full border-4 rounded-xl bg-gray-300 p-2 gap-2">

@@ -13,6 +13,7 @@ import {
   undoEdit,
   redoEdit,
   getUndoStateHint,
+  clearPlayerPainting,
   saveQuoteToPlayerPainting,
   removeQuoteFromPlayerPainting,
 } from "../app/slices/paintingsSlice";
@@ -105,6 +106,7 @@ export const World = connect(
       onUndoEdit: () => dispatch(undoEdit()),
       onRedoEdit: () => dispatch(redoEdit()),
       onGetUndoStateHint: () => dispatch(getUndoStateHint()),
+      onClearPlayerPainting: () => dispatch(clearPlayerPainting()),
       onSubmitPainting: (painting) => {
         dispatch(uploadPainting(painting));
       },

@@ -17,6 +17,8 @@ The handy library is licensed under the GNU Lesser General Public License: http:
 
 export function Scribble(p) {
   this.sketch = p || window;
+  this.sketch.randomSeed(42);
+  this.sketch.noiseSeed(42);
   this.bowing = 1;
   this.roughness = 1;
   this.maxOffset = 2;

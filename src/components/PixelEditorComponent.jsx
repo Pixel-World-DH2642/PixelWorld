@@ -19,6 +19,7 @@ export function PixelEditorComponent({
   onUndoEdit,
   onRedoEdit,
   onGetUndoStateHint,
+  onClearPlayerPainting,
 }) {
   //Tools
   //-Clear Drawing
@@ -145,6 +146,10 @@ export function PixelEditorComponent({
     onRedoEdit();
   }
 
+  function handleClearPlayerPainting() {
+    onClearPlayerPainting();
+  }
+
   //Layout
   //Create palette slot elements
   const paletteSlots = palette.map((slot) => (
@@ -232,6 +237,13 @@ export function PixelEditorComponent({
           >
             <img className="w-8" src="assets/undo_icon_64x64.png" alt="undo" />
             <p>Undo</p>
+          </div>
+          <div
+            className={`flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md hover:bg-gray-200 active:bg-blue-300`}
+            onClick={handleClearPlayerPainting}
+          >
+            <button>Clear</button>
+            <p>Clear</p>
           </div>
           <div
             className={`flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md hover:bg-gray-200 active:bg-blue-300`}

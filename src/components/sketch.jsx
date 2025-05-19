@@ -42,6 +42,10 @@ export function sketch(p5) {
   }
 
   function initializeWithProps(propBuffer) {
+    //Handlers
+    handleSketchReady = propBuffer.onSketchReady;
+
+    //Actors
     skyLayerActor = ActorList.createSkyLayerActor();
     ActorList.setEnvironmentWeather(
       propBuffer.weather.parsedData,
@@ -49,7 +53,6 @@ export function sketch(p5) {
     );
     ActorList.createGroundSliceActor([testPlant1, testPlant2, testPlant3]);
 
-    console.log("initializing with props", propBuffer);
     easel = ActorList.createCanvasActor(
       p5.createVector(900, 220),
       {
@@ -75,6 +78,19 @@ export function sketch(p5) {
     objectsInitializedWithProps = true;
   }
 
+  function onNewPropsRecieved(props) {
+    if (!sketchIsSetup) return;
+
+    if (props.weather.timestamp !== initialPropsBuffer.weather.timestamp) {
+      ActorList.setEnvironmentWeather(props.weather.parsedData, skyLayerActor);
+    }
+
+    const canvasComponent = easel.findComponent("CanvasComponent");
+    canvasComponent.setCurrentColor(props.currentColor);
+    canvasComponent.setCurrentTool(props.currentTool);
+    canvasComponent.setPaintingData(props.playerPainting);
+  }
+
   p5.preload = () => {
     testPlant1 = p5.loadImage("/assets/flower01.png");
     testPlant2 = p5.loadImage("/assets/grass01.png");
@@ -84,41 +100,30 @@ export function sketch(p5) {
   };
 
   p5.setup = () => {
-    console.log("setup 1");
     p5.createCanvas(700, 400);
     p5.rectMode(p5.CENTER);
     p5.noSmooth();
+    //Set unique seed per user!
+    p5.randomSeed(42);
+    p5.noiseSeed(42);
     //p5.background(30, 40, 220);
 
-    if (initialPropsBuffer) {
-      initializeWithProps(initialPropsBuffer);
-    }
-
+    initializeWithProps(initialPropsBuffer);
     sketchIsSetup = true;
-    console.log("Handle sketch ready", handleSketchReady);
+
+    //console.log("Handle sketch ready", handleSketchReady);
     if (handleSketchReady) {
       handleSketchReady();
     }
   };
 
   p5.updateWithProps = (props) => {
-    console.log("updating props 1");
+    //console.log("updating props 1");
     if (!sketchIsSetup) initialPropsBuffer = props;
-    handleSketchReady = props.onSketchReady;
-
-    // TODO: don't update OR fixed the seed
-    ActorList.setEnvironmentWeather(props.weather.parsedData, skyLayerActor);
-
-    //I hate this, but it has to be like this for now...
-    if (!easel) return;
-    const canvasComponent = easel.findComponent("CanvasComponent");
-    canvasComponent.setCurrentColor(props.currentColor);
-    canvasComponent.setCurrentTool(props.currentTool);
-
-    canvasComponent.setPaintingData(props.playerPainting);
+    onNewPropsRecieved(props);
   };
 
-  //Super ugly please be time to make better (Use the nice input system)
+  //Super ugly please be time to make better (Use the nice input system I made :|)
   let lastKeyPress;
 
   p5.draw = () => {
@@ -156,13 +161,12 @@ export function sketch(p5) {
 
   p5.mouseReleased = () => {
     //Future: use input system
-    console.log("mouse released");
     easel.findComponent("CanvasComponent").inputComplete();
   };
 
   p5.keyPressed = () => {
-    //console.log("kdjb")
     if (p5.keyIsDown(p5.UP_ARROW))
-      mainCharacter.forceComponent.addForce(p5.createVector(0, -3));
+      mainCharacter.findComponent("GroundMove").jump(3);
+    //mainCharacter.forceComponent.addForce(p5.createVector(0, -3));
   };
 }
