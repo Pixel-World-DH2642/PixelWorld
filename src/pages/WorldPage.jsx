@@ -230,7 +230,7 @@ export function WorldPage({
   };
 
   return (
-    <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
+    <div className="font-pixel mx-auto w-[760px] xl:w-full max-h-[calc(100vh-4rem)] px-8 pt-8 overflow-y-scroll">
       <NavBar enableBack={false} title="Pixel World" />
 
       {/* Loading state with transition */}
@@ -246,10 +246,10 @@ export function WorldPage({
           className={`transition-opacity duration-300 ${contentOpacity === 0 ? "opacity-0" : "opacity-100"} ${loading || weatherStatus === "loading" || !isSketchReady ? "hidden" : ""}`}
         >
           <div className="flex flex-col items-center justify-center text-center gap-4 pb-4 pt-4">
-            <div className="flex w-full items-stretch justify-between gap-4 h-auto">
+            <div className="flex w-full flex-col xl:flex-row items-stretch justify-between gap-4 h-auto">
               <div
                 id="viewport-container"
-                className="border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0"
+                className="w-[700px] border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0"
               >
                 <ReactP5Wrapper
                   sketch={sketch}
@@ -262,7 +262,7 @@ export function WorldPage({
                   isPaintingLocked={isPaintingLocked}
                 />
               </div>
-              <div className="flex-1 flex flex-shrink-0 flex-col w-264 h-[408px] items-center justify-center overflow-hidden">
+              <div className="flex-1 flex flex-shrink-0 flex-col w-full xl:w-[364px] h-full xl:h-[408px] items-center justify-center overflow-hidden">
                 {/* Dynamic panel content */}
                 {renderCurrentPanel()}
               </div>
