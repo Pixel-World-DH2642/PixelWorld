@@ -12,7 +12,7 @@ Users can visit the Museum to browse and appreciate paintings uploaded by others
 
 - **Quote of the Day**: Users receive a daily quote to inspire their pixel art creations.
 - **Dynamic Weather**: The environment's weather reflects the user's actual geolocation, enhancing immersion.
-- **Drawing Your Painting**: Users can create pixel art on a 16x16 canvas, using a simple drawing tool.
+- **Drawing Your Painting**: Users can create pixel art on a 16x16 canvas, using a simple drawing tool with undo/redo support.
 - **Painting Submission**: Users can upload their own pixel art, attaching a quote and personal description.
 - **Museum**: A gallery where users can like and comment on paintings created by others, each with its own quote and description.
 - **Real-time Updated Likes and Comments**: The likes and comments are updated in real-time!
