@@ -129,7 +129,7 @@ export function WorldPage({
                 onGetUndoStateHint={onGetUndoStateHint}
               />
             </div>
-            <div className="flex flex-col h-[132px] items-center justify-between w-full border-4 rounded-xl bg-gray-300 p-1 gap-1">
+            <div className="flex flex-col h-[132px] items-center justify-between w-full border-4 rounded-xl bg-gray-300 p-2 gap-2">
               <div className="w-full h-full flex flex-col items-start gap-1 rounded-md bg-gray-100 p-2 overflow-y-scroll">
                 <p
                   className={`text-sm text-start text-wrap wrap-break-word ${playerPainting.savedQuote ? "" : "italic text-gray-500"}`}
