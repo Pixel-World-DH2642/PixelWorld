@@ -4,10 +4,12 @@ import { TOOL_MODE } from "../../app/slices/pixelEditorSlice";
 export function createActorList(p, MicroEngine) {
   const mainScene = MicroEngine.CreateScene();
 
-  function createCanvasActor(pos, size) {
+  function createCanvasActor(pos, size, onPlayerPaintingUpdateCB) {
     const actor = MicroEngine.Components.Actor(pos);
     actor.addComponent(CanvasComponent, null);
     console.log("canvas actor");
+
+    let onPlayerPaintingUpdate = onPlayerPaintingUpdateCB;
 
     function CanvasComponent(settings, actor, pos) {
       let pixelSize = 12;
@@ -29,9 +31,6 @@ export function createActorList(p, MicroEngine) {
           pixelArray[x][y] = null;
         }
       }
-
-      //React redux
-      let onPlayerPaintingUpdate = null;
 
       function processInput(/*draw info*/) {
         //if (!onPlayerPaintingUpdate) return;
@@ -125,6 +124,8 @@ export function createActorList(p, MicroEngine) {
         p.rect(pos.x, pos.y, size.x, size.y);
         p.noStroke();
 
+        if (!pixelArray) return;
+
         for (let x = 0; x < pixelArray.length; x++) {
           for (let y = 0; y < pixelArray[x].length; y++) {
             if (pixelArray[x][y]) {
@@ -152,11 +153,6 @@ export function createActorList(p, MicroEngine) {
         },
         setCurrentTool: function (tool) {
           currentTool = tool;
-        },
-        setOnPlayerPaintingUpdate: function (callback) {
-          if (onPlayerPaintingUpdate) return;
-          onPlayerPaintingUpdate = callback;
-          onPlayerPaintingUpdate(pixelArray);
         },
         setPaintingData: function (data) {
           if (!data) return;

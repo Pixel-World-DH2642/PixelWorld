@@ -41,16 +41,23 @@ export function sketch(p5) {
 
   function initializeWithProps(propBuffer) {
     skyLayerActor = ActorList.createSkyLayerActor();
+    ActorList.setEnvironmentWeather(
+      propBuffer.weather.parsedData,
+      skyLayerActor,
+    );
     ActorList.createGroundSliceActor([testPlant1, testPlant2, testPlant3]);
 
-    easel = ActorList.createCanvasActor(p5.createVector(900, 220), {
-      x: 192,
-      y: 192,
-    });
-    const canvasComponent = easel.findComponent("CanvasComponent");
-    canvasComponent.setOnPlayerPaintingUpdate(
+    console.log("initializing with props", propBuffer);
+    easel = ActorList.createCanvasActor(
+      p5.createVector(900, 220),
+      {
+        x: 192,
+        y: 192,
+      },
       propBuffer.onPlayerPaintingUpdate,
     );
+    const canvasComponent = easel.findComponent("CanvasComponent");
+
     canvasComponent.setCurrentColor(propBuffer.currentColor);
     canvasComponent.setCurrentTool(propBuffer.currentTool);
     canvasComponent.setPaintingData(propBuffer.playerPainting);
@@ -91,6 +98,7 @@ export function sketch(p5) {
     console.log("updating props 1");
     if (!sketchIsSetup) initialPropsBuffer = props;
 
+    // TODO: don't update OR fixed the seed
     ActorList.setEnvironmentWeather(props.weather.parsedData, skyLayerActor);
 
     //I hate this, but it has to be like this for now...

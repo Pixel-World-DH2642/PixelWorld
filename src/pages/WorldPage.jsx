@@ -23,6 +23,8 @@ export function WorldPage({
   selectedColor,
   painting,
   weather,
+  weatherStatus,
+  weatherError,
   user,
   currentPanelState,
   onPanelStateChange,
@@ -158,83 +160,87 @@ export function WorldPage({
 
       {/* Loading state with transition */}
       <div
-        className={`transition-opacity duration-300 ${loading ? "opacity-100" : "opacity-0"} ${loading ? "" : "hidden"} flex justify-center items-center h-[50vh]`}
+        className={`transition-opacity duration-300 ${loading || weatherStatus === "loading" ? "opacity-100" : "opacity-0"} ${loading || weatherStatus === "loading" ? "" : "hidden"} flex justify-center items-center h-[50vh]`}
       >
         {Suspense("loading", "Loading pixel world...")}
       </div>
 
       {/* Main content with transitions */}
-      <div
-        className={`transition-opacity duration-300 ${contentOpacity === 0 ? "opacity-0" : "opacity-100"} ${loading ? "hidden" : ""}`}
-      >
-        <div className="flex flex-col items-center justify-center text-center gap-4 pb-8 pt-4">
-          <div className="flex w-full items-stretch justify-between gap-4 h-auto">
-            <div
-              id="viewport-container"
-              className="border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0"
-            >
-              <ReactP5Wrapper
-                sketch={sketch}
-                weather={weather}
-                currentColor={currentColor}
-                currentTool={currentTool}
-                onPlayerPaintingUpdate={onPlayerPaintingUpdate}
-                playerPainting={playerPainting}
-              />
-            </div>
-            <div className="border-4 rounded-xl flex-1 flex flex-shrink-0 flex-col w-264 items-center justify-center overflow-hidden">
-              {/* Dynamic panel content */}
-              {renderCurrentPanel()}
+      {!loading && !error && weatherStatus === "succeeded" && (
+        <div
+          className={`transition-opacity duration-300 ${contentOpacity === 0 ? "opacity-0" : "opacity-100"} ${loading || weatherStatus === "loading" ? "hidden" : ""}`}
+        >
+          <div className="flex flex-col items-center justify-center text-center gap-4 pb-8 pt-4">
+            <div className="flex w-full items-stretch justify-between gap-4 h-auto">
+              <div
+                id="viewport-container"
+                className="border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0"
+              >
+                <ReactP5Wrapper
+                  sketch={sketch}
+                  weather={weather}
+                  currentColor={currentColor}
+                  currentTool={currentTool}
+                  onPlayerPaintingUpdate={onPlayerPaintingUpdate}
+                  playerPainting={playerPainting}
+                />
+              </div>
+              <div className="border-4 rounded-xl flex-1 flex flex-shrink-0 flex-col w-264 items-center justify-center overflow-hidden">
+                {/* Dynamic panel content */}
+                {renderCurrentPanel()}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="text-red-500">Debug UI for panel switching</div>
-        {/* Debug panel for switching between states */}
-        <div className="mb-4">
-          <ButtonGroup variant="contained" aria-label="Panel switcher">
+          <div className="text-red-500">Debug UI for panel switching</div>
+          {/* Debug panel for switching between states */}
+          <div className="mb-4">
+            <ButtonGroup variant="contained" aria-label="Panel switcher">
+              <Button
+                color={
+                  currentPanelState === PANEL_STATES.WEATHER
+                    ? "primary"
+                    : "inherit"
+                }
+                onClick={() => onPanelStateChange(PANEL_STATES.WEATHER)}
+              >
+                Weather
+              </Button>
+              <Button
+                color={
+                  currentPanelState === PANEL_STATES.EDITOR
+                    ? "primary"
+                    : "inherit"
+                }
+                onClick={() => onPanelStateChange(PANEL_STATES.EDITOR)}
+              >
+                Editor
+              </Button>
+              <Button
+                color={
+                  currentPanelState === PANEL_STATES.QUOTE
+                    ? "primary"
+                    : "inherit"
+                }
+                onClick={() => onPanelStateChange(PANEL_STATES.QUOTE)}
+              >
+                Quote
+              </Button>
+            </ButtonGroup>
+          </div>
+          {/* Debug UI for navigate to museum */}
+          <div className="mb-4">
             <Button
-              color={
-                currentPanelState === PANEL_STATES.WEATHER
-                  ? "primary"
-                  : "inherit"
-              }
-              onClick={() => onPanelStateChange(PANEL_STATES.WEATHER)}
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/museum")}
             >
-              Weather
+              Go to Museum
             </Button>
-            <Button
-              color={
-                currentPanelState === PANEL_STATES.EDITOR
-                  ? "primary"
-                  : "inherit"
-              }
-              onClick={() => onPanelStateChange(PANEL_STATES.EDITOR)}
-            >
-              Editor
-            </Button>
-            <Button
-              color={
-                currentPanelState === PANEL_STATES.QUOTE ? "primary" : "inherit"
-              }
-              onClick={() => onPanelStateChange(PANEL_STATES.QUOTE)}
-            >
-              Quote
-            </Button>
-          </ButtonGroup>
+          </div>
+          <div className="mb-4"></div>
         </div>
-        {/* Debug UI for navigate to museum */}
-        <div className="mb-4">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate("/museum")}
-          >
-            Go to Museum
-          </Button>
-        </div>
-        <div className="mb-4"></div>
-      </div>
+      )}
 
       <SubmitModal
         painting={playerPainting}
