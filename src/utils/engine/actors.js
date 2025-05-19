@@ -1,13 +1,30 @@
 import { createMicroEngine } from "./microEngine";
 import { TOOL_MODE } from "../../app/slices/pixelEditorSlice";
 
+const WorldZoneData = {
+  canvasPos: { x: 0, y: 0 },
+  canvasZoneWidth: 200,
+  museumPos: { x: 0, y: 0 },
+  museumZoneWidth: 200,
+  quotePos: { x: 0, y: 0 },
+  quoteZoneWidth: 200,
+  weatherZonePos: { x: 0, y: 0 },
+  weatherZoneWidth: 200,
+};
+
+//WE can pass these into the zone component to get callbacks on enter
+const canvasZoneData = {
+  name: "canvas",
+  pos: { x: 0, y: 0 },
+  width: 200,
+};
+
 export function createActorList(p, MicroEngine) {
   const mainScene = MicroEngine.CreateScene();
 
   function createCanvasActor(pos, size, onPlayerPaintingUpdateCB) {
     const actor = MicroEngine.Components.Actor(pos);
     actor.addComponent(CanvasComponent, null);
-    console.log("canvas actor");
 
     let onPlayerPaintingUpdate = onPlayerPaintingUpdateCB;
 
@@ -22,7 +39,7 @@ export function createActorList(p, MicroEngine) {
       };
 
       let currentTool = TOOL_MODE.PENCIL;
-
+      let paintingEdited = false;
       let pixelArray = [];
 
       for (let x = 0; x < rows; x++) {
@@ -38,13 +55,22 @@ export function createActorList(p, MicroEngine) {
         const mx = p.mouseX - MicroEngine.CameraPanning.x;
         const my = p.mouseY - MicroEngine.CameraPanning.y;
 
-        if (mx < pos.x - size.x / 2 || mx > pos.x + size.x / 2) return;
-        if (my < pos.y - size.y / 2 || my > pos.y + size.y / 2) return;
+        if (
+          mx < pos.x - size.x / 2 ||
+          mx > pos.x + size.x / 2 ||
+          my < pos.y - size.y / 2 ||
+          my > pos.y + size.y / 2
+        ) {
+          if (paintingEdited) {
+            paintingEdited = false;
+            inputComplete();
+          }
+        }
 
         const pixCoordX = Math.floor((mx - pos.x + size.x / 2) / pixelSize);
         const pixCoordY = Math.floor((my - pos.y + size.y / 2) / pixelSize);
 
-        // TODO: check if reading undefined otherwise the canvas freezes
+        /*
         if (pixCoordX < 0 || pixCoordX >= pixelArray.length) return;
         if (
           pixCoordY < 0 ||
@@ -52,8 +78,10 @@ export function createActorList(p, MicroEngine) {
           pixCoordY >= pixelArray[pixCoordX].length
         )
           return;
+          */
 
-        console.log("canvas actor", pixCoordX, pixCoordY);
+        paintingEdited = true;
+
         // console.log(pixelArray); // Logging large/frozen arrays can sometimes be problematic
 
         // Immutable update of the pixelArray
@@ -78,7 +106,8 @@ export function createActorList(p, MicroEngine) {
 
       function inputComplete() {
         //React redux
-        if (!pixelArray) return;
+        if (!paintingEdited) return;
+        paintingEdited = false;
         onPlayerPaintingUpdate(pixelArray);
       }
 
@@ -121,7 +150,7 @@ export function createActorList(p, MicroEngine) {
         //p5.stroke(0);
         p.strokeWeight(4);
         p.stroke(150, 120, 20);
-        p.rect(pos.x, pos.y, size.x, size.y);
+        p.rect(pos.x, pos.y, size.x + 4, size.y + 4);
         p.noStroke();
 
         if (!pixelArray) return;
@@ -166,7 +195,9 @@ export function createActorList(p, MicroEngine) {
   }
 
   function createMainCharacterActor(spriteSheet, spriteData) {
-    const actor = MicroEngine.Components.Actor(p.createVector(450, 50));
+    const actor = MicroEngine.Components.Actor(p.createVector(450, 50), {
+      name: "player",
+    });
     actor.addComponent(MicroEngine.Components.RectCollider, {
       geometrySettings: { size: { x: 20, y: 50 } },
     });
@@ -199,21 +230,6 @@ export function createActorList(p, MicroEngine) {
     });
     actor.addComponent(GroundMoveComponent);
 
-    /*
-    actor.addComponent(MicroEngine.Components.Renderer, {
-      render: function () {
-        p5.stroke(0);
-        p5.fill(45);
-        p5.rect(
-          actor.pos.x,
-          actor.pos.y,
-          actor.colliderComponent.colliderGeometry.size.x,
-          actor.colliderComponent.colliderGeometry.size.y,
-        );
-      },
-    });
-    */
-
     actor.addComponent(MicroEngine.Components.Animator, { scale: 4 });
     const animatorRef = actor.findComponent("Animation");
     const rightFrames = animatorRef.extractFramesFromSpriteSheet(
@@ -232,15 +248,38 @@ export function createActorList(p, MicroEngine) {
     animatorRef.addAnimationState(leftFrames, "WalkLeft");
     animatorRef.addAnimationState([rightFrames[0]], "IdleRight");
     animatorRef.addAnimationState([leftFrames[0]], "IdleLeft");
-    animatorRef.setAnimationState("WalkRight");
-    //Add Idle...
+    animatorRef.setAnimationState("IdleRight");
 
     function GroundMoveComponent(settings, actor, pos) {
-      let groundMode = false;
+      let isGrounded = false;
+      let groundRef = null;
 
-      actor.colliderComponent.addEvent("begin", () => {
-        groundMode = true;
+      actor.colliderComponent.addEvent("begin", (collisionData) => {
+        //console.log(collisionData.otherCollider.parent.name);
+        if (collisionData.otherCollider.parent.name != "ground") return;
+        isGrounded = true;
+        if (!groundRef) groundRef = collisionData.otherCollider;
       });
+
+      function bettaMover(dir) {
+        if (isGrounded) {
+          const oldPos = actor.pos;
+          oldPos.x += dir;
+          oldPos.y = groundRef.colliderGeometry.querryGroundHeight(oldPos.x);
+          actor.pos = oldPos;
+          actor.forceComponent.useGravity = false;
+        }
+        let camX = MicroEngine.CameraPanning.x;
+        camX -= dir;
+        MicroEngine.CameraPanning = { x: camX };
+      }
+
+      function jump(force) {
+        actor.forceComponent.addForce(p.createVector(0, -force));
+        isGrounded = false;
+        actor.forceComponent.useGravity = true;
+        //console.log(actor.forceComponent.useGravity);
+      }
 
       function ghettoMover(dir) {
         const oldPos = actor.pos;
@@ -254,7 +293,8 @@ export function createActorList(p, MicroEngine) {
 
       return {
         type: "GroundMove",
-        move: ghettoMover,
+        move: bettaMover,
+        jump,
       };
     }
 
@@ -377,7 +417,9 @@ export function createActorList(p, MicroEngine) {
       },
     };
 
-    let actor = MicroEngine.Components.Actor(p.createVector(0, 0));
+    let actor = MicroEngine.Components.Actor(p.createVector(0, 0), {
+      name: "ground",
+    });
     actor.addComponent(MicroEngine.Components.GroundCollider, colliderSettings);
     actor.addComponent(GroundRendererComponent, {});
     mainScene.addActor(actor);

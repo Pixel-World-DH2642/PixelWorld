@@ -81,7 +81,7 @@ export function createMicroEngine(p5) {
     }
 
     function update() {
-      if (forceComponent)
+      if (forceComponent?.useGravity)
         forceComponent.addForce(p5.createVector(0, gravityStrength));
       components.forEach((component) => {
         if (component.update) component.update();
@@ -442,7 +442,7 @@ export function createMicroEngine(p5) {
           return otherCollider;
         },
         get otherCollider() {
-          return otherCollider;
+          return ownCollider;
         },
       },
     ];

@@ -366,12 +366,15 @@ const paintingsSlice = createSlice({
       state.playerPainting =
         state.undoBuffer[state.undoBuffer.length - 1 + state.undoIndex];
     },
-    getUndoStateHint: (state, action) => {
+    getUndoStateHint: (state) => {
       const undoHint = { canUndo: true, canRedo: true };
       if (state.undoIndex + state.undoBuffer.length <= 0)
         undoHint.canUndo = false;
       if (state.undoIndex >= 0) undoHint.canRedo = false;
       return undoHint;
+    },
+    clearPlayerPainting: (state) => {
+      //I dont even know what the painting data is anymore...
     },
     updateLikesCount: (state, action) => {
       const { paintingId, count } = action.payload;
@@ -520,6 +523,7 @@ export const {
   undoEdit,
   redoEdit,
   getUndoStateHint,
+  clearPlayerPainting,
   updateLikesCountByOne,
   updateLikesCount,
   saveQuoteToPlayerPainting,
