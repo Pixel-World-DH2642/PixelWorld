@@ -4,7 +4,7 @@ export function WeatherDashboard({ weather }) {
   }
 
   return (
-    <div className="w-full max-w-md font-pixel bg-gray-100 rounded-lg p-4">
+    <div className="w-full h-full max-w-md font-pixel bg-gray-100 rounded-lg p-4">
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
         🌦️ Weather Dashboard
       </h2>

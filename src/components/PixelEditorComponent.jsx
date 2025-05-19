@@ -169,9 +169,9 @@ export function PixelEditorComponent({
   ));
 
   return (
-    <div className="flex flex-col w-full h-full bg-gray-300 p-2 gap-2">
+    <div className="flex flex-col w-full h-full bg-gray-300 p-2 gap-2 overflow-y-scroll">
       <div className="flex items-center justify-between gap-2">
-        <div className="sm:text-xl">Pixel Editor</div>
+        <div className="text-xl">Pixel Editor</div>
         <div
           className={`text-sm flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md hover:bg-gray-200 active:bg-blue-300`}
           onClick={handleClearPlayerPainting}
@@ -180,14 +180,15 @@ export function PixelEditorComponent({
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-2 h-50">
+      <div className="flex flex-col items-center justify-center gap-2">
         <div
-          className="inline-grid grid-cols-4 gap-1 h-full aspect-square cursor-pointer p-4 bg-gray-100 rounded-md"
+          className="inline-grid grid-cols-4 gap-1 w-full aspect-square cursor-pointer p-4 bg-gray-100 rounded-md"
           onClick={handlePaletteClickedACB}
         >
           {paletteSlots}
         </div>
-        <div className="grid grid-cols-2 gap-1 text-sm rounded-md bg-gray-100 p-2 h-50 overflow-hidden">
+
+        <div className="grid grid-cols-3 gap-1 text-sm rounded-md bg-gray-100 p-2 w-full">
           <div className="flex flex-col items-center justify-center">
             <input
               type="color"
@@ -205,7 +206,7 @@ export function PixelEditorComponent({
             onClick={handleRandomizeClicked}
           >
             <img
-              className="w-8"
+              className="w-6"
               src="assets/random_icon_64x64.png"
               alt="randomize palette"
             />
@@ -220,7 +221,7 @@ export function PixelEditorComponent({
             onClick={handlePencilSelected}
           >
             <img
-              className="w-8"
+              className="w-6"
               src="assets/pencil_icon_64x64.png"
               alt="pencil"
             />
@@ -237,7 +238,7 @@ export function PixelEditorComponent({
             onClick={handleEraserSelected}
           >
             <img
-              className="w-8"
+              className="w-6"
               src="assets/eraser_icon_64x64_new.png"
               alt="eraser"
             />
@@ -253,7 +254,7 @@ export function PixelEditorComponent({
             }`}
             onClick={undoHint?.canUndo ? handleUndoEdit : undefined}
           >
-            <img className="w-8" src="assets/undo_icon_64x64.png" alt="undo" />
+            <img className="w-6" src="assets/undo_icon_64x64.png" alt="undo" />
             <p>Undo</p>
           </div>
 
@@ -265,7 +266,7 @@ export function PixelEditorComponent({
             }`}
             onClick={undoHint?.canRedo ? handleRedoEdit : undefined}
           >
-            <img className="w-8" src="assets/redo_icon_64x64.png" alt="redo" />
+            <img className="w-6" src="assets/redo_icon_64x64.png" alt="redo" />
             <p>Redo</p>
           </div>
         </div>

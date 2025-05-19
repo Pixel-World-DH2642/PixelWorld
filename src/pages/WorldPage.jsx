@@ -72,7 +72,7 @@ export function WorldPage({
   // Check screen width on mount and when window resizes
   useEffect(() => {
     function handleResize() {
-      setScreenTooSmall(window.innerWidth < 830);
+      setScreenTooSmall(window.outerWidth < 830);
     }
 
     // Initial check
@@ -192,33 +192,14 @@ export function WorldPage({
     switch (currentPanelState) {
       case PANEL_STATES.WEATHER:
         return (
-          <div className="w-full h-full border-4 rounded-xl flex flex-col items-center justify-center bg-gray-300 p-4 overflow-hidden">
+          <div className="w-85 h-full border-4 rounded-xl flex flex-col items-center justify-center bg-gray-300 p-4 overflow-hidden">
             <WeatherDashboard weather={weather} />
           </div>
         );
       case PANEL_STATES.EDITOR:
         return (
-          <div className="w-full h-full flex flex-col items-center overflow-hidden gap-4">
-            <div className="border-4 rounded-xl flex flex-col items-center justify-center w-full h-[260px] bg-gray-300 pb-2 overflow-hidden">
-              <PixelEditorComponent
-                colorPaletteArray={colorPaletteArray}
-                currentColor={currentColor}
-                currentTool={currentTool}
-                selectedPaletteSlot={selectedPaletteSlot}
-                onToolSelect={onToolSelect}
-                onColorSelect={onColorSelect}
-                onPaletteUpdated={onPaletteUpdated}
-                onPaletteInitialize={onPaletteInitialize}
-                onSlotSelected={onSlotSelected}
-                //Painting Slice
-                onUndoEdit={onUndoEdit}
-                onRedoEdit={onRedoEdit}
-                onGetUndoStateHint={onGetUndoStateHint}
-                onPlayerPaintingUpdate={onPlayerPaintingUpdate}
-                undoHint={undoHint}
-              />
-            </div>
-            <div className="flex flex-col h-[132px] items-center justify-between w-full border-4 rounded-xl bg-gray-300 p-2 gap-2">
+          <div className="w-full h-full flex overflow-hidden gap-4 justify-end">
+            <div className="flex flex-col items-center justify-between border-4 rounded-xl bg-gray-300 p-2 gap-2 self-start w-100">
               <div className="w-full h-full flex flex-col items-start gap-1 rounded-md bg-gray-100 p-2 overflow-y-scroll">
                 <p
                   className={`text-sm text-start text-wrap wrap-break-word ${playerPainting.savedQuote ? "" : "italic text-gray-500"}`}
@@ -256,11 +237,30 @@ export function WorldPage({
                 </Button>
               </div>
             </div>
+            <div className="w-70 h-full border-4 rounded-xl flex flex-col items-center justify-center bg-gray-300 overflow-hidden">
+              <PixelEditorComponent
+                colorPaletteArray={colorPaletteArray}
+                currentColor={currentColor}
+                currentTool={currentTool}
+                selectedPaletteSlot={selectedPaletteSlot}
+                onToolSelect={onToolSelect}
+                onColorSelect={onColorSelect}
+                onPaletteUpdated={onPaletteUpdated}
+                onPaletteInitialize={onPaletteInitialize}
+                onSlotSelected={onSlotSelected}
+                //Painting Slice
+                onUndoEdit={onUndoEdit}
+                onRedoEdit={onRedoEdit}
+                onGetUndoStateHint={onGetUndoStateHint}
+                onPlayerPaintingUpdate={onPlayerPaintingUpdate}
+                undoHint={undoHint}
+              />
+            </div>
           </div>
         );
       case PANEL_STATES.QUOTE:
         return (
-          <div className="w-full h-full border-4 rounded-xl flex flex-col items-center justify-center overflow-hidden">
+          <div className="w-85 h-full border-4 rounded-xl flex flex-col items-center justify-center overflow-hidden">
             <QuoteBoard
               user={user}
               quote={quote}
@@ -275,12 +275,11 @@ export function WorldPage({
         );
       case PANEL_STATES.MUSEUM:
         return (
-          <div className="w-full h-full border-4 rounded-xl flex flex-col items-center justify-center overflow-hidden bg-gray-300 p-4 gap-4">
-            <p>Use the arrow keys ➡️ ⬅️ ⬆️ to move around the world.</p>
-            {/* Museum button */}
+          <div className="w-full h-full flex justify-center items-end p-4">
             <Button
               variant="contained"
-              color="primary"
+              color="secondary"
+              size="large"
               onClick={() => navigate("/museum")}
               endIcon={<ArrowForwardIcon />}
             >
@@ -298,7 +297,7 @@ export function WorldPage({
   };
 
   return (
-    <div className="font-pixel mx-auto w-[772px] xl:w-full max-h-[calc(100vh-4rem)] px-8 pt-8 overflow-y-scroll">
+    <div className="font-pixel mx-auto w-[772px] max-h-[calc(100vh-4rem)] px-8 pt-8 overflow-y-scroll">
       <NavBar enableBack={false} title="Pixel World" />
       {/* Loading state with transition */}
       <div
@@ -313,13 +312,14 @@ export function WorldPage({
           className={`transition-opacity duration-300 ${contentOpacity === 0 ? "opacity-0" : "opacity-100"} ${loading || weatherStatus === "loading" || !isSketchReady ? "hidden" : ""}`}
         >
           <div className="flex flex-col items-center justify-center text-center gap-4 pb-4 pt-4">
-            <div className="flex w-full flex-col xl:flex-row items-stretch justify-between gap-4 h-auto">
+            <div className="relative w-full">
+              {/* Canvas container */}
               <div
                 id="viewport-container"
-                className="w-[708px] border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0 relative"
+                className="w-[708px] mx-auto border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0 relative"
               >
                 <button
-                  className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center z-10 border-2 border-black cursor-pointer"
+                  className="absolute top-2 left-2 w-8 h-8 bg-white rounded-full flex items-center justify-center z-10 border-2 border-black cursor-pointer"
                   onClick={() => {
                     setShowInstructions(true);
                     setIsPaintingLocked(true);
@@ -404,10 +404,14 @@ export function WorldPage({
                   onPanelStateChange={onPanelStateChange}
                 />
               </div>
-              <div className="flex-1 flex flex-shrink-0 flex-col w-full xl:w-[364px] h-full xl:h-[408px] items-center justify-center overflow-hidden">
-                {/* Dynamic panel content */}
-                {renderCurrentPanel()}
-              </div>
+
+              {/* Overlay panel on the right side */}
+              {currentPanelState !== PANEL_STATES.WORLD && (
+                <div className="absolute top-0 right-0 w-full h-full flex flex-shrink-0 flex-col items-end justify-center overflow-hidden animate-slide-in p-4">
+                  {/* Dynamic panel content */}
+                  {renderCurrentPanel()}
+                </div>
+              )}
             </div>
           </div>
 

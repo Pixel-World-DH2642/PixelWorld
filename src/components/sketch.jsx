@@ -64,6 +64,7 @@ export function sketch(p5) {
         onPanelStateChange(zoneState);
         break;
       case PANEL_STATES.WEATHER:
+        console.log("weather");
         onPanelStateChange(zoneState);
         break;
       case PANEL_STATES.WORLD:
@@ -90,7 +91,7 @@ export function sketch(p5) {
     ActorList.createGroundSliceActor([testPlant1, testPlant2, testPlant3]);
 
     easelActor = ActorList.createCanvasActor(
-      p5.createVector(1300, 220),
+      p5.createVector(1300, 270),
       {
         x: 192,
         y: 192,
@@ -103,15 +104,15 @@ export function sketch(p5) {
     canvasComponent.setCurrentTool(propBuffer.currentTool);
     canvasComponent.setPaintingData(propBuffer.playerPainting);
 
-    museumActor = ActorList.createImageActor(p5.createVector(150, 220), museum);
+    museumActor = ActorList.createImageActor(p5.createVector(150, 270), museum);
 
     billboardActor = ActorList.createImageActor(
-      p5.createVector(700, 220),
+      p5.createVector(700, 270),
       billboard,
       { scale: 1 },
     );
     weatherStationActor = ActorList.createImageActor(
-      p5.createVector(1800, 190),
+      p5.createVector(1800, 240),
       weatherStation,
       { scale: 1.5, tint: () => p5.tint(220) },
     );
@@ -192,7 +193,7 @@ export function sketch(p5) {
   };
 
   p5.setup = () => {
-    p5.createCanvas(700, 400);
+    p5.createCanvas(700, 450);
     p5.rectMode(p5.CENTER);
     p5.noSmooth();
     //Set unique seed per user!
@@ -248,7 +249,7 @@ export function sketch(p5) {
 
   p5.windowResized = () => {
     const parentElement = document.getElementById("viewport-container");
-    p5.resizeCanvas(Math.min(800, parentElement.clientWidth), 400);
+    p5.resizeCanvas(Math.min(800, parentElement.clientWidth), 450);
   };
 
   p5.mouseReleased = () => {
