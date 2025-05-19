@@ -89,6 +89,12 @@ export function sketch(p5) {
     canvasComponent.setCurrentColor(props.currentColor);
     canvasComponent.setCurrentTool(props.currentTool);
     canvasComponent.setPaintingData(props.playerPainting);
+
+    if (props.isPaintingLocked) {
+      canvasComponent.lockPainting();
+    } else {
+      canvasComponent.unlockPainting();
+    }
   }
 
   p5.preload = () => {

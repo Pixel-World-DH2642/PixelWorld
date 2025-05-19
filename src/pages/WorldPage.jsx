@@ -62,6 +62,7 @@ export function WorldPage({
   const [contentOpacity, setContentOpacity] = useState(loading ? 0 : 1);
   const prevLoadingRef = useRef(loading);
   const [isSketchReady, setIsSketchReady] = useState(false);
+  const [isPaintingLocked, setIsPaintingLocked] = useState(true);
 
   const navigate = useNavigate();
 
@@ -107,6 +108,29 @@ export function WorldPage({
       prevLoadingRef.current = loading;
     }
   }, [loading]);
+
+  useEffect(
+    // check if panel state is editor, if yes unlock painting
+    () => {
+      if (currentPanelState === PANEL_STATES.EDITOR) {
+        setIsPaintingLocked(false);
+      } else {
+        setIsPaintingLocked(true);
+      }
+    },
+    [currentPanelState],
+  );
+
+  useEffect(() => {
+    // Check if the modal is open or closed
+    if (isModalOpen) {
+      // If the modal is open, lock the painting
+      setIsPaintingLocked(true);
+    } else {
+      // If the modal is closed, unlock the painting
+      setIsPaintingLocked(false);
+    }
+  }, [isModalOpen]);
 
   if (authStatus !== "loading" && !user) {
     console.log("Auth status: ", authStatus);
@@ -234,6 +258,7 @@ export function WorldPage({
                   onPlayerPaintingUpdate={onPlayerPaintingUpdate}
                   playerPainting={playerPainting}
                   onSketchReady={() => setIsSketchReady(true)}
+                  isPaintingLocked={isPaintingLocked}
                 />
               </div>
               <div className="flex-1 flex flex-shrink-0 flex-col w-264 items-center justify-center overflow-hidden">
