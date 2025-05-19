@@ -46,12 +46,15 @@ export const checkUserQuoteData = createAsyncThunk(
       if (userQuoteDoc.exists()) {
         const data = userQuoteDoc.data();
 
+        // Convert Firestore timestamp to number if it exists
+        const lastFetchTimestamp = data.lastFetchTimestamp
+          ? data.lastFetchTimestamp.toDate?.()
+            ? data.lastFetchTimestamp.toDate().getTime()
+            : data.lastFetchTimestamp
+          : null;
+
         // Check if it's a new day to reset the counter
-        if (
-          isNewDay(
-            data.lastFetchTimestamp?.toDate?.() || data.lastFetchTimestamp,
-          )
-        ) {
+        if (isNewDay(lastFetchTimestamp)) {
           return {
             quotesRemaining: DAILY_QUOTE_LIMIT,
             lastFetchTimestamp: null,
@@ -61,8 +64,7 @@ export const checkUserQuoteData = createAsyncThunk(
 
         return {
           quotesRemaining: data.quotesRemaining || 0,
-          lastFetchTimestamp:
-            data.lastFetchTimestamp?.toDate?.() || data.lastFetchTimestamp,
+          lastFetchTimestamp: lastFetchTimestamp,
           currentQuote: data.currentQuote || null,
         };
       } else {
@@ -158,8 +160,16 @@ const quoteSlice = createSlice({
       .addCase(fetchDailyQuote.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.currentQuote = action.payload.quote;
-        state.timestamp = action.payload.timestamp;
-        state.lastFetchTimestamp = Date.now(); // Use local time for display purposes
+
+        // If payload.timestamp is a Date object, convert to numeric timestamp
+        state.timestamp =
+          action.payload.timestamp instanceof Date
+            ? action.payload.timestamp.getTime()
+            : action.payload.timestamp;
+
+        // Store as numeric timestamp for serialization
+        state.lastFetchTimestamp = Date.now();
+
         state.quotesRemaining -= 1;
         state.error = null;
         state.isQuoteSaved = false; // Reset saved state after fetching a new quote

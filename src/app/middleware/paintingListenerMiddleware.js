@@ -176,9 +176,9 @@ paintingListenerMiddleware.startListening({
       listenerApi.getState().paintings.playerPainting.savedQuote,
     );
     if (
-      listenerApi.getState().paintings.playerPainting.savedQuote.content ===
+      listenerApi.getState().paintings.playerPainting.savedQuote?.content ===
         listenerApi.getState().quote.currentQuote.content &&
-      listenerApi.getState().paintings.playerPainting.savedQuote.author ===
+      listenerApi.getState().paintings.playerPainting.savedQuote?.author ===
         listenerApi.getState().quote.currentQuote.author
     ) {
       console.log("Saved quote matches current quote, updating state");

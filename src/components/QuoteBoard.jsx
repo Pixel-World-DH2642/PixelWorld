@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 export function QuoteBoard({
   user,
   quote,
-  includeQuote,
+  includeQuote = false,
   onGetNewQuote,
   onSaveQuoteToPainting,
   quotesRemaining,
@@ -62,7 +62,12 @@ export function QuoteBoard({
           </div>
           <div className="mb-2">
             <label className="flex items-center cursor-pointer">
-              <input type="checkbox" className="mr-2 h-4 w-4" disabled={true} />
+              <input
+                type="checkbox"
+                className="mr-2 h-4 w-4"
+                disabled={true}
+                checked={false}
+              />
               <span className="text-sm">Include quote with submission</span>
             </label>
           </div>
