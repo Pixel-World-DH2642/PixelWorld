@@ -380,6 +380,8 @@ export function WorldPage({
                   playerPainting={playerPainting}
                   onSketchReady={() => setIsSketchReady(true)}
                   isPaintingLocked={isPaintingLocked}
+                  currentPanelState={currentPanelState}
+                  onPanelStateChange={onPanelStateChange}
                 />
               </div>
               <div className="flex-1 flex flex-shrink-0 flex-col w-full xl:w-[364px] h-full xl:h-[408px] items-center justify-center overflow-hidden">
