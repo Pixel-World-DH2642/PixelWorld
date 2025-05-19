@@ -2,13 +2,17 @@ export function WeatherDashboard({ weather }) {
   if (!weather) {
     return <div>Loading weather data...</div>;
   }
-  //const weather = useSelector((state) => state.weather);
 
   return (
-    <div className="w-full max-w-md font-pixel bg-gray-100 rounded-lg p-6">
+    <div className="w-full max-w-md font-pixel bg-gray-100 rounded-lg p-4">
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
         🌦️ Weather Dashboard
       </h2>
+
+      <p className="text-sm text-gray-600 mb-4 text-center w-full">
+        The weather in your location affects your PixelWorld environment. Let
+        the real-world conditions inspire your pixel art creation!
+      </p>
 
       <div className="space-y-2 text-gray-700 text-lg">
         <p>
@@ -31,6 +35,10 @@ export function WeatherDashboard({ weather }) {
           🌧️ <span className="font-semibold">Precipitation:</span>{" "}
           {weather.weatherData?.meanPrecipitation} kg/m²/h
         </p>
+      </div>
+
+      <div className="mt-4 text-xs text-gray-500 italic">
+        Weather data is based on your current location and updates in real-time.
       </div>
     </div>
   );

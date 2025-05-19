@@ -262,7 +262,7 @@ export function WorldPage({
                   isPaintingLocked={isPaintingLocked}
                 />
               </div>
-              <div className="flex-1 flex flex-shrink-0 flex-col w-264 items-center justify-center overflow-hidden">
+              <div className="flex-1 flex flex-shrink-0 flex-col w-264 h-[408px] items-center justify-center overflow-hidden">
                 {/* Dynamic panel content */}
                 {renderCurrentPanel()}
               </div>
