@@ -366,14 +366,6 @@ const paintingsSlice = createSlice({
       state.playerPainting =
         state.undoBuffer[state.undoBuffer.length - 1 + state.undoIndex];
     },
-    getUndoStateHint: (state) => {
-      const undoHint = { canUndo: true, canRedo: true };
-      if (state.undoIndex + state.undoBuffer.length <= 0)
-        undoHint.canUndo = false;
-      if (state.undoIndex >= 0) undoHint.canRedo = false;
-      return undoHint;
-    },
-    clearPlayerPainting: (state) => {},
     updateLikesCount: (state, action) => {
       const { paintingId, count } = action.payload;
       if (state.entities[paintingId]) {
@@ -447,6 +439,8 @@ const paintingsSlice = createSlice({
       .addCase(fetchPlayerPainting.fulfilled, (state, action) => {
         state.loading = false;
         state.playerPainting = action.payload;
+        state.undoBuffer = [{ ...action.payload }];
+        state.undoIndex = 0;
       })
       .addCase(fetchPlayerPainting.rejected, (state, action) => {
         state.loading = false;
@@ -514,6 +508,14 @@ export const selectSelectedPainting = (state) => {
   return selectPaintingById(state, state.paintings.selectedPaintingId);
 };
 
+export const selectUndoStateHint = (state) => {
+  const { undoIndex, undoBuffer } = state.paintings;
+  const undoHint = { canUndo: true, canRedo: true };
+  if (undoIndex + undoBuffer.length <= 1) undoHint.canUndo = false;
+  if (undoIndex >= 0) undoHint.canRedo = false;
+  return undoHint;
+};
+
 export const {
   selectPainting,
   clearSelectedPainting,
@@ -521,7 +523,6 @@ export const {
   undoEdit,
   redoEdit,
   getUndoStateHint,
-  clearPlayerPainting,
   updateLikesCountByOne,
   updateLikesCount,
   saveQuoteToPlayerPainting,

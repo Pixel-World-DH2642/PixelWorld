@@ -2,6 +2,7 @@ import "../styles/global.css";
 import { TOOL_MODE } from "../app/slices/pixelEditorSlice";
 import { useState, useEffect } from "react";
 import { randomColor, hexToRgb } from "../utils/color";
+import { Button } from "@mui/material";
 
 export function PixelEditorComponent({
   //State Properties
@@ -20,6 +21,7 @@ export function PixelEditorComponent({
   onRedoEdit,
   onGetUndoStateHint,
   onPlayerPaintingUpdate,
+  undoHint,
 }) {
   //Tools
   //-Clear Drawing
@@ -168,7 +170,16 @@ export function PixelEditorComponent({
 
   return (
     <div className="flex flex-col w-full h-full bg-gray-300 p-2 gap-2">
-      <div className="sm:text-xl">Pixel Editor</div>
+      <div className="flex items-center justify-between gap-2">
+        <div className="sm:text-xl">Pixel Editor</div>
+        <div
+          className={`text-sm flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md hover:bg-gray-200 active:bg-blue-300`}
+          onClick={handleClearPlayerPainting}
+        >
+          Clear Canvas
+        </div>
+      </div>
+
       <div className="flex items-center justify-center gap-2 h-50">
         <div
           className="inline-grid grid-cols-4 gap-1 h-full aspect-square cursor-pointer p-4 bg-gray-100 rounded-md"
@@ -235,22 +246,24 @@ export function PixelEditorComponent({
             </p>
           </div>
           <div
-            className={`flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md hover:bg-gray-200 active:bg-blue-300`}
-            onClick={handleUndoEdit}
+            className={`flex flex-col items-center justify-center transition-transform duration-200 p-1 rounded-md ${
+              undoHint?.canUndo
+                ? "cursor-pointer hover:bg-gray-200 active:bg-blue-300"
+                : "opacity-50 cursor-not-allowed"
+            }`}
+            onClick={undoHint?.canUndo ? handleUndoEdit : undefined}
           >
             <img className="w-8" src="assets/undo_icon_64x64.png" alt="undo" />
             <p>Undo</p>
           </div>
+
           <div
-            className={`flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md hover:bg-gray-200 active:bg-blue-300`}
-            onClick={handleClearPlayerPainting}
-          >
-            <button>Clear</button>
-            <p>Clear</p>
-          </div>
-          <div
-            className={`flex flex-col items-center justify-center cursor-pointer transition-transform duration-200 p-1 rounded-md hover:bg-gray-200 active:bg-blue-300`}
-            onClick={handleRedoEdit}
+            className={`flex flex-col items-center justify-center transition-transform duration-200 p-1 rounded-md ${
+              undoHint?.canRedo
+                ? "cursor-pointer hover:bg-gray-200 active:bg-blue-300"
+                : "opacity-50 cursor-not-allowed"
+            }`}
+            onClick={undoHint?.canRedo ? handleRedoEdit : undefined}
           >
             <img className="w-8" src="assets/redo_icon_64x64.png" alt="redo" />
             <p>Redo</p>

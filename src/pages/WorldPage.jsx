@@ -53,9 +53,10 @@ export function WorldPage({
   onUndoEdit,
   onRedoEdit,
   onGetUndoStateHint,
-  onClearPlayerPainting,
   //Painting Props
   playerPainting,
+  // Undo state
+  undoHint,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [contentOpacity, setContentOpacity] = useState(loading ? 0 : 1);
@@ -140,6 +141,7 @@ export function WorldPage({
                 onRedoEdit={onRedoEdit}
                 onGetUndoStateHint={onGetUndoStateHint}
                 onPlayerPaintingUpdate={onPlayerPaintingUpdate}
+                undoHint={undoHint}
               />
             </div>
             <div className="flex flex-col h-[132px] items-center justify-between w-full border-4 rounded-xl bg-gray-300 p-2 gap-2">
@@ -165,7 +167,7 @@ export function WorldPage({
                   onClick={() => {
                     onRemoveQuoteFromPainting();
                   }}
-                  disabled={!playerPainting.savedQuote}
+                  disabled={!playerPainting.savedQuote ? true : false}
                 >
                   Remove Quote
                 </Button>

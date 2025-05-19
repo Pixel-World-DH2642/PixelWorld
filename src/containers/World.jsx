@@ -13,9 +13,9 @@ import {
   undoEdit,
   redoEdit,
   getUndoStateHint,
-  clearPlayerPainting,
   saveQuoteToPlayerPainting,
   removeQuoteFromPlayerPainting,
+  selectUndoStateHint,
 } from "../app/slices/paintingsSlice";
 import {
   setCurrentTool,
@@ -63,6 +63,9 @@ export const World = connect(
       quoteStatus: state.quote.status,
       quoteError: state.quote.error,
       includeQuote: state.quote.isQuoteSaved,
+
+      //Undo state
+      undoHint: selectUndoStateHint(state),
     };
   },
   function mapDispatchToProps(dispatch) {
@@ -106,7 +109,6 @@ export const World = connect(
       onUndoEdit: () => dispatch(undoEdit()),
       onRedoEdit: () => dispatch(redoEdit()),
       onGetUndoStateHint: () => dispatch(getUndoStateHint()),
-      onClearPlayerPainting: () => dispatch(clearPlayerPainting()),
       onSubmitPainting: (painting) => {
         dispatch(uploadPainting(painting));
       },
