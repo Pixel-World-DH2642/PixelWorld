@@ -14,6 +14,7 @@ import {
   redoEdit,
   getUndoStateHint,
   saveQuoteToPlayerPainting,
+  removeQuoteFromPlayerPainting,
 } from "../app/slices/paintingsSlice";
 import {
   setCurrentTool,
@@ -70,6 +71,10 @@ export const World = connect(
       onSaveQuoteToPainting: (isChecked, quote) => {
         dispatch(saveQuoteToPlayerPainting({ isChecked, quote }));
         dispatch(setQuoteSaved(isChecked));
+      },
+      onRemoveQuoteFromPainting: (quote) => {
+        dispatch(removeQuoteFromPlayerPainting());
+        dispatch(setQuoteSaved(false));
       },
 
       onGetWeather: () => dispatch(getWeatherData()),

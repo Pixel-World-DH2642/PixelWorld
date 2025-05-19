@@ -389,6 +389,9 @@ const paintingsSlice = createSlice({
         state.playerPainting.savedQuote = null;
       }
     },
+    removeQuoteFromPlayerPainting: (state) => {
+      state.playerPainting.savedQuote = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -519,5 +522,6 @@ export const {
   updateLikesCountByOne,
   updateLikesCount,
   saveQuoteToPlayerPainting,
+  removeQuoteFromPlayerPainting,
 } = paintingsSlice.actions;
 export default paintingsSlice.reducer;

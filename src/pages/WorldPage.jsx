@@ -7,6 +7,7 @@ import { NavBar } from "../components/NavBar";
 import { SubmitModal } from "../components/SubmitModal";
 import { Button, ButtonGroup } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { QuoteBoard } from "../components/QuoteBoard";
 import { PANEL_STATES } from "../app/slices/worldSlice";
@@ -21,7 +22,6 @@ export function WorldPage({
   quoteError,
   includeQuote,
   selectedColor,
-  painting,
   weather,
   weatherStatus,
   weatherError,
@@ -32,10 +32,7 @@ export function WorldPage({
   onGetQuote,
   onCheckQuoteData,
   onSaveQuoteToPainting,
-  onSelectQuote,
-  onDeleteQuote,
-  onDrawPixel,
-  onSelectColor,
+  onRemoveQuoteFromPainting,
   onSubmitPainting,
   onResetPainting,
   paintingSubmission,
@@ -107,47 +104,85 @@ export function WorldPage({
   const renderCurrentPanel = () => {
     switch (currentPanelState) {
       case PANEL_STATES.WEATHER:
-        return <WeatherDashboard weather={weather} />;
+        return (
+          <div className="w-full h-full border-4 rounded-xl flex flex-col items-center justify-center bg-gray-300 p-4 overflow-hidden">
+            <WeatherDashboard weather={weather} />
+          </div>
+        );
       case PANEL_STATES.EDITOR:
         return (
-          <div className="flex flex-col items-center justify-center h-full w-full bg-gray-300 pb-2">
-            <PixelEditorComponent
-              colorPaletteArray={colorPaletteArray}
-              currentColor={currentColor}
-              currentTool={currentTool}
-              selectedPaletteSlot={selectedPaletteSlot}
-              onToolSelect={onToolSelect}
-              onColorSelect={onColorSelect}
-              onPaletteUpdated={onPaletteUpdated}
-              onPaletteInitialize={onPaletteInitialize}
-              onSlotSelected={onSlotSelected}
-              //Painting Slice
-              onUndoEdit={onUndoEdit}
-              onRedoEdit={onRedoEdit}
-              onGetUndoStateHint={onGetUndoStateHint}
-            />
-            <Button
-              variant="contained"
-              color="success"
-              endIcon={<SendIcon />}
-              onClick={() => setIsModalOpen(true)}
-            >
-              Submit Painting
-            </Button>
+          <div className="w-full h-full flex flex-col items-center overflow-hidden gap-4">
+            <div className="border-4 rounded-xl flex flex-col items-center justify-center w-full h-[260px] bg-gray-300 pb-2 overflow-hidden">
+              <PixelEditorComponent
+                colorPaletteArray={colorPaletteArray}
+                currentColor={currentColor}
+                currentTool={currentTool}
+                selectedPaletteSlot={selectedPaletteSlot}
+                onToolSelect={onToolSelect}
+                onColorSelect={onColorSelect}
+                onPaletteUpdated={onPaletteUpdated}
+                onPaletteInitialize={onPaletteInitialize}
+                onSlotSelected={onSlotSelected}
+                //Painting Slice
+                onUndoEdit={onUndoEdit}
+                onRedoEdit={onRedoEdit}
+                onGetUndoStateHint={onGetUndoStateHint}
+              />
+            </div>
+            <div className="flex flex-col h-[132px] items-center justify-between w-full border-4 rounded-xl bg-gray-300 p-1 gap-1">
+              <div className="w-full h-full flex flex-col items-start gap-1 rounded-md bg-gray-100 p-2 overflow-y-scroll">
+                <p
+                  className={`text-sm text-start text-wrap wrap-break-word ${playerPainting.savedQuote ? "" : "italic text-gray-500"}`}
+                >
+                  {playerPainting.savedQuote?.content ||
+                    "No quote saved for this painting yet."}
+                </p>
+                <p className="text-xs italic text-end self-end">
+                  {playerPainting.savedQuote
+                    ? "- " + playerPainting.savedQuote?.author
+                    : ""}
+                </p>
+              </div>
+              <div className="flex items-center w-full justify-between">
+                <Button
+                  variant="outlined"
+                  color="error"
+                  size="small"
+                  endIcon={<DeleteIcon />}
+                  onClick={() => {
+                    onRemoveQuoteFromPainting();
+                  }}
+                  disabled={!playerPainting.savedQuote}
+                >
+                  Remove Quote
+                </Button>
+                <Button
+                  variant="contained"
+                  color="success"
+                  size="small"
+                  endIcon={<SendIcon />}
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  Submit Painting
+                </Button>
+              </div>
+            </div>
           </div>
         );
       case PANEL_STATES.QUOTE:
         return (
-          <QuoteBoard
-            user={user}
-            quote={quote}
-            onGetNewQuote={getNewQuote}
-            quotesRemaining={quotesRemaining}
-            quoteStatus={quoteStatus}
-            quoteError={quoteError}
-            includeQuote={includeQuote} // Default value, or use state if you implement this
-            onSaveQuoteToPainting={onSaveQuoteToPainting}
-          />
+          <div className="w-full h-full border-4 rounded-xl flex flex-col items-center justify-center overflow-hidden">
+            <QuoteBoard
+              user={user}
+              quote={quote}
+              onGetNewQuote={getNewQuote}
+              quotesRemaining={quotesRemaining}
+              quoteStatus={quoteStatus}
+              quoteError={quoteError}
+              includeQuote={includeQuote} // Default value, or use state if you implement this
+              onSaveQuoteToPainting={onSaveQuoteToPainting}
+            />
+          </div>
         );
       default:
         return <div>Invalid panel state</div>;
@@ -185,7 +220,7 @@ export function WorldPage({
                   playerPainting={playerPainting}
                 />
               </div>
-              <div className="border-4 rounded-xl flex-1 flex flex-shrink-0 flex-col w-264 items-center justify-center overflow-hidden">
+              <div className="flex-1 flex flex-shrink-0 flex-col w-264 items-center justify-center overflow-hidden">
                 {/* Dynamic panel content */}
                 {renderCurrentPanel()}
               </div>
