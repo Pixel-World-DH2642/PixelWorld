@@ -28,7 +28,7 @@ export function sketch(p5) {
     weatherStationActor;
 
   //Preload items
-  let testPlant1, testPlant2, testPlant3;
+  let testPlant1, testPlant2, testPlant3, extraplant1, extraplant2, extraplant3;
   let mainCharSpriteSheet, mainCharSpriteData;
   let museum, billboard, weatherStation;
 
@@ -86,7 +86,14 @@ export function sketch(p5) {
       propBuffer.weather.parsedData,
       skyLayerActor,
     );
-    ActorList.createGroundSliceActor([testPlant1, testPlant2, testPlant3]);
+    ActorList.createGroundSliceActor([
+      testPlant1,
+      testPlant2,
+      testPlant3,
+      extraplant1,
+      extraplant2,
+      extraplant3,
+    ]);
 
     easelActor = ActorList.createCanvasActor(
       p5.createVector(1300, 220),
@@ -171,6 +178,9 @@ export function sketch(p5) {
     testPlant1 = p5.loadImage("/assets/flower01.png");
     testPlant2 = p5.loadImage("/assets/grass01.png");
     testPlant3 = p5.loadImage("/assets/moss01.png");
+    extraplant1 = p5.loadImage("/assets/extraplant1.png");
+    extraplant2 = p5.loadImage("/assets/extraplant2.png");
+    extraplant3 = p5.loadImage("/assets/extraplant3.png");
     mainCharSpriteSheet = p5.loadImage("/assets/game_assets/F_01.png");
     mainCharSpriteData = p5.loadJSON("/assets/game_assets/character.json");
     museum = p5.loadImage("/assets/museum.png");
@@ -212,11 +222,11 @@ export function sketch(p5) {
     MicroEngine.EngineLoop();
 
     if (p5.keyIsDown(p5.LEFT_ARROW)) {
-      mainCharacter.findComponent("Animation").setAnimationState("WalkLeft");
+      //mainCharacter.findComponent("Animation").setAnimationState("WalkLeft");
       mainCharacter.findComponent("GroundMove").move(-2);
       lastKeyPress = p5.LEFT_ARROW;
     } else if (p5.keyIsDown(p5.RIGHT_ARROW)) {
-      mainCharacter.findComponent("Animation").setAnimationState("WalkRight");
+      //mainCharacter.findComponent("Animation").setAnimationState("WalkRight");
       mainCharacter.findComponent("GroundMove").move(2);
       lastKeyPress = p5.RIGHT_ARROW;
     } else if (lastKeyPress == p5.LEFT_ARROW) {

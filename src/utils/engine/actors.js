@@ -360,6 +360,9 @@ export function createActorList(p5, MicroEngine) {
           let camX = MicroEngine.CameraPanning.x;
           camX += xBuffer - actor.pos.x;
           MicroEngine.CameraPanning = { x: camX };
+          if (dir < 0)
+            actor.findComponent("Animation").setAnimationState("WalkLeft");
+          else actor.findComponent("Animation").setAnimationState("WalkRight");
         }
       }
 
@@ -422,7 +425,7 @@ export function createActorList(p5, MicroEngine) {
           const ypos = actor
             .findComponent("Collider")
             .colliderGeometry.querryGroundHeight(xpos);
-          const plantIndex = Math.floor(p5.random(3));
+          const plantIndex = Math.floor(p5.random(6));
           plantArr.push({ xpos, ypos, plantIndex });
         }
 
@@ -516,124 +519,6 @@ export function createActorList(p5, MicroEngine) {
     return actor;
   }
 
-  ///%%%%%%%%%%%%%%%%%%%%%%%% WIP %%%%%%%%%%%%%%%%%%%%%%%%///
-
-  function TileGroundRendererComponent(settings, actor, pos) {
-    //Layers
-    //Add parallax as component
-    //Paralax manager
-    //Background system, slice up large images into smaller tiles
-    //Tile background component
-    //1 - Generate tile map image
-    //2 - Slice tile map into tile slices
-    //3 - Render tile map by managing which slices rendered based on player position
-
-    let tileStackWidth = settings.tileStackWidth;
-    let tileStackHeight = settings.tileStackHeight;
-    //To deterimine tile placement
-    let tileRules = []; //{tile: tileImage, rule: function}
-
-    let tileSize = settings?.tileSize || 10;
-    const hmap = settings.hmap;
-    let vertexSpacing = settings?.vertexSpacing || 20;
-
-    function drawTiles() {
-      //Params
-
-      //Panning
-      let xOffset = MicroEngine.CameraPanning.x / vertexSpacing;
-      let indexOffset = -Math.floor(xOffset);
-      xOffset = (xOffset + indexOffset) * vertexSpacing;
-      let indexWidth = Math.floor(pg.width / vertexSpacing) + indexOffset + 2;
-
-      for (let i = indexOffset; i < indexWidth; i++) {
-        pg.curveVertex(
-          (i - indexOffset) * vertexSpacing + xOffset,
-          heightMap[i],
-        );
-      }
-    }
-
-    return {
-      type: "TileRenderer",
-      initialize: function () {},
-      update: function () {},
-      render: drawTiles(),
-    };
-  }
-
-  function createGroundObject(settings) {
-    //---------------------------------------------Object vars
-    const hmap = MicroEngine.GenerateCurveData({
-      amplitude: 130,
-      baseHeight: p5.height - 20,
-      noiseIncrementStep: 0.1,
-      vertexIterations: 160,
-    });
-
-    //let tileStackWidth = settings.tileStackWidth;
-    //let tileStackHeight = settings.tileStackHeight;
-    //To deterimine tile placement
-    //let tileRules = []; //{tile: tileImage, rule: function}
-
-    let tileSize = settings?.tileSize || 8;
-    let vertexSpacing = tileSize;
-
-    //---------------------------------------------Initialization functions
-    function quantizeHeightMap(heightMap) {
-      heightMap.forEach((val) => (val = val - (val % tileSize)));
-    }
-    //---------------------------------------------Object initialization
-    quantizeHeightMap(hmap);
-
-    //---------------------------------------------Add/ define components
-    function TileGroundRendererComponent(settings, actor, pos) {
-      function drawTiles() {
-        //Params
-
-        //Panning
-        /*
-        let xOffset = MicroEngine.CameraPanning.x / vertexSpacing;
-        let indexOffset = -Math.floor(xOffset);
-        xOffset = (xOffset + indexOffset) * vertexSpacing;
-        let indexWidth = Math.floor(vertexSpacing) + indexOffset + 2;
-        */
-        MicroEngine.CameraPanning = { x: 0, y: 0 };
-        //console.log(MicroEngine.CameraPanning);
-        for (let i = 0; i < hmap.length; i += vertexSpacing) {
-          p5.stroke(0);
-          p5.strokeWeight(1);
-          /*
-          p5.rect(
-            (i - indexOffset) * vertexSpacing + xOffset,
-            hmap[i],
-            tileSize,
-            tileSize,
-          );
-          */
-
-          p5.rect(i * vertexSpacing, hmap[i], tileSize, tileSize);
-        }
-      }
-
-      return {
-        type: "TileRenderer",
-        initialize: function () {},
-        update: function () {},
-        render: drawTiles(),
-      };
-    }
-
-    let actor = MicroEngine.Components.Actor(p5.createVector(0, 0));
-    //actor.addComponent(MicroEngine.Components.GroundCollider, colliderSettings);
-    actor.addComponent(TileGroundRendererComponent, {});
-
-    //---------------------------------------------Return
-    mainScene.addActor(actor);
-    return actor;
-  }
-  ////////////////////////////////////////////////////////////
-
   function createSkyLayerActor() {
     const actor = MicroEngine.Components.Actor(p5.createVector());
     actor.addComponent(SkyRendererComponent);
@@ -653,7 +538,7 @@ export function createActorList(p5, MicroEngine) {
 
       function generateSky() {
         skyCanvas.background(baseColor.r, baseColor.g, baseColor.b);
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 12; i++) {
           skyCanvas.strokeWeight(20 + p5.random(-7, 30));
           skyCanvas.stroke(
             baseColor.r +

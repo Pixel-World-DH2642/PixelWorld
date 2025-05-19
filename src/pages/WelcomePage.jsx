@@ -187,7 +187,7 @@ export function WelcomePage({ user, onLogout }) {
             </div>
             <div className="flex pb-5">
               <img
-                src="\assets\David.png"
+                src="\assets\pixidave.png"
                 className=" flex w-13 h-13 sm:w-16 sm:h-16 aspect-square bg-gray-400 rounded-full border border-black "
               ></img>
               <div className="ml-4">
@@ -196,7 +196,8 @@ export function WelcomePage({ user, onLogout }) {
                 </h2>
                 <div className="max-w-xl">
                   <p className="text-sm text-gray-600">
-                    Creator of pixelated world and all the magic in it!
+                    Creator of MicroEngine game engine, the pixel editor and
+                    general design & dev.
                   </p>
                 </div>
               </div>
