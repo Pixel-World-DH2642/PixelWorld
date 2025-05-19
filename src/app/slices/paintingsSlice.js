@@ -373,9 +373,7 @@ const paintingsSlice = createSlice({
       if (state.undoIndex >= 0) undoHint.canRedo = false;
       return undoHint;
     },
-    clearPlayerPainting: (state) => {
-      //I dont even know what the painting data is anymore...
-    },
+    clearPlayerPainting: (state) => {},
     updateLikesCount: (state, action) => {
       const { paintingId, count } = action.payload;
       if (state.entities[paintingId]) {

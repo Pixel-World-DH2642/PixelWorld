@@ -64,6 +64,8 @@ export function createActorList(p, MicroEngine) {
           if (paintingEdited) {
             paintingEdited = false;
             inputComplete();
+          } else {
+            return;
           }
         }
 

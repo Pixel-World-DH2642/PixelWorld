@@ -19,7 +19,7 @@ export function PixelEditorComponent({
   onUndoEdit,
   onRedoEdit,
   onGetUndoStateHint,
-  onClearPlayerPainting,
+  onPlayerPaintingUpdate,
 }) {
   //Tools
   //-Clear Drawing
@@ -147,7 +147,10 @@ export function PixelEditorComponent({
   }
 
   function handleClearPlayerPainting() {
-    onClearPlayerPainting();
+    const emptyPixelArray = Array.from({ length: 16 }, () =>
+      Array(16).fill(null),
+    );
+    onPlayerPaintingUpdate(emptyPixelArray);
   }
 
   //Layout
