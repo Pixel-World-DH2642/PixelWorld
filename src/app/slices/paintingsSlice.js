@@ -335,14 +335,26 @@ const paintingsSlice = createSlice({
       state.selectedPaintingId = null;
     },
     updatePlayerPainting: (state, action) => {
+      // If we have undone some changes and now make a new edit,
+      // discard the redo history by slicing the buffer to keep only the valid history
+      if (state.undoIndex < 0) {
+        state.undoBuffer = state.undoBuffer.slice(
+          0,
+          state.undoBuffer.length + state.undoIndex,
+        );
+        state.undoIndex = 0; // Reset the undo index
+      }
+
+      // Now add the current state to the undo buffer
       state.undoBuffer = state.undoBuffer.slice();
       state.undoBuffer.push(state.playerPainting);
       if (state.undoBuffer.length > 30) state.undoBuffer.splice(0, 1);
+
+      // Update the player painting with the new data
       state.playerPainting.jagged = action.payload;
       // Convert jagged to colorMatrix
       state.playerPainting.colorMatrix = action.payload.flat();
       // and only take the hex
-      // console.log("Updating player painting:", state.playerPainting);
       state.playerPainting.colorMatrix = state.playerPainting.colorMatrix.map(
         (color) => color?.hex || null,
       );
