@@ -1,5 +1,6 @@
 import { createMicroEngine } from "../utils/engine/microEngine";
 import { createActorList } from "../utils/engine/actors";
+import { PANEL_STATES } from "../app/slices/worldSlice";
 
 export function sketch(p5) {
   //Globals
@@ -7,6 +8,8 @@ export function sketch(p5) {
   let objectsInitializedWithProps = false;
   let initialPropsBuffer = null;
   let canvasGarbageCollector;
+  let zoneState = PANEL_STATES.WORLD;
+  let onPanelStateChange = null;
 
   let handleSketchReady = null;
 
@@ -17,13 +20,18 @@ export function sketch(p5) {
   //MicroEngine.LoadScene(mainScene);
 
   //############################--DEFINE ACTORS--############################//
-  let mainCharacter, easel, skyCanvas, scribble;
+  let mainCharacter,
+    easelActor,
+    skyLayerActor,
+    museumActor,
+    billboardActor,
+    weatherStationActor;
 
   //Preload items
   let testPlant1, testPlant2, testPlant3;
   let mainCharSpriteSheet, mainCharSpriteData;
+  let museum, billboard, weatherStation;
 
-  let skyLayerActor;
   //############################-----------------############################//
 
   //--------------------------------Helpers----------------------------------//
@@ -41,9 +49,36 @@ export function sketch(p5) {
     };
   }
 
+  function onZoneChange(zone) {
+    if (zoneState == zone || !onPanelStateChange) return;
+    //console.log(zone + " " + zoneState);
+    zoneState = zone;
+
+    //console.log(zone);
+
+    switch (zoneState) {
+      case PANEL_STATES.EDITOR:
+        onPanelStateChange(zoneState);
+        break;
+      case PANEL_STATES.QUOTE:
+        onPanelStateChange(zoneState);
+        break;
+      case PANEL_STATES.WEATHER:
+        onPanelStateChange(zoneState);
+        break;
+      case PANEL_STATES.WORLD:
+        onPanelStateChange(zoneState);
+        break;
+      case "MUSEUM":
+        //Navigate to museum...
+        break;
+    }
+  }
+
   function initializeWithProps(propBuffer) {
     //Handlers
     handleSketchReady = propBuffer.onSketchReady;
+    onPanelStateChange = propBuffer.onPanelStateChange;
 
     //Actors
     skyLayerActor = ActorList.createSkyLayerActor();
@@ -53,25 +88,66 @@ export function sketch(p5) {
     );
     ActorList.createGroundSliceActor([testPlant1, testPlant2, testPlant3]);
 
-    easel = ActorList.createCanvasActor(
-      p5.createVector(900, 220),
+    easelActor = ActorList.createCanvasActor(
+      p5.createVector(1300, 220),
       {
         x: 192,
         y: 192,
       },
       propBuffer.onPlayerPaintingUpdate,
     );
-    const canvasComponent = easel.findComponent("CanvasComponent");
+    const canvasComponent = easelActor.findComponent("CanvasComponent");
 
     canvasComponent.setCurrentColor(propBuffer.currentColor);
     canvasComponent.setCurrentTool(propBuffer.currentTool);
     canvasComponent.setPaintingData(propBuffer.playerPainting);
 
+    museumActor = ActorList.createImageActor(p5.createVector(150, 220), museum);
+
+    billboardActor = ActorList.createImageActor(
+      p5.createVector(700, 220),
+      billboard,
+      { scale: 1 },
+    );
+    weatherStationActor = ActorList.createImageActor(
+      p5.createVector(1800, 190),
+      weatherStation,
+      { scale: 1.5, tint: () => p5.tint(220) },
+    );
+
     mainCharacter = ActorList.createMainCharacterActor(
       mainCharSpriteSheet,
       mainCharSpriteData,
     );
-    mainCharacter.findComponent("Animation").setAnimationState("IdleRight");
+
+    //ADD WORLD ZONES
+    const worldZones = mainCharacter.findComponent("ZoneCallback");
+
+    function exit(name) {
+      onZoneChange("world");
+    }
+    worldZones.addZone(
+      PANEL_STATES.EDITOR,
+      easelActor.pos.x,
+      300,
+      onZoneChange,
+      exit,
+    );
+    worldZones.addZone("museum", museumActor.pos.x, 80, onZoneChange, exit);
+    worldZones.addZone(
+      PANEL_STATES.QUOTE,
+      billboardActor.pos.x,
+      300,
+      onZoneChange,
+      exit,
+    );
+    worldZones.addZone(
+      PANEL_STATES.WEATHER,
+      weatherStationActor.pos.x,
+      300,
+      onZoneChange,
+      exit,
+    );
 
     MicroEngine.LoadScene(ActorList.mainScene);
     canvasGarbageCollector = canvasCleaner();
@@ -85,7 +161,7 @@ export function sketch(p5) {
       ActorList.setEnvironmentWeather(props.weather.parsedData, skyLayerActor);
     }
 
-    const canvasComponent = easel.findComponent("CanvasComponent");
+    const canvasComponent = easelActor.findComponent("CanvasComponent");
     canvasComponent.setCurrentColor(props.currentColor);
     canvasComponent.setCurrentTool(props.currentTool);
     canvasComponent.setPaintingData(props.playerPainting);
@@ -97,6 +173,9 @@ export function sketch(p5) {
     testPlant3 = p5.loadImage("/assets/moss01.png");
     mainCharSpriteSheet = p5.loadImage("/assets/game_assets/F_01.png");
     mainCharSpriteData = p5.loadJSON("/assets/game_assets/character.json");
+    museum = p5.loadImage("/assets/museum.png");
+    billboard = p5.loadImage("/assets/billboard.png");
+    weatherStation = p5.loadImage("assets/weatherStation.png");
   };
 
   p5.setup = () => {
@@ -134,11 +213,11 @@ export function sketch(p5) {
 
     if (p5.keyIsDown(p5.LEFT_ARROW)) {
       mainCharacter.findComponent("Animation").setAnimationState("WalkLeft");
-      mainCharacter.findComponent("GroundMove").move(-1);
+      mainCharacter.findComponent("GroundMove").move(-2);
       lastKeyPress = p5.LEFT_ARROW;
     } else if (p5.keyIsDown(p5.RIGHT_ARROW)) {
       mainCharacter.findComponent("Animation").setAnimationState("WalkRight");
-      mainCharacter.findComponent("GroundMove").move(1);
+      mainCharacter.findComponent("GroundMove").move(2);
       lastKeyPress = p5.RIGHT_ARROW;
     } else if (lastKeyPress == p5.LEFT_ARROW) {
       mainCharacter.findComponent("Animation").setAnimationState("IdleLeft");
@@ -148,7 +227,7 @@ export function sketch(p5) {
 
     if (p5.mouseIsPressed) {
       //Future: use input system
-      easel.findComponent("CanvasComponent").processInput();
+      easelActor.findComponent("CanvasComponent").processInput();
     }
 
     if (canvasGarbageCollector) canvasGarbageCollector();
@@ -161,12 +240,12 @@ export function sketch(p5) {
 
   p5.mouseReleased = () => {
     //Future: use input system
-    easel.findComponent("CanvasComponent").inputComplete();
+    easelActor.findComponent("CanvasComponent").inputComplete();
   };
 
   p5.keyPressed = () => {
     if (p5.keyIsDown(p5.UP_ARROW))
-      mainCharacter.findComponent("GroundMove").jump(3);
+      mainCharacter.findComponent("GroundMove").jump(4);
     //mainCharacter.forceComponent.addForce(p5.createVector(0, -3));
   };
 }

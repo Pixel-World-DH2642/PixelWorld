@@ -19,7 +19,34 @@ const canvasZoneData = {
   width: 200,
 };
 
-export function createActorList(p, MicroEngine) {
+function DummyRendererComponent(settings, actor, pos) {
+  return {
+    type: "DummyRenderer",
+    render: function () {
+      settings.p5.rect(pos.x, pos.y, settings.size.x, settings.size.y);
+    },
+  };
+}
+
+function ImageRendererComponent(settings, actor, pos) {
+  return {
+    type: "ImageRenderer",
+    render: function () {
+      settings.p5.push();
+
+      settings.p5.translate(
+        pos.x - (settings.image.width * settings.scale) / 2,
+        pos.y,
+      );
+      settings.p5.scale(settings.scale, settings.scale);
+      if (settings.tint) settings.tint();
+      settings.p5.image(settings.image, 0, 0);
+      settings.p5.pop();
+    },
+  };
+}
+
+export function createActorList(p5, MicroEngine) {
   const mainScene = MicroEngine.CreateScene();
 
   function createCanvasActor(pos, size, onPlayerPaintingUpdateCB) {
@@ -53,8 +80,8 @@ export function createActorList(p, MicroEngine) {
       function processInput() {
         if (paintingLocked) return;
 
-        const mx = p.mouseX - MicroEngine.CameraPanning.x;
-        const my = p.mouseY - MicroEngine.CameraPanning.y;
+        const mx = p5.mouseX - MicroEngine.CameraPanning.x;
+        const my = p5.mouseY - MicroEngine.CameraPanning.y;
 
         if (
           mx < pos.x - size.x / 2 ||
@@ -66,7 +93,6 @@ export function createActorList(p, MicroEngine) {
             inputComplete();
             paintingEdited = false;
           } else {
-            console.log("your out");
             return;
           }
         }
@@ -106,44 +132,44 @@ export function createActorList(p, MicroEngine) {
       //!!!!!!!
       //Make a pg so we only have to re-render when user paints
       function render() {
-        p.stroke(120, 100, 20);
-        p.strokeWeight(8);
+        p5.stroke(120, 100, 20);
+        p5.strokeWeight(8);
 
         //Right Leg
-        p.line(
+        p5.line(
           pos.x,
           pos.y - size.y * 0.7,
           pos.x + size.x * 0.5,
           pos.y + size.y * 0.8,
         );
         //Left Leg
-        p.line(
+        p5.line(
           pos.x,
           pos.y - size.y * 0.7,
           pos.x - size.x * 0.5,
           pos.y + size.y * 0.8,
         );
         //Top Bracket
-        p.line(
+        p5.line(
           pos.x - size.x * 0.2,
           pos.y - size.y * 0.6,
           pos.x + size.x * 0.2,
           pos.y - size.y * 0.6,
         );
         //Bottom Bracket
-        p.line(
+        p5.line(
           pos.x - size.x * 0.6,
           pos.y + size.y * 0.5,
           pos.x + size.x * 0.6,
           pos.y + size.y * 0.5,
         );
 
-        p.fill(222, 230, 200);
+        p5.fill(222, 230, 200);
         //p5.stroke(0);
-        p.strokeWeight(4);
-        p.stroke(150, 120, 20);
-        p.rect(pos.x, pos.y, size.x + 4, size.y + 4);
-        p.noStroke();
+        p5.strokeWeight(4);
+        p5.stroke(150, 120, 20);
+        p5.rect(pos.x, pos.y, size.x + 4, size.y + 4);
+        p5.noStroke();
 
         if (!pixelArray) return;
 
@@ -152,8 +178,8 @@ export function createActorList(p, MicroEngine) {
             if (pixelArray[x][y]) {
               const col = pixelArray[x][y].rgba;
               if (!col) continue;
-              p.fill(col.r, col.g, col.b, col.a);
-              p.rect(
+              p5.fill(col.r, col.g, col.b, col.a);
+              p5.rect(
                 x * pixelSize + pixelSize / 2 + pos.x - size.x / 2,
                 y * pixelSize + pixelSize / 2 + pos.y - size.y / 2,
                 pixelSize,
@@ -192,8 +218,21 @@ export function createActorList(p, MicroEngine) {
     return actor;
   }
 
+  function createImageActor(pos, image, settings) {
+    const actor = MicroEngine.Components.Actor(pos);
+    actor.addComponent(ImageRendererComponent, {
+      image,
+      p5,
+      scale: settings?.scale ?? 1,
+      tint: settings?.tint,
+    });
+
+    mainScene.addActor(actor);
+    return actor;
+  }
+
   function createMainCharacterActor(spriteSheet, spriteData) {
-    const actor = MicroEngine.Components.Actor(p.createVector(450, 50), {
+    const actor = MicroEngine.Components.Actor(p5.createVector(450, 50), {
       name: "player",
     });
     actor.addComponent(MicroEngine.Components.RectCollider, {
@@ -227,8 +266,11 @@ export function createActorList(p, MicroEngine) {
       distributeForceOverrides: [playerGroundOverride],
     });
     actor.addComponent(GroundMoveComponent);
-
-    actor.addComponent(MicroEngine.Components.Animator, { scale: 4 });
+    actor.addComponent(ZoneCallbackComponent);
+    actor.addComponent(MicroEngine.Components.Animator, {
+      scale: 4,
+      frameLength: 0.065,
+    });
     const animatorRef = actor.findComponent("Animation");
     const rightFrames = animatorRef.extractFramesFromSpriteSheet(
       spriteSheet,
@@ -248,6 +290,53 @@ export function createActorList(p, MicroEngine) {
     animatorRef.addAnimationState([leftFrames[0]], "IdleLeft");
     animatorRef.setAnimationState("IdleRight");
 
+    function ZoneCallbackComponent(settings, actor, pos) {
+      const zones = [];
+
+      function addZone(name, xPos, width, enterCallback, exitCallback) {
+        zones.push({
+          name,
+          xPos,
+          width,
+          inZone: false,
+          enterCallback,
+          exitCallback,
+        });
+      }
+
+      function update() {
+        let enter = false;
+        zones.forEach((zone) => {
+          if (enter) return;
+          if (
+            pos.x > zone.xPos - zone.width / 2 &&
+            pos.x < zone.xPos + zone.width / 2
+          ) {
+            if (!zone.inZone) {
+              if (zone.enterCallback) zone.enterCallback(zone.name);
+              zone.inZone = true;
+              enter = true;
+              //zone.callbacks.forEach((callback) => callback(zone.name));
+            }
+          } else if (
+            pos.x < zone.xPos - zone.width / 2 ||
+            pos.x > zone.xPos + zone.width / 2
+          ) {
+            if (zone.inZone) {
+              if (zone.exitCallback) zone.exitCallback(zone.name);
+              zone.inZone = false;
+            }
+          }
+        });
+      }
+
+      return {
+        type: "ZoneCallback",
+        addZone,
+        update,
+      };
+    }
+
     function GroundMoveComponent(settings, actor, pos) {
       let isGrounded = false;
       let groundRef = null;
@@ -261,19 +350,23 @@ export function createActorList(p, MicroEngine) {
 
       function bettaMover(dir) {
         if (isGrounded) {
-          const oldPos = actor.pos;
-          oldPos.x += dir;
-          oldPos.y = groundRef.colliderGeometry.querryGroundHeight(oldPos.x);
-          actor.pos = oldPos;
+          const xBuffer = pos.x;
+          actor.pos = {
+            x: Math.min(Math.max(actor.pos.x + dir, 50), 2500),
+            y: groundRef.colliderGeometry.querryGroundHeight(xBuffer),
+          };
+
           actor.forceComponent.useGravity = false;
+          let camX = MicroEngine.CameraPanning.x;
+          camX += xBuffer - actor.pos.x;
+          MicroEngine.CameraPanning = { x: camX };
         }
-        let camX = MicroEngine.CameraPanning.x;
-        camX -= dir;
-        MicroEngine.CameraPanning = { x: camX };
       }
 
       function jump(force) {
-        actor.forceComponent.addForce(p.createVector(0, -force));
+        if (!isGrounded) return;
+        actor.pos = { x: actor.pos.x, y: actor.pos.y - 0.2 };
+        actor.forceComponent.addForce(p5.createVector(0, -force));
         isGrounded = false;
         actor.forceComponent.useGravity = true;
         //console.log(actor.forceComponent.useGravity);
@@ -302,14 +395,13 @@ export function createActorList(p, MicroEngine) {
     return actor;
   }
 
-  ///%%%%%%%%%%%%%%%%%%%%%%%% WIP %%%%%%%%%%%%%%%%%%%%%%%%///
   function createGroundSliceActor(testPlants) {
     //Make sure vertex spacing gets passed through to the collider & renderer...
     //Make it available
 
     const hmap = MicroEngine.Utils.GenerateCurveData({
       amplitude: 130,
-      baseHeight: p.height,
+      baseHeight: p5.height,
       noiseIncrementStep: 0.1,
       vertexIterations: 300,
     });
@@ -326,11 +418,11 @@ export function createActorList(p, MicroEngine) {
         let plantArr = [];
 
         for (let i = 0; i < 500; i++) {
-          const xpos = p.random(10000);
+          const xpos = p5.random(10000);
           const ypos = actor
             .findComponent("Collider")
             .colliderGeometry.querryGroundHeight(xpos);
-          const plantIndex = Math.floor(p.random(3));
+          const plantIndex = Math.floor(p5.random(3));
           plantArr.push({ xpos, ypos, plantIndex });
         }
 
@@ -340,16 +432,16 @@ export function createActorList(p, MicroEngine) {
       function generateSlices() {
         //Generate background, chop into slices, garbage collect big image
         //Temp canvas
-        let groundCanvasFull = p.createGraphics(
+        let groundCanvasFull = p5.createGraphics(
           hmap.length * vertexSpacing,
-          p.height,
+          p5.height,
         );
         groundCanvasFull.noSmooth();
         renderCurve(hmap, groundCanvasFull);
         const backgroundSlices = MicroEngine.Utils.SliceImage(
           groundCanvasFull,
           300,
-          p.height,
+          p5.height,
         );
         groundCanvasFull.remove();
         groundCanvasFull = undefined;
@@ -398,9 +490,9 @@ export function createActorList(p, MicroEngine) {
               -slice.imgSlice.width
             )
               return;
-            if (MicroEngine.CameraPanning.x + slice.coords.x > p.width) return;
+            if (MicroEngine.CameraPanning.x + slice.coords.x > p5.width) return;
 
-            p.image(slice.imgSlice, slice.coords.x, slice.coords.y);
+            p5.image(slice.imgSlice, slice.coords.x, slice.coords.y);
           });
         },
       };
@@ -415,7 +507,7 @@ export function createActorList(p, MicroEngine) {
       },
     };
 
-    let actor = MicroEngine.Components.Actor(p.createVector(0, 0), {
+    let actor = MicroEngine.Components.Actor(p5.createVector(0, 0), {
       name: "ground",
     });
     actor.addComponent(MicroEngine.Components.GroundCollider, colliderSettings);
@@ -423,6 +515,8 @@ export function createActorList(p, MicroEngine) {
     mainScene.addActor(actor);
     return actor;
   }
+
+  ///%%%%%%%%%%%%%%%%%%%%%%%% WIP %%%%%%%%%%%%%%%%%%%%%%%%///
 
   function TileGroundRendererComponent(settings, actor, pos) {
     //Layers
@@ -472,7 +566,7 @@ export function createActorList(p, MicroEngine) {
     //---------------------------------------------Object vars
     const hmap = MicroEngine.GenerateCurveData({
       amplitude: 130,
-      baseHeight: p.height - 20,
+      baseHeight: p5.height - 20,
       noiseIncrementStep: 0.1,
       vertexIterations: 160,
     });
@@ -507,8 +601,8 @@ export function createActorList(p, MicroEngine) {
         MicroEngine.CameraPanning = { x: 0, y: 0 };
         //console.log(MicroEngine.CameraPanning);
         for (let i = 0; i < hmap.length; i += vertexSpacing) {
-          p.stroke(0);
-          p.strokeWeight(1);
+          p5.stroke(0);
+          p5.strokeWeight(1);
           /*
           p5.rect(
             (i - indexOffset) * vertexSpacing + xOffset,
@@ -518,7 +612,7 @@ export function createActorList(p, MicroEngine) {
           );
           */
 
-          p.rect(i * vertexSpacing, hmap[i], tileSize, tileSize);
+          p5.rect(i * vertexSpacing, hmap[i], tileSize, tileSize);
         }
       }
 
@@ -530,7 +624,7 @@ export function createActorList(p, MicroEngine) {
       };
     }
 
-    let actor = MicroEngine.Components.Actor(p.createVector(0, 0));
+    let actor = MicroEngine.Components.Actor(p5.createVector(0, 0));
     //actor.addComponent(MicroEngine.Components.GroundCollider, colliderSettings);
     actor.addComponent(TileGroundRendererComponent, {});
 
@@ -540,29 +634,12 @@ export function createActorList(p, MicroEngine) {
   }
   ////////////////////////////////////////////////////////////
 
-  /* Render Example */
-  /*  
-  
-  //The image to slice
-  const bigImg = createGraphics(300, 300);
-  bigImg.circle(width/2, height/2, 300);
-  
-  //Slice it up
-  const sliced = createImageSlices(bigImg, 100, 100);
-
-  //Render it
-  sliced.forEach((slice) => {
-    console.log(slice.coords)
-    image(slice.imgSlice, slice.coords.x, slice.coords.y);
-  });
-   */
-
   function createSkyLayerActor() {
-    const actor = MicroEngine.Components.Actor(p.createVector());
+    const actor = MicroEngine.Components.Actor(p5.createVector());
     actor.addComponent(SkyRendererComponent);
 
     function SkyRendererComponent(settings, actor, pos) {
-      const skyCanvas = p.createGraphics(p.width, p.height);
+      const skyCanvas = p5.createGraphics(p5.width, p5.height);
       const scribble = MicroEngine.CreateScribbleInstance(skyCanvas); //new Scribble(skyCanvas);
       scribble.bowing = 5;
       let baseColor = { r: 30, g: 40, b: 220 };
@@ -577,21 +654,21 @@ export function createActorList(p, MicroEngine) {
       function generateSky() {
         skyCanvas.background(baseColor.r, baseColor.g, baseColor.b);
         for (let i = 0; i < 8; i++) {
-          skyCanvas.strokeWeight(20 + p.random(-7, 30));
+          skyCanvas.strokeWeight(20 + p5.random(-7, 30));
           skyCanvas.stroke(
             baseColor.r +
-              p.random(colorRandomization.r.min, colorRandomization.r.max),
+              p5.random(colorRandomization.r.min, colorRandomization.r.max),
             baseColor.g +
-              p.random(colorRandomization.g.min, colorRandomization.g.max),
+              p5.random(colorRandomization.g.min, colorRandomization.g.max),
             baseColor.b +
-              p.random(colorRandomization.b.min, colorRandomization.b.max),
+              p5.random(colorRandomization.b.min, colorRandomization.b.max),
           );
-          scribble.scribbleLine(0, i * 20, p.width, i * 20);
+          scribble.scribbleLine(0, i * 20, p5.width, i * 20);
         }
       }
 
       function displaySky() {
-        p.image(
+        p5.image(
           skyCanvas,
           -MicroEngine.CameraPanning.x,
           MicroEngine.CameraPanning.y,
@@ -619,23 +696,31 @@ export function createActorList(p, MicroEngine) {
     if (!weatherData || !skyActor) return;
 
     const skyRenderer = skyActor.findComponent("SkyRenderer");
+    //let baseColor = { r: 30, g: 40, b: 220 };
+    const cloudLevel2_BaseColor = { r: 40, g: 50, b: 190 };
+    const cloudLevel3_BaseColor = { r: 60, g: 40, b: 190 };
+    const cloudLevel4_BaseColor = { r: 80, g: 80, b: 190 };
+    const cloudLevel5_BaseColor = { r: 120, g: 120, b: 190 };
     const cloudLevel6_BaseColor = { r: 190, g: 190, b: 190 };
     //console.log(weatherData.cloudAmt);
     switch (weatherData.cloudAmt) {
       case 0:
-        skyRenderer.setColors({ baseColor: cloudLevel6_BaseColor });
+        //Use Default
         break;
       case 1:
-        skyRenderer.setColors({ baseColor: cloudLevel6_BaseColor });
+        //Use Default, maybe add a few small clouds...
         break;
       case 2:
+        skyRenderer.setColors({ baseColor: cloudLevel2_BaseColor });
         break;
       case 3:
+        skyRenderer.setColors({ baseColor: cloudLevel3_BaseColor });
         break;
       case 4:
+        skyRenderer.setColors({ baseColor: cloudLevel4_BaseColor });
         break;
       case 5:
-        skyRenderer.setColors({ baseColor: cloudLevel6_BaseColor });
+        skyRenderer.setColors({ baseColor: cloudLevel5_BaseColor });
         break;
       case 6:
         skyRenderer.setColors({ baseColor: cloudLevel6_BaseColor });
@@ -649,6 +734,7 @@ export function createActorList(p, MicroEngine) {
     mainScene,
     //Actors
     createCanvasActor,
+    createImageActor,
     createMainCharacterActor,
     createGroundSliceActor,
     createSkyLayerActor,
