@@ -8,6 +8,8 @@ export function sketch(p5) {
   let initialPropsBuffer = null;
   let canvasGarbageCollector;
 
+  let handleSketchReady = null;
+
   //Micro Engine Setup
   const MicroEngine = createMicroEngine(p5);
   const ActorList = createActorList(p5, MicroEngine);
@@ -92,11 +94,16 @@ export function sketch(p5) {
     }
 
     sketchIsSetup = true;
+    console.log("Handle sketch ready", handleSketchReady);
+    if (handleSketchReady) {
+      handleSketchReady();
+    }
   };
 
   p5.updateWithProps = (props) => {
     console.log("updating props 1");
     if (!sketchIsSetup) initialPropsBuffer = props;
+    handleSketchReady = props.onSketchReady;
 
     // TODO: don't update OR fixed the seed
     ActorList.setEnvironmentWeather(props.weather.parsedData, skyLayerActor);

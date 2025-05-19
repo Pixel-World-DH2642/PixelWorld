@@ -8,7 +8,7 @@ import { SubmitModal } from "../components/SubmitModal";
 import { Button, ButtonGroup } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { QuoteBoard } from "../components/QuoteBoard";
 import { PANEL_STATES } from "../app/slices/worldSlice";
 import { Suspense } from "../components/Suspense";
@@ -26,6 +26,7 @@ export function WorldPage({
   weatherStatus,
   weatherError,
   user,
+  authStatus,
   currentPanelState,
   onPanelStateChange,
   onGetWeather,
@@ -58,6 +59,7 @@ export function WorldPage({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [contentOpacity, setContentOpacity] = useState(loading ? 0 : 1);
   const prevLoadingRef = useRef(loading);
+  const [isSketchReady, setIsSketchReady] = useState(false);
 
   const navigate = useNavigate();
 
@@ -70,6 +72,10 @@ export function WorldPage({
       // Maybe show a login prompt
     }
   }
+
+  useEffect(() => {
+    console.log("isSketchReady: ", isSketchReady);
+  }, [isSketchReady]);
 
   useEffect(() => {
     onGetWeather();
@@ -99,6 +105,11 @@ export function WorldPage({
       prevLoadingRef.current = loading;
     }
   }, [loading]);
+
+  if (authStatus !== "loading" && !user) {
+    console.log("Auth status: ", authStatus);
+    return <Navigate to="/welcome" replace />;
+  }
 
   // Renders the appropriate panel based on current state
   const renderCurrentPanel = () => {
@@ -195,7 +206,7 @@ export function WorldPage({
 
       {/* Loading state with transition */}
       <div
-        className={`transition-opacity duration-300 ${loading || weatherStatus === "loading" ? "opacity-100" : "opacity-0"} ${loading || weatherStatus === "loading" ? "" : "hidden"} flex justify-center items-center h-[50vh]`}
+        className={`transition-opacity duration-300 ${loading || weatherStatus === "loading" || !isSketchReady ? "opacity-100" : "opacity-0"} ${loading || weatherStatus === "loading" || !isSketchReady ? "" : "hidden"} flex justify-center items-center h-[50vh]`}
       >
         {Suspense("loading", "Loading pixel world...")}
       </div>
@@ -203,7 +214,7 @@ export function WorldPage({
       {/* Main content with transitions */}
       {!loading && !error && weatherStatus === "succeeded" && (
         <div
-          className={`transition-opacity duration-300 ${contentOpacity === 0 ? "opacity-0" : "opacity-100"} ${loading || weatherStatus === "loading" ? "hidden" : ""}`}
+          className={`transition-opacity duration-300 ${contentOpacity === 0 ? "opacity-0" : "opacity-100"} ${loading || weatherStatus === "loading" || !isSketchReady ? "hidden" : ""}`}
         >
           <div className="flex flex-col items-center justify-center text-center gap-4 pb-8 pt-4">
             <div className="flex w-full items-stretch justify-between gap-4 h-auto">
@@ -218,6 +229,7 @@ export function WorldPage({
                   currentTool={currentTool}
                   onPlayerPaintingUpdate={onPlayerPaintingUpdate}
                   playerPainting={playerPainting}
+                  onSketchReady={() => setIsSketchReady(true)}
                 />
               </div>
               <div className="flex-1 flex flex-shrink-0 flex-col w-264 items-center justify-center overflow-hidden">

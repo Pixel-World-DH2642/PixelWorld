@@ -58,7 +58,7 @@ export function ProfilePage({
 
   if (authStatus !== "loading" && !user) {
     console.log("Auth status: ", authStatus);
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/welcome" replace />;
   } else {
     return (
       <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] p-8">

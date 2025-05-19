@@ -35,6 +35,7 @@ export const World = connect(
       error: state.paintings.error,
 
       user: state.auth.user,
+      authStatus: state.auth.status,
 
       weather: state.weather,
       weatherStatus: state.weather.status,

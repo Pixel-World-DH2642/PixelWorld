@@ -504,6 +504,7 @@ export const selectSortedByDatePaintings = (state) => {
 export const selectTopPaintings = (state, count = 3) => {
   return selectAllPaintings(state)
     .slice()
+    .filter((painting) => (painting.likesCount || 0) > 0)
     .sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0))
     .slice(0, count);
 };
