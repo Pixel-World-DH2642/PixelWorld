@@ -104,6 +104,7 @@ export function WorldPage({
     setShowInstructions(false);
     setIsPaintingLocked(true);
     // TODO: set panel state to default (world)
+    onPanelStateChange(PANEL_STATES.WORLD);
   }, []);
 
   useEffect(() => {
@@ -272,13 +273,32 @@ export function WorldPage({
             />
           </div>
         );
+      case PANEL_STATES.MUSEUM:
+        return (
+          <div className="w-full h-full border-4 rounded-xl flex flex-col items-center justify-center overflow-hidden bg-gray-300 p-4 gap-4">
+            <p>Use the arrow keys ➡️ ⬅️ ⬆️ to move around the world.</p>
+            {/* Museum button */}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/museum")}
+              endIcon={<ArrowForwardIcon />}
+            >
+              Museum
+            </Button>
+          </div>
+        );
       default:
-        return <div>Invalid panel state</div>;
+        return (
+          <div className="w-full h-full border-4 rounded-xl flex flex-col items-center justify-center overflow-hidden bg-gray-300 p-4">
+            <p>Use the arrow keys ➡️ ⬅️ ⬆️ to move around the world.</p>
+          </div>
+        );
     }
   };
 
   return (
-    <div className="font-pixel mx-auto w-[760px] xl:w-full max-h-[calc(100vh-4rem)] px-8 pt-8 overflow-y-scroll">
+    <div className="font-pixel mx-auto w-[772px] xl:w-full max-h-[calc(100vh-4rem)] px-8 pt-8 overflow-y-scroll">
       <NavBar enableBack={false} title="Pixel World" />
       {/* Loading state with transition */}
       <div
@@ -393,9 +413,9 @@ export function WorldPage({
 
           {/* <div className="text-red-500">Debug UI for panel switching</div> */}
           {/* Navigation controls container */}
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center mb-4">
             {/* Panel switching buttons */}
-            <div className="flex gap-4">
+            {/* <div className="flex gap-4">
               <Button
                 variant="contained"
                 color={
@@ -429,19 +449,18 @@ export function WorldPage({
               >
                 Quote
               </Button>
-            </div>
+            </div> */}
 
             {/* Museum button */}
-            <Button
+            {/* <Button
               variant="contained"
               color="primary"
               onClick={() => navigate("/museum")}
               endIcon={<ArrowForwardIcon />}
             >
               Museum
-            </Button>
+            </Button> */}
           </div>
-          <div className="mb-4"></div>
         </div>
       )}
 

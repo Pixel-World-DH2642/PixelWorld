@@ -69,8 +69,9 @@ export function sketch(p5) {
       case PANEL_STATES.WORLD:
         onPanelStateChange(zoneState);
         break;
-      case "MUSEUM":
-        //Navigate to museum...
+      case PANEL_STATES.MUSEUM:
+        console.log("museum");
+        onPanelStateChange(zoneState);
         break;
     }
   }
@@ -133,7 +134,13 @@ export function sketch(p5) {
       onZoneChange,
       exit,
     );
-    worldZones.addZone("museum", museumActor.pos.x, 80, onZoneChange, exit);
+    worldZones.addZone(
+      PANEL_STATES.MUSEUM,
+      museumActor.pos.x,
+      80,
+      onZoneChange,
+      exit,
+    );
     worldZones.addZone(
       PANEL_STATES.QUOTE,
       billboardActor.pos.x,

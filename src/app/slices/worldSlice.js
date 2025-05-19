@@ -3,6 +3,7 @@ export const PANEL_STATES = {
   EDITOR: "editor",
   QUOTE: "quote",
   WORLD: "world",
+  Museum: "museum",
 };
 
 import { createSlice } from "@reduxjs/toolkit";
