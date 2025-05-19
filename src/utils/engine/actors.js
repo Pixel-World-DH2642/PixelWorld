@@ -35,6 +35,8 @@ export function createActorList(p, MicroEngine) {
 
       let paintingLocked = false;
       let paintingEdited = false;
+      let isOutsideCanvas = false;
+
       //Model Data
       let currentColor = {
         rgba: { r: 0, g: 0, b: 0, a: 0 },
@@ -62,13 +64,17 @@ export function createActorList(p, MicroEngine) {
           my < pos.y - size.y / 2 ||
           my > pos.y + size.y / 2
         ) {
-          if (paintingEdited) {
+          if (paintingEdited && isOutsideCanvas) {
+            console.log("painting edited", paintingEdited);
             inputComplete();
             paintingEdited = false;
+            isOutsideCanvas = true;
           } else {
             console.log("your out");
             return;
           }
+        } else {
+          isOutsideCanvas = false;
         }
 
         const pixCoordX = Math.floor((mx - pos.x + size.x / 2) / pixelSize);
