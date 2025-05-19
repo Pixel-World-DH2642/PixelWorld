@@ -13,6 +13,7 @@ import { useNavigate, Navigate } from "react-router-dom";
 import { QuoteBoard } from "../components/QuoteBoard";
 import { PANEL_STATES } from "../app/slices/worldSlice";
 import { Suspense } from "../components/Suspense";
+import { InstructionsCharacter } from "../components/InstructionsCharacter";
 
 export function WorldPage({
   loading,
@@ -65,6 +66,7 @@ export function WorldPage({
   const [isSketchReady, setIsSketchReady] = useState(false);
   const [isPaintingLocked, setIsPaintingLocked] = useState(true);
   const [screenTooSmall, setScreenTooSmall] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const navigate = useNavigate();
 
@@ -100,6 +102,9 @@ export function WorldPage({
 
   useEffect(() => {
     onGetWeather();
+    setShowInstructions(false);
+    setIsPaintingLocked(true);
+    // TODO: set panel state to default (world)
   }, []);
 
   useEffect(() => {
@@ -292,8 +297,81 @@ export function WorldPage({
             <div className="flex w-full flex-col xl:flex-row items-stretch justify-between gap-4 h-auto">
               <div
                 id="viewport-container"
-                className="w-[700px] border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0"
+                className="w-[708px] border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0 relative"
               >
+                <button
+                  className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center z-10 border-2 border-black cursor-pointer"
+                  onClick={() => {
+                    setShowInstructions(true);
+                    setIsPaintingLocked(true);
+                  }}
+                  title="Help"
+                >
+                  <span className="text-xl font-bold">?</span>
+                </button>
+
+                {/* Instructions popup */}
+                {showInstructions && (
+                  <div className="absolute top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center z-20 p-8">
+                    <div className="relative border-2 border-black rounded-xl overflow-hidden flex flex-col items-center justify-center p-4 bg-white">
+                      <div className="flex items-center justify-between w-full mb-2">
+                        <h2 className="font-bold">How to play</h2>
+                        <button
+                          className="w-6 h-6 rounded-full flex items-center justify-center font-bold border-2 border-black overflow-hidden bg-white cursor-pointer"
+                          onClick={() => {
+                            setShowInstructions(false);
+                            setIsPaintingLocked(false);
+                          }}
+                        >
+                          <img
+                            src="/assets/x.png"
+                            alt="Close"
+                            className="w-4 h-4"
+                            style={{ imageRendering: "pixelated" }}
+                          />
+                        </button>
+                      </div>
+
+                      {/* Instructions content */}
+                      <p
+                        className={` w-full pb-1 mb-1 ${currentPanelState !== PANEL_STATES.WEATHER && currentPanelState !== PANEL_STATES.EDITOR && currentPanelState !== PANEL_STATES.QUOTE ? "" : "border-b-1"}`}
+                      >
+                        Use the arrow keys ➡️ ⬅️ ⬆️ to move around the world.
+                      </p>
+                      {currentPanelState === PANEL_STATES.QUOTE && (
+                        <div className="text-start">
+                          <h2 className="font-bold">About the quote</h2>
+                          <p>
+                            Are you having a creative block? Generate a quote to
+                            inspire your next creation. You can choose to
+                            include this quote to your painting.
+                          </p>
+                        </div>
+                      )}
+                      {currentPanelState === PANEL_STATES.EDITOR && (
+                        <div className="text-start">
+                          <h2 className="font-bold">About the editor</h2>
+                          <p>
+                            Here you can paint your drawing alongside your quote
+                            of the day. Missing a quote? Go back to the quote
+                            notice board to get one.
+                          </p>
+                        </div>
+                      )}
+                      {currentPanelState === PANEL_STATES.WEATHER && (
+                        <div className="text-start">
+                          <h2 className="font-bold">About the weather</h2>
+                          <p>
+                            The weather in your location affects your PixelWorld
+                            environment. Let the real-world conditions inspire
+                            your pixel art creation!
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <ReactP5Wrapper
                   sketch={sketch}
                   weather={weather}

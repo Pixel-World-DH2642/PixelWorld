@@ -8,12 +8,6 @@ export function WeatherDashboard({ weather }) {
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
         🌦️ Weather Dashboard
       </h2>
-
-      <p className="text-sm text-gray-600 mb-4 text-center w-full">
-        The weather in your location affects your PixelWorld environment. Let
-        the real-world conditions inspire your pixel art creation!
-      </p>
-
       <div className="space-y-2 text-gray-700 text-lg">
         <p>
           🌤️ <span className="font-semibold">Weather:</span>{" "}
