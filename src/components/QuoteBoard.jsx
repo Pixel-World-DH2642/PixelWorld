@@ -34,7 +34,7 @@ export function QuoteBoard({
   const isQuoteLimitReached = quotesRemaining <= 0;
 
   return (
-    <div className="flex flex-col h-full w-full items-center gap-4 p-4 bg-gray-300">
+    <div className="flex flex-col h-full w-full items-center gap-3 p-4 bg-gray-300">
       <h1 className="sm:text-xl">Quote Board</h1>
 
       {showError && (
@@ -60,7 +60,7 @@ export function QuoteBoard({
                 : 'Click "Get a new quote" to display an inspiring quote...'}
             </p>
           </div>
-          <div className="mb-4">
+          <div className="mb-2">
             <label className="flex items-center cursor-pointer">
               <input type="checkbox" className="mr-2 h-4 w-4" disabled={true} />
               <span className="text-sm">Include quote with submission</span>
@@ -75,7 +75,7 @@ export function QuoteBoard({
               - {quote.author || "Unknown"}
             </p>
           </div>
-          <div className="mb-4">
+          <div className="mb-2">
             <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -89,7 +89,7 @@ export function QuoteBoard({
         </>
       )}
 
-      <div className="mt-auto">
+      <div className="mt-2">
         <p className="text-sm mb-1">Quotes left for today: {quotesRemaining}</p>
         {isQuoteLimitReached && (
           <p className="text-sm text-red-500 mb-2">
