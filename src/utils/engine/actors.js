@@ -33,13 +33,14 @@ export function createActorList(p, MicroEngine) {
       let rows = Math.floor(size.x / pixelSize);
       let columns = Math.floor(size.y / pixelSize);
 
+      let paintingLocked = false;
+      let paintingEdited = false;
+      //Model Data
       let currentColor = {
         rgba: { r: 0, g: 0, b: 0, a: 0 },
         hex: "#00000000",
       };
-
       let currentTool = TOOL_MODE.PENCIL;
-      let paintingEdited = false;
       let pixelArray = [];
 
       for (let x = 0; x < rows; x++) {
@@ -49,8 +50,8 @@ export function createActorList(p, MicroEngine) {
         }
       }
 
-      function processInput(/*draw info*/) {
-        //if (!onPlayerPaintingUpdate) return;
+      function processInput() {
+        if (paintingLocked) return;
 
         const mx = p.mouseX - MicroEngine.CameraPanning.x;
         const my = p.mouseY - MicroEngine.CameraPanning.y;
@@ -62,9 +63,10 @@ export function createActorList(p, MicroEngine) {
           my > pos.y + size.y / 2
         ) {
           if (paintingEdited) {
-            paintingEdited = false;
             inputComplete();
+            paintingEdited = false;
           } else {
+            console.log("your out");
             return;
           }
         }
@@ -72,19 +74,7 @@ export function createActorList(p, MicroEngine) {
         const pixCoordX = Math.floor((mx - pos.x + size.x / 2) / pixelSize);
         const pixCoordY = Math.floor((my - pos.y + size.y / 2) / pixelSize);
 
-        /*
-        if (pixCoordX < 0 || pixCoordX >= pixelArray.length) return;
-        if (
-          pixCoordY < 0 ||
-          !pixelArray[pixCoordX] ||
-          pixCoordY >= pixelArray[pixCoordX].length
-        )
-          return;
-          */
-
         paintingEdited = true;
-
-        // console.log(pixelArray); // Logging large/frozen arrays can sometimes be problematic
 
         // Immutable update of the pixelArray
         const newPixelArray = pixelArray.map((row, rowIndex) => {
@@ -188,6 +178,12 @@ export function createActorList(p, MicroEngine) {
         setPaintingData: function (data) {
           if (!data) return;
           pixelArray = JSON.parse(JSON.stringify(data.jagged));
+        },
+        lockPainting: function () {
+          paintingLocked = true;
+        },
+        unlockPainting: function () {
+          paintingLocked = false;
         },
       };
     }
