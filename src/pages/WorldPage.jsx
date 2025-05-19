@@ -276,7 +276,6 @@ export function WorldPage({
   return (
     <div className="font-pixel mx-auto w-[760px] xl:w-full max-h-[calc(100vh-4rem)] px-8 pt-8 overflow-y-scroll">
       <NavBar enableBack={false} title="Pixel World" />
-
       {/* Loading state with transition */}
       <div
         className={`transition-opacity duration-300 ${loading || weatherStatus === "loading" || !isSketchReady ? "opacity-100" : "opacity-0"} ${loading || weatherStatus === "loading" || !isSketchReady ? "" : "hidden"} flex justify-center items-center h-[50vh]`}
