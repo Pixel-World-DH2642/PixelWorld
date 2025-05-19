@@ -64,8 +64,25 @@ export function WorldPage({
   const prevLoadingRef = useRef(loading);
   const [isSketchReady, setIsSketchReady] = useState(false);
   const [isPaintingLocked, setIsPaintingLocked] = useState(true);
+  const [screenTooSmall, setScreenTooSmall] = useState(false);
 
   const navigate = useNavigate();
+
+  // Check screen width on mount and when window resizes
+  useEffect(() => {
+    function handleResize() {
+      setScreenTooSmall(window.innerWidth < 830);
+    }
+
+    // Initial check
+    handleResize();
+
+    // Add resize listener
+    window.addEventListener("resize", handleResize);
+
+    // Clean up
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   function getNewQuote() {
     if (user && user.uid) {
@@ -136,6 +153,33 @@ export function WorldPage({
   if (authStatus !== "loading" && !user) {
     console.log("Auth status: ", authStatus);
     return <Navigate to="/welcome" replace />;
+  }
+
+  // Show screen size warning when screen is too small
+  if (screenTooSmall) {
+    return (
+      <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] p-4">
+        <NavBar enableBack={false} title="Pixel World" />
+        <div className="font-pixel flex flex-col items-center justify-center text-center gap-4 my-8">
+          <div className="bg-white max-w-md">
+            <h1 className="text-xl text-red-400">Screen Too Small</h1>
+            <p className="text-gray-500 pb-16">
+              Please use a larger device or resize your browser window to
+              continue.
+            </p>
+            <p>But you can still check out the museum!</p>
+          </div>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/museum")}
+            endIcon={<ArrowForwardIcon />}
+          >
+            Museum
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   // Renders the appropriate panel based on current state
@@ -230,7 +274,7 @@ export function WorldPage({
   };
 
   return (
-    <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
+    <div className="font-pixel mx-auto w-[760px] xl:w-full max-h-[calc(100vh-4rem)] px-8 pt-8 overflow-y-scroll">
       <NavBar enableBack={false} title="Pixel World" />
       {/* Loading state with transition */}
       <div
@@ -245,10 +289,10 @@ export function WorldPage({
           className={`transition-opacity duration-300 ${contentOpacity === 0 ? "opacity-0" : "opacity-100"} ${loading || weatherStatus === "loading" || !isSketchReady ? "hidden" : ""}`}
         >
           <div className="flex flex-col items-center justify-center text-center gap-4 pb-4 pt-4">
-            <div className="flex w-full items-stretch justify-between gap-4 h-auto">
+            <div className="flex w-full flex-col xl:flex-row items-stretch justify-between gap-4 h-auto">
               <div
                 id="viewport-container"
-                className="border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0"
+                className="w-[700px] border-4 rounded-xl overflow-auto flex-shrink-0 flex-grow-0"
               >
                 <ReactP5Wrapper
                   sketch={sketch}
@@ -261,7 +305,7 @@ export function WorldPage({
                   isPaintingLocked={isPaintingLocked}
                 />
               </div>
-              <div className="flex-1 flex flex-shrink-0 flex-col w-264 h-[408px] items-center justify-center overflow-hidden">
+              <div className="flex-1 flex flex-shrink-0 flex-col w-full xl:w-[364px] h-full xl:h-[408px] items-center justify-center overflow-hidden">
                 {/* Dynamic panel content */}
                 {renderCurrentPanel()}
               </div>
