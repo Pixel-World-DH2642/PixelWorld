@@ -13,6 +13,7 @@ import { Provider } from "react-redux";
 import configureReduxStore from "./app/store";
 import { connectToPersistance } from "./app/firebase";
 import { Layout } from "./components/Layout";
+import { WorldLayout } from "./components/WorldLayout";
 import muiTheme from "./styles/muiTheme";
 
 const store = configureReduxStore();
@@ -39,9 +40,9 @@ export function makeRouter() {
     {
       path: "/world",
       element: (
-        <Layout>
+        <WorldLayout>
           <World />
-        </Layout>
+        </WorldLayout>
       ),
     },
     {

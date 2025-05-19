@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 
-export function Layout({ children }) {
+export function WorldLayout({ children }) {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
 
@@ -14,7 +14,7 @@ export function Layout({ children }) {
       }}
     >
       <div
-        className={`bg-white rounded-lg shadow-lg ${isLoginPage ? "w-auto" : "w-full lg:min-w-3xl lg:max-w-6xl"} overflow-auto text-base`}
+        className={`bg-white rounded-lg shadow-lg ${isLoginPage ? "w-auto" : "lg:min-w-3xl lg:max-w-6xl"} overflow-auto text-base`}
       >
         {children}
       </div>
