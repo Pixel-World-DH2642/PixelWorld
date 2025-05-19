@@ -64,8 +64,25 @@ export function WorldPage({
   const prevLoadingRef = useRef(loading);
   const [isSketchReady, setIsSketchReady] = useState(false);
   const [isPaintingLocked, setIsPaintingLocked] = useState(true);
+  const [screenTooSmall, setScreenTooSmall] = useState(false);
 
   const navigate = useNavigate();
+
+  // Check screen width on mount and when window resizes
+  useEffect(() => {
+    function handleResize() {
+      setScreenTooSmall(window.innerWidth < 830);
+    }
+
+    // Initial check
+    handleResize();
+
+    // Add resize listener
+    window.addEventListener("resize", handleResize);
+
+    // Clean up
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   function getNewQuote() {
     if (user && user.uid) {
@@ -136,6 +153,33 @@ export function WorldPage({
   if (authStatus !== "loading" && !user) {
     console.log("Auth status: ", authStatus);
     return <Navigate to="/welcome" replace />;
+  }
+
+  // Show screen size warning when screen is too small
+  if (screenTooSmall) {
+    return (
+      <div className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] p-4">
+        <NavBar enableBack={false} title="Pixel World" />
+        <div className="font-pixel flex flex-col items-center justify-center text-center gap-4 my-8">
+          <div className="bg-white max-w-md">
+            <h1 className="text-xl text-red-400">Screen Too Small</h1>
+            <p className="text-gray-500 pb-16">
+              Please use a larger device or resize your browser window to
+              continue.
+            </p>
+            <p>But you can still check out the museum!</p>
+          </div>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/museum")}
+            endIcon={<ArrowForwardIcon />}
+          >
+            Museum
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   // Renders the appropriate panel based on current state

@@ -32,7 +32,7 @@ const PaintingCard = ({
     <Link
       to="/details"
       className={
-        `flex flex-col p-4 shadow-xl aspect-[2/3] cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-200 ease-in-out` +
+        `flex flex-col p-4 shadow-xl cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-200 ease-in-out` +
         " " +
         className
       }
@@ -49,16 +49,17 @@ const PaintingCard = ({
             <p className="mt-1 text-sm text-right font-bold">
               - {painting.authorName}
             </p>
-            {painting.createdAt && (
-              <p className="text-xs text-gray-500 text-right">
-                {formatDate(painting.createdAt)}
-              </p>
-            )}
-            {painting.savedQuote && painting.savedQuote.content && (
-              <p className="text-sm italic line-clamp-2 mb-auto">
-                "{painting.savedQuote?.content}"
-              </p>
-            )}
+            {/* Always render the date element with consistent height */}
+            <p className="text-xs text-gray-500 text-right h-4">
+              {painting.createdAt ? formatDate(painting.createdAt) : "\u00A0"}
+            </p>
+
+            {/* Always render the quote element with consistent height - two lines */}
+            <p className="text-sm italic line-clamp-2 mb-auto min-h-[2.5rem]">
+              {painting.savedQuote && painting.savedQuote.content
+                ? `"${painting.savedQuote.content}"`
+                : "\u00A0\n\u00A0"}
+            </p>
           </div>
           {/* Like button */}
           <div className="flex items-center self-end">
