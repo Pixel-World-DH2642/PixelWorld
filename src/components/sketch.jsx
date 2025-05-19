@@ -68,6 +68,7 @@ export function sketch(p5) {
       mainCharSpriteSheet,
       mainCharSpriteData,
     );
+    mainCharacter.findComponent("Animation").setAnimationState("IdleRight");
 
     MicroEngine.LoadScene(ActorList.mainScene);
     canvasGarbageCollector = canvasCleaner();
