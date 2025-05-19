@@ -8,6 +8,7 @@ import { SubmitModal } from "../components/SubmitModal";
 import { Button, ButtonGroup } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate, Navigate } from "react-router-dom";
 import { QuoteBoard } from "../components/QuoteBoard";
 import { PANEL_STATES } from "../app/slices/worldSlice";
@@ -244,7 +245,7 @@ export function WorldPage({
         <div
           className={`transition-opacity duration-300 ${contentOpacity === 0 ? "opacity-0" : "opacity-100"} ${loading || weatherStatus === "loading" || !isSketchReady ? "hidden" : ""}`}
         >
-          <div className="flex flex-col items-center justify-center text-center gap-4 pb-8 pt-4">
+          <div className="flex flex-col items-center justify-center text-center gap-4 pb-4 pt-4">
             <div className="flex w-full items-stretch justify-between gap-4 h-auto">
               <div
                 id="viewport-container"
@@ -268,11 +269,13 @@ export function WorldPage({
             </div>
           </div>
 
-          <div className="text-red-500">Debug UI for panel switching</div>
-          {/* Debug panel for switching between states */}
-          <div className="mb-4">
-            <ButtonGroup variant="contained" aria-label="Panel switcher">
+          {/* <div className="text-red-500">Debug UI for panel switching</div> */}
+          {/* Navigation controls container */}
+          <div className="flex justify-between items-center mb-4">
+            {/* Panel switching buttons */}
+            <div className="flex gap-4">
               <Button
+                variant="contained"
                 color={
                   currentPanelState === PANEL_STATES.WEATHER
                     ? "primary"
@@ -283,6 +286,7 @@ export function WorldPage({
                 Weather
               </Button>
               <Button
+                variant="contained"
                 color={
                   currentPanelState === PANEL_STATES.EDITOR
                     ? "primary"
@@ -293,6 +297,7 @@ export function WorldPage({
                 Editor
               </Button>
               <Button
+                variant="contained"
                 color={
                   currentPanelState === PANEL_STATES.QUOTE
                     ? "primary"
@@ -302,16 +307,16 @@ export function WorldPage({
               >
                 Quote
               </Button>
-            </ButtonGroup>
-          </div>
-          {/* Debug UI for navigate to museum */}
-          <div className="mb-4">
+            </div>
+
+            {/* Museum button */}
             <Button
               variant="contained"
               color="primary"
               onClick={() => navigate("/museum")}
+              endIcon={<ArrowForwardIcon />}
             >
-              Go to Museum
+              Museum
             </Button>
           </div>
           <div className="mb-4"></div>
