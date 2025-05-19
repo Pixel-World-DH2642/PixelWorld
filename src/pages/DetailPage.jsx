@@ -159,7 +159,7 @@ export function DetailPage({
   };
 
   return (
-    <section className="font-pixel mx-auto w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
+    <section className="font-pixel mx-auto md:min-w-3xl lg:min-w-4xl xl:min-w-6xl w-full max-h-[calc(100vh-4rem)] px-8 pt-8">
       <NavBar
         beforeNavigate={() => {
           onClearComments();

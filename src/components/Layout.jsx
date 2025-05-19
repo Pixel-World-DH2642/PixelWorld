@@ -14,7 +14,7 @@ export function Layout({ children }) {
       }}
     >
       <div
-        className={`bg-white rounded-lg shadow-lg ${isLoginPage ? "w-auto" : "lg: min-w-3xl xl:min-w-6xl lg:max-w-6xl"} overflow-auto text-base`}
+        className={`bg-white rounded-lg shadow-lg ${isLoginPage ? "w-auto" : "lg:min-w-3xl lg:max-w-6xl"} overflow-auto text-base`}
       >
         {children}
       </div>
