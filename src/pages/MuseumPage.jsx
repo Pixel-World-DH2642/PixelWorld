@@ -54,7 +54,7 @@ const PaintingCard = ({
                 {formatDate(painting.createdAt)}
               </p>
             )}
-            {painting.savedQuote && (
+            {painting.savedQuote && painting.savedQuote.content && (
               <p className="text-sm italic line-clamp-2 mb-auto">
                 "{painting.savedQuote?.content}"
               </p>
