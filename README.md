@@ -14,8 +14,12 @@ Users can visit the Museum to browse and appreciate paintings uploaded by others
 - **Dynamic Weather**: The environment's weather reflects the user's actual geolocation, enhancing immersion.
 - **Drawing Your Painting**: Users can create pixel art on a 16x16 canvas, using a simple drawing tool.
 - **Painting Submission**: Users can upload their own pixel art, attaching a quote and personal description.
-- **Museum**: A gallery where users can like and comment on paintings created by others, each with its own quote and description. The likes and comments are real-time updated.
+- **Museum**: A gallery where users can like and comment on paintings created by others, each with its own quote and description.
+- **Real-time Updated Likes and Comments**: The likes and comments are updated in real-time!
+- **Responsive Design**: The application is designed to be responsive and works well on both desktop and mobile devices\*.
 - **User Profile**: Users can view their own paintings, along with their profile information.
+
+_\*Note: The application works best on laptop or bigger screens. The world page will give a warning on mobile devices with narrow screens or without keyboard inputs. All other pages are fully responsive and usable on mobile devices._
 
 ## Technology stack
 
