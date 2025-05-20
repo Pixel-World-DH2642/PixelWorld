@@ -198,7 +198,7 @@ const firebaseListenerMiddleware = (store) => (next) => (action) => {
     if (userId) {
       store.dispatch(startUserLikesListener(userId));
     }
-  } else if (action.type === "auth/logoutSuccess") {
+  } else if (action.type === "auth/logoutUser/fulfilled") {
     // Clear user's liked paintings when logging out
     store.dispatch(resetLikes());
 
