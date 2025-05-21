@@ -19,10 +19,25 @@ const initialState = {
 //if the location is different than Sweden -> display default weather
 export const getWeatherData = createAsyncThunk(
   "weather/getWeatherData",
-  async () => {
-    //longitude & latitude hardcoded for now
-    //will use navigator.geolocation to get coords
-    return await fetchWeatherData(18.06324, 59.334591);
+  async (_, { rejectWithValue }) => {
+    try {
+      // Use a Promise to get the user's location
+      const getPosition = () =>
+        new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+
+      const position = await getPosition();
+      const { latitude, longitude } = position.coords;
+      console.log("User's coordinates:", latitude, longitude);
+
+      // Fetch weather data using the user's coordinates
+      return await fetchWeatherData(longitude, latitude);
+    } catch (error) {
+      // If geolocation fails, return default weather data for Sweden
+      console.error("Geolocation error:", error);
+      return await fetchWeatherData(18.06324, 59.334591); // Default coordinates for Sweden
+    }
   },
 );
 

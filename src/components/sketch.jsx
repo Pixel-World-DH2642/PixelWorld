@@ -58,9 +58,11 @@ export function sketch(p5) {
 
     switch (zoneState) {
       case PANEL_STATES.EDITOR:
+        console.log("editor");
         onPanelStateChange(zoneState);
         break;
       case PANEL_STATES.QUOTE:
+        console.log("quote");
         onPanelStateChange(zoneState);
         break;
       case PANEL_STATES.WEATHER:
@@ -68,6 +70,7 @@ export function sketch(p5) {
         onPanelStateChange(zoneState);
         break;
       case PANEL_STATES.WORLD:
+        console.log("world");
         onPanelStateChange(zoneState);
         break;
       case PANEL_STATES.MUSEUM:

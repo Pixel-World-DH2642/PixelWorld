@@ -32,7 +32,9 @@ export function WeatherDashboard({ weather }) {
       </div>
 
       <div className="mt-4 text-xs text-gray-500 italic">
-        Weather data is based on your current location and updates in real-time.
+        Weather data is based on your current location (if browser permission
+        granted). If you are not in Sweden, default weather data location is set
+        for Stockholm.
       </div>
     </div>
   );

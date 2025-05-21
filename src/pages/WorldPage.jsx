@@ -381,7 +381,7 @@ export function WorldPage({
                         <div className="text-start">
                           <h2 className="font-bold">About the weather</h2>
                           <p>
-                            The weather in your location affects your PixelWorld
+                            Different weather will affect your PixelWorld
                             environment. Let the real-world conditions inspire
                             your pixel art creation!
                           </p>
