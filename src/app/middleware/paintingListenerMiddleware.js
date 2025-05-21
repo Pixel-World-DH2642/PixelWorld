@@ -186,3 +186,76 @@ paintingListenerMiddleware.startListening({
     }
   },
 });
+
+paintingListenerMiddleware.startListening({
+  predicate: (action, currentState, previousState) => {
+    // Get references to the colorPaletteArray
+    const currentPalette = currentState.editor.colorPaletteArray;
+    const previousPalette = previousState.editor.colorPaletteArray;
+
+    // Quick reference check - if they're the same object reference, nothing changed
+    if (currentPalette === previousPalette) {
+      return false;
+    }
+
+    // Deep comparison to detect any changes within the array
+    return JSON.stringify(currentPalette) !== JSON.stringify(previousPalette);
+  },
+  effect: async (action, listenerApi) => {
+    // Access the updated colorPaletteArray
+    const colorPaletteArray = listenerApi.getState().editor.colorPaletteArray;
+    const userId = listenerApi.getState().auth.user?.uid;
+
+    console.log("colorPaletteArray changed:", colorPaletteArray);
+    console.log("Action that caused the change:", action);
+
+    // Skip saving if this is just loading the palette from Firebase
+    if (
+      action.type === "editor/setColorPalette" &&
+      action.payload.isFromFirebase
+    ) {
+      return;
+    }
+
+    try {
+      if (!userId) {
+        console.error("Cannot save color palette: No user ID available");
+        return;
+      }
+
+      // Import required Firebase functions
+      const { collection, getDocs, query, where, addDoc, updateDoc, doc } =
+        await import("firebase/firestore");
+      const { db } = await import("../firebase");
+
+      // Check if this user already has a color palette in userPalettes
+      const userPaletteRef = collection(db, "userPalettes");
+      const q = query(userPaletteRef, where("userId", "==", userId));
+      const snapshot = await getDocs(q);
+
+      // Prepare the data to save
+      const paletteData = {
+        userId: userId,
+        colorPaletteArray: JSON.stringify(colorPaletteArray),
+        updatedAt: new Date(),
+      };
+
+      if (snapshot.empty) {
+        // Create new palette document
+        console.log("Creating new color palette for user:", userId);
+        await addDoc(userPaletteRef, paletteData);
+      } else {
+        // Update existing palette document
+        const paletteDoc = snapshot.docs[0];
+        console.log("Updating existing color palette for user:", userId);
+        await updateDoc(doc(db, "userPalettes", paletteDoc.id), paletteData);
+      }
+
+      console.log(
+        "Successfully saved color palette to userPalettes collection",
+      );
+    } catch (error) {
+      console.error("Error saving color palette:", error);
+    }
+  },
+});

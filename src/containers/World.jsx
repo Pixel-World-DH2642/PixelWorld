@@ -12,7 +12,6 @@ import {
   updatePlayerPainting,
   undoEdit,
   redoEdit,
-  getUndoStateHint,
   saveQuoteToPlayerPainting,
   removeQuoteFromPlayerPainting,
   selectUndoStateHint,
@@ -23,8 +22,7 @@ import {
   updateColorPalette,
   setColorPalette,
   setCurrentPaletteSlot,
-  updatePixelArray,
-  setPixelArray,
+  randomizePalette,
 } from "../app/slices/pixelEditorSlice.js";
 import { setPanelState } from "../app/slices/worldSlice";
 import { hexToRgb } from "../utils/color.js";
@@ -101,6 +99,7 @@ export const World = connect(
         );
       },
       onSlotSelected: (slot) => dispatch(setCurrentPaletteSlot(slot)),
+      onRandomizePalette: () => dispatch(randomizePalette()),
       //Painting Slice Functions
       onPlayerPaintingUpdate: (painting) => {
         // console.log("Dispatching updatePlayerPainting with:", painting);
@@ -108,7 +107,6 @@ export const World = connect(
       },
       onUndoEdit: () => dispatch(undoEdit()),
       onRedoEdit: () => dispatch(redoEdit()),
-      onGetUndoStateHint: () => dispatch(getUndoStateHint()),
       onSubmitPainting: (painting) => {
         dispatch(uploadPainting(painting));
       },

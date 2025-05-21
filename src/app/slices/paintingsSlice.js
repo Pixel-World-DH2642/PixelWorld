@@ -397,6 +397,22 @@ const paintingsSlice = createSlice({
     removeQuoteFromPlayerPainting: (state) => {
       state.playerPainting.savedQuote = null;
     },
+    resetPaintingsState: (state) => {
+      // Clear user-specific data
+      state.selectedPaintingId = null;
+      state.playerPainting = {
+        jagged: null,
+        colorMatrix: null,
+        savedQuote: null,
+        title: null,
+        notes: null,
+      };
+      state.undoBuffer = [];
+      state.undoIndex = 0;
+      state.error = null;
+      // Clear entities (all paintings)
+      paintingsAdapter.removeAll(state);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -534,10 +550,10 @@ export const {
   updatePlayerPainting,
   undoEdit,
   redoEdit,
-  getUndoStateHint,
   updateLikesCountByOne,
   updateLikesCount,
   saveQuoteToPlayerPainting,
   removeQuoteFromPlayerPainting,
+  resetPaintingsState,
 } = paintingsSlice.actions;
 export default paintingsSlice.reducer;

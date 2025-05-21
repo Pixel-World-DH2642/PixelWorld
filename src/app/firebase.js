@@ -5,8 +5,11 @@ import { setUser, authLoaded } from "./slices/authSlice";
 import {
   fetchAllPaintings,
   fetchPlayerPainting,
+  resetPaintingsState,
 } from "./slices/paintingsSlice";
-import { fetchUserLikes } from "./slices/likeSlice";
+import { fetchUserLikes, resetLikes } from "./slices/likeSlice";
+import { fetchUserColorPalette, resetEditor } from "./slices/pixelEditorSlice";
+import { resetQuote } from "./slices/quoteSlice";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAA_zepBE6w3GCBV1Kr6_Ui43KcEPk-Mlw",
@@ -34,9 +37,14 @@ export function connectToPersistance(store) {
       store.dispatch(setUser({ uid, displayName, email, photoURL }));
       store.dispatch(fetchUserLikes(uid));
       store.dispatch(fetchPlayerPainting(uid));
+      store.dispatch(fetchUserColorPalette(uid));
     } else {
       // User is signed out
       store.dispatch(setUser(null));
+      store.dispatch(resetLikes());
+      store.dispatch(resetQuote());
+      store.dispatch(resetEditor());
+      store.dispatch(resetPaintingsState());
     }
 
     store.dispatch(authLoaded());

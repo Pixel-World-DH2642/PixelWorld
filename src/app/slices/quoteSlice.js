@@ -133,6 +133,7 @@ const quoteSlice = createSlice({
     setQuoteSaved: (state, action) => {
       state.isQuoteSaved = action.payload;
     },
+    resetQuote: () => initialState,
   },
   extraReducers: (builder) => {
     builder
@@ -181,6 +182,6 @@ const quoteSlice = createSlice({
   },
 });
 
-export const { setQuoteSaved } = quoteSlice.actions;
+export const { setQuoteSaved, resetQuote } = quoteSlice.actions;
 
 export default quoteSlice.reducer;

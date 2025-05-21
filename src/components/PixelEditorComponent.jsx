@@ -1,8 +1,7 @@
 import "../styles/global.css";
 import { TOOL_MODE } from "../app/slices/pixelEditorSlice";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { randomColor, hexToRgb } from "../utils/color";
-import { Button } from "@mui/material";
 
 export function PixelEditorComponent({
   //State Properties
@@ -16,86 +15,25 @@ export function PixelEditorComponent({
   onPaletteUpdated,
   onPaletteInitialize,
   onSlotSelected,
+  onRandomizePalette, // Add this new prop
   //Painting Functions
   onUndoEdit,
   onRedoEdit,
-  onGetUndoStateHint,
   onPlayerPaintingUpdate,
   undoHint,
 }) {
-  //Tools
-  //-Clear Drawing
-  //-Fill
-  //-Mini View
-
-  //ToDo
-  //Set initial color for color picker, model, and in the sketch
-
-  //-optimize painting render
-  //-Quote in world
-  //-Get quote in world
-  //-world overlay instructions
-
-  //Panel state: quote, weather, pixel > world slice for dynamic context sensitive panel
-  //
-
-  //-Weather (implement more & better)
-
-  //Quote bot, access, write out quote one character at a time
-
-  //Bugs
-  //-Tripple clicking a pixel grid throws read only error...
-  //-No data to canvasActor from model until pixel editor update
-  //-sky re-render problem
-  //-color picker change
-  //-Player jitter > add grounded state & turn off gravity
-
-  //Setup
   const numPaletteSlots = 16;
-  // Convert palette to a state variable
-  const [palette, setPalette] = useState([]);
-  // Default color to ensure picker is always controlled
-  const [pickerColor, setPickerColor] = useState("#e62465");
 
-  // Initialize palette effect
+  // Initialize palette effect - only if it's empty
   useEffect(() => {
-    initializePalette();
-  }, [colorPaletteArray]);
-
-  // Update picker color when selected slot changes
-  useEffect(() => {
-    if (
-      selectedPaletteSlot !== null &&
-      colorPaletteArray[selectedPaletteSlot]
-    ) {
-      setPickerColor(colorPaletteArray[selectedPaletteSlot]);
-    }
-  }, [selectedPaletteSlot, colorPaletteArray]);
-
-  function initializePalette() {
     if (colorPaletteArray.length === 0) {
-      onPaletteInitialize(randomizePalette());
-    } else {
-      const newPalette = [];
-      for (let i = 0; i < numPaletteSlots; i++) {
-        newPalette[i] = {
-          id: `paletteSlot${i}`,
-          index: i,
-          color: colorPaletteArray[i],
-        };
-      }
-      setPalette(newPalette);
+      // Generate a random palette on first load
+      const initialPalette = Array(numPaletteSlots)
+        .fill(0)
+        .map(() => randomColor());
+      onPaletteInitialize(initialPalette);
     }
-  }
-
-  function randomizePalette() {
-    const colorBuffer = [];
-    for (let i = 0; i < numPaletteSlots; i++) {
-      const color = randomColor();
-      colorBuffer.push(color);
-    }
-    return colorBuffer;
-  }
+  }, []);
 
   //Callbacks: Hook into PixelEditor container
   function handlePaletteClickedACB(e) {
@@ -104,28 +42,18 @@ export function PixelEditorComponent({
     const clickedSlotIndex = parseInt(e.target.dataset.index);
     if (clickedSlotIndex === selectedPaletteSlot) return;
 
-    // Update the selected slot in state
+    // Just update the selected slot in the Redux store - the color update happens there
     onSlotSelected(clickedSlotIndex);
-
-    // Update color based on the selected slot
-    const newColor = e.target.dataset.color;
-    setPickerColor(newColor);
-    onColorSelect({
-      rgba: hexToRgb(newColor),
-      hex: newColor,
-    });
   }
 
   function handleColorChangeACB(e) {
     const newColor = e.target.value;
-    setPickerColor(newColor);
 
-    if (selectedPaletteSlot !== null) {
-      const slot = document.getElementById(palette[selectedPaletteSlot].id);
-      slot.dataset.color = newColor;
-      slot.style.backgroundColor = newColor;
-      onColorSelect({ rgba: hexToRgb(newColor), hex: newColor });
-    }
+    // Update the color in the palette at the selected slot
+    onPaletteUpdated({
+      index: selectedPaletteSlot,
+      color: newColor,
+    });
   }
 
   function handleEraserSelected() {
@@ -137,7 +65,8 @@ export function PixelEditorComponent({
   }
 
   function handleRandomizeClicked() {
-    onPaletteInitialize(randomizePalette());
+    // Use the Redux action to randomize the palette
+    onRandomizePalette();
   }
 
   function handleUndoEdit() {
@@ -155,18 +84,19 @@ export function PixelEditorComponent({
     onPlayerPaintingUpdate(emptyPixelArray);
   }
 
-  //Layout
-  //Create palette slot elements
-  const paletteSlots = palette.map((slot) => (
-    <div
-      className={`aspect-square ${selectedPaletteSlot === slot.index ? "outline-2 outline outline-black" : ""}`}
-      key={slot.id}
-      id={slot.id}
-      data-color={slot.color}
-      data-index={slot.index}
-      style={{ backgroundColor: slot.color }}
-    ></div>
-  ));
+  // Create palette slots directly from the Redux state
+  const paletteSlots = Array.from({ length: numPaletteSlots }).map(
+    (_, index) => (
+      <div
+        className={`aspect-square ${selectedPaletteSlot === index ? "outline-2 outline outline-black" : ""}`}
+        key={`paletteSlot${index}`}
+        id={`paletteSlot${index}`}
+        data-color={colorPaletteArray[index] || "#000000"}
+        data-index={index}
+        style={{ backgroundColor: colorPaletteArray[index] || "#000000" }}
+      ></div>
+    ),
+  );
 
   return (
     <div className="flex flex-col w-full h-full bg-gray-300 p-2 gap-2 overflow-y-scroll">
@@ -194,7 +124,7 @@ export function PixelEditorComponent({
               type="color"
               id="picker"
               name="color"
-              value={pickerColor}
+              value={currentColor.hex || "#000000"}
               className="cursor-pointer"
               onChange={handleColorChangeACB}
               disabled={selectedPaletteSlot === null}

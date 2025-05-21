@@ -43,6 +43,7 @@ export function WorldPage({
   currentColor,
   currentTool,
   selectedPaletteSlot,
+  onRandomizePalette,
   //Pixel Editor Funcs
   onToolSelect,
   onColorSelect,
@@ -53,7 +54,6 @@ export function WorldPage({
   onPlayerPaintingUpdate,
   onUndoEdit,
   onRedoEdit,
-  onGetUndoStateHint,
   //Painting Props
   playerPainting,
   // Undo state
@@ -248,10 +248,10 @@ export function WorldPage({
                 onPaletteUpdated={onPaletteUpdated}
                 onPaletteInitialize={onPaletteInitialize}
                 onSlotSelected={onSlotSelected}
+                onRandomizePalette={onRandomizePalette}
                 //Painting Slice
                 onUndoEdit={onUndoEdit}
                 onRedoEdit={onRedoEdit}
-                onGetUndoStateHint={onGetUndoStateHint}
                 onPlayerPaintingUpdate={onPlayerPaintingUpdate}
                 undoHint={undoHint}
               />
