@@ -45,7 +45,7 @@ const PaintingCard = ({
         <div className="flex flex-col justify-between h-full items-stretch">
           {/* Text content container with ellipsis for overflow */}
           <div className="flex-1 flex flex-col overflow-hidden">
-            <h2 className="text-2xl">{painting.title}</h2>
+            <h2 className="text-2xl line-clamp-1">{painting.title}</h2>
             <p className="mt-1 text-sm text-right font-bold">
               - {painting.authorName}
             </p>
