@@ -1,8 +1,4 @@
-import {
-  configureStore,
-  createSlice,
-  createAsyncThunk,
-} from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import quoteSlice from "./slices/quoteSlice";
 import weatherSlice from "./slices/weatherSlice";
 import authSlice from "./slices/authSlice";
@@ -14,24 +10,11 @@ import { paintingListenerMiddleware } from "./middleware/paintingListenerMiddlew
 import pixelEditorSlice from "./slices/pixelEditorSlice";
 import worldSlice from "./slices/worldSlice";
 
-const appSlice = createSlice({
-  name: "app",
-  initialState: {
-    ready: false,
-  },
-  reducers: {
-    setReady: (state) => {
-      state.ready = true;
-    },
-  },
-});
-
 export default function configureReduxStore() {
   console.log("Configuring Redux store...");
   const initialState = {};
   return configureStore({
     reducer: {
-      app: appSlice.reducer,
       auth: authSlice,
       quote: quoteSlice,
       weather: weatherSlice,
