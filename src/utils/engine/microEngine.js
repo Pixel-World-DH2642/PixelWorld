@@ -464,6 +464,7 @@ export function createMicroEngine(p5) {
   function createAnimatorComponent(settings, actor, pos) {
     const animationStates = new Map();
     let currentAnimation = [];
+    let currentAnimationKey = null;
     let frameIndex = 0;
     let scale = settings?.scale || 1;
     let frameLength = settings?.frameLength || 0.1;
@@ -476,7 +477,16 @@ export function createMicroEngine(p5) {
     function setAnimationState(name) {
       if (currentAnimation == animationStates.get(name)) return; //Don't reset if same state
       frameIndex = 0;
+      if (!animationStates.get(name)) {
+        throw new error("No animation state with name: " + name);
+        return;
+      }
       currentAnimation = animationStates.get(name);
+      currentAnimationKey = name;
+    }
+
+    function getAnimationState() {
+      return currentAnimationKey;
     }
 
     function extractFramesFromSpriteSheet(
@@ -532,6 +542,9 @@ export function createMicroEngine(p5) {
       },
       get setAnimationState() {
         return setAnimationState;
+      },
+      get getAnimationState() {
+        return getAnimationState;
       },
       get extractFramesFromSpriteSheet() {
         return extractFramesFromSpriteSheet;

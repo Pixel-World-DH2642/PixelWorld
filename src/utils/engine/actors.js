@@ -374,7 +374,7 @@ export function createActorList(p5, MicroEngine) {
 
       function jump(force) {
         if (!isGrounded) return;
-        actor.pos = { x: actor.pos.x, y: actor.pos.y - 0.2 };
+        actor.pos = { x: actor.pos.x, y: actor.pos.y - 1 };
         actor.forceComponent.addForce(p5.createVector(0, -force));
         isGrounded = false;
         actor.forceComponent.useGravity = true;
@@ -605,13 +605,13 @@ export function createActorList(p5, MicroEngine) {
         skyRenderer.setColors({ baseColor: cloudLevel2_BaseColor });
         break;
       case 3:
-        skyRenderer.setColors({ baseColor: cloudLevel3_BaseColor });
+        skyRenderer.setColors({ baseColor: cloudLevel6_BaseColor });
         break;
       case 4:
-        skyRenderer.setColors({ baseColor: cloudLevel4_BaseColor });
+        skyRenderer.setColors({ baseColor: cloudLevel6_BaseColor });
         break;
       case 5:
-        skyRenderer.setColors({ baseColor: cloudLevel5_BaseColor });
+        skyRenderer.setColors({ baseColor: cloudLevel6_BaseColor });
         break;
       case 6:
         skyRenderer.setColors({ baseColor: cloudLevel6_BaseColor });
