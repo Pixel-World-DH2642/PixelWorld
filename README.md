@@ -2,6 +2,8 @@
 
 Firebase deployment link: [Pixel World](https://pixelworld-45efc.web.app/)
 
+![Pixel World](world.png)
+
 ## Description
 
 PixelWorld is a web application that encourages creativity and sharing through pixel art. Users explore a 2D world where they receive a “quote of the day” as inspiration for a 16x16 pixel painting. If they like the quote, they can attach it to their artwork (only one quote per painting). Users can also refresh the quote to find new inspiration. The environment’s weather is determined by the user’s actual geolocation, adding a dynamic touch to the experience.
